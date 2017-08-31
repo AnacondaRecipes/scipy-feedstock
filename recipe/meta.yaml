@@ -1,5 +1,4 @@
 {% set version = "0.19.1" %}
-{% set variant = "openblas" %}
 
 package:
   name: scipy
@@ -10,31 +9,29 @@ source:
   sha256: ac268fe92edd149c6f52fa138d2a03877c080981d7944e96bab8ef68764f71cc
 
 build:
-  number: 202
-  # We lack openblas on Windows, and therefore can't build scipy there either currently.
-  skip: true  # [win]
+  number: 2
+  # conda 4.4+ can use this
+  requires_features:
+    blas: {{ blas_impl }}
+  # this is for conda 4.3 and below
   features:
-    - blas_{{ variant }}
+    - nomkl    # [x86 and blas_impl != 'mkl']
 
 requirements:
   build:
-    - toolchain
-    - gcc          # [osx]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+  host:
     - python
     - setuptools
     - cython
-    - blas 1.1 {{ variant }}
-    - libgfortran  # [linux]
-    - openblas 0.2.19|0.2.19*
-    - numpy 1.9.*  # [not (win and py36)]
-    - numpy 1.11.*  # [win and py36]
+    - numpy
+    - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
+    - openblas    # [blas_impl == 'openblas']
   run:
     - python
-    - blas 1.1 {{ variant }}
-    - libgfortran
-    - openblas 0.2.19|0.2.19*
-    - numpy >=1.9  # [not (win and py36)]
-    - numpy >=1.11  # [win and py36]
+    - {{ pin_compatible('numpy') }}
 
 test:
   requires:
