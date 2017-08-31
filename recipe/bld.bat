@@ -1,17 +1,31 @@
-set COMP_DIR=C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows
+if "%blas_impl%" == "mkl" (
 
-set DISTUTILS_USE_SDK=1
-set MSSdk=1
+(
+echo [mkl]
+echo library_dirs = %LIBRARY_LIB%
+echo include_dirs = %LIBRARY_INC%
+echo mkl_libs = mkl_core_dll, mkl_intel_lp64_dll, mkl_intel_thread_dll
+echo lapack_libs = mkl_lapack95_lp64
+) > site.cfg
 
-if %PY_VER%==3.5 (
-REM This one is essential for getting DLL linkage on Py3.5+
-    set "PY_VCRUNTIME_REDIST=%LIBARARY_BIN%\vcruntime140.dll"
-    set VS=vs2015
 ) else (
-    set VS=vs2010
-)
 
-call "%COMP_DIR%\bin\ifortvars.bat" %INTEL_ARCH% %VS%
+(
+echo [DEFAULT]
+echo library_dirs = %LIBRARY_LIB%
+echo include_dirs = %LIBRARY_INC%
+echo.
+echo [atlas]
+echo atlas_libs = openblas
+echo libraries = openblas
+echo.
+echo [openblas]
+echo libraries = openblas
+echo library_dirs = %LIBRARY_LIB%
+echo include_dirs = %LIBRARY_INC%
+) > site.cfg
+
+)
 
 %PYTHON% setup.py install
 if errorlevel 1 exit 1
