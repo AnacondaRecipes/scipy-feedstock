@@ -27,5 +27,11 @@ echo include_dirs = %LIBRARY_INC%
 
 )
 
-%PYTHON% setup.py install
+IF "%target_platform%" == "win-64" (
+  set "fcompiler=intelem"
+) else (
+  set "fcompiler=intel"
+)
+
+python setup.py config --fcompiler=%fcompiler% build_clib --fcompiler=intelem build_ext --fcompiler=intelem install
 if errorlevel 1 exit 1
