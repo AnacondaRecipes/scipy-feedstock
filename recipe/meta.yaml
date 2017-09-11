@@ -22,7 +22,7 @@ source:
     - test_stubs.patch
 
 build:
-  number: 2
+  number: 3
   # conda 4.4+ can use this
   requires_features:
     blas: {{ blas_impl }}
