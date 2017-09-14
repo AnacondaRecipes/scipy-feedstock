@@ -32,8 +32,9 @@ build:
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    # on windows, Parallel studio activates the appropriate c/cxx compiler
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
     - {{ compiler('fortran') }}
   host:
     - python
@@ -42,6 +43,7 @@ requirements:
     - numpy
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas    # [blas_impl == 'openblas']
+    - msinttypes   # [win and vc<14]
   run:
     - python
     - {{ pin_compatible('numpy') }}
