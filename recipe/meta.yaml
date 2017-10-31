@@ -42,7 +42,7 @@ requirements:
     - cython
     - numpy
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
-    - openblas    # [blas_impl == 'openblas']
+    - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
     - msinttypes   # [win and vc<14]
   run:
     - python
