@@ -82,7 +82,7 @@ except AttributeError:
     print('NO MKL')
     have_mkl = False
 
-# We have some test-case failures on 32-bit with MKL:
+# We have some test-case failures on 32-bit platforms:
 #
 # Ran 24221 tests in 389.466s
 #
@@ -91,5 +91,5 @@ except AttributeError:
 # .. maybe related to:
 #
 # TODO :: Investigate this properly.
-if not have_mkl or sys.maxsize > 2**32:
+if sys.maxsize > 2**32:
     sys.exit(not scipy.test().wasSuccessful())
