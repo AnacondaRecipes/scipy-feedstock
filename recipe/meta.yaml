@@ -1,4 +1,4 @@
-{% set version = "0.19.1" %}
+{% set version = "1.0.0" %}
 
 package:
   name: scipy
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
-  sha256: ac268fe92edd149c6f52fa138d2a03877c080981d7944e96bab8ef68764f71cc
+  sha256: c423a4511684554958dab55f2877df78e765b44f8eef46d5425891d6ac3b49bc
   patches:
     # one failure due to building against old numpy: https://github.com/scipy/scipy/issues/6288
     # one failure in error reporting:
@@ -52,7 +52,7 @@ requirements:
 
 test:
   requires:
-    - nose
+    - pytest
     - mpmath
     - nomkl  # [blas_impl == 'openblas']
   commands:
