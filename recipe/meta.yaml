@@ -1,5 +1,4 @@
 {% set version = "1.0.1" %}
-{% set variant = "openblas" %}
 
 package:
   name: scipy
