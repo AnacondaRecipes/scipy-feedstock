@@ -7,19 +7,6 @@ package:
 source:
   url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
   sha256: c423a4511684554958dab55f2877df78e765b44f8eef46d5425891d6ac3b49bc
-  patches:
-    # one failure due to building against old numpy: https://github.com/scipy/scipy/issues/6288
-    # one failure in error reporting:
-    #    ----------------------------------------------------------------------
-    # Traceback (most recent call last):
-    #   File "/Users/msarahan/miniconda3/conda-bld/scipy_1504276197501/_test_env/lib/python2.7/site-packages/nose/case.py", line 197, in runTest
-    #     self.test(*self.arg)
-    #   File "/Users/msarahan/miniconda3/conda-bld/scipy_1504276197501/_test_env/lib/python2.7/site-packages/scipy/special/tests/test_sf_error.py", line 103, in test_errstate
-    #     action)
-    #   File "/Users/msarahan/miniconda3/conda-bld/scipy_1504276197501/_test_env/lib/python2.7/site-packages/scipy/special/tests/test_sf_error.py", line 34, in _check_action
-    #     assert_(w[-1].category is sc.SpecialFunctionWarning)
-    # IndexError: list index out of range
-    - test_stubs.patch  # [osx]
 
 build:
   number: 0
