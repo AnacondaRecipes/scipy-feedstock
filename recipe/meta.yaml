@@ -22,7 +22,7 @@ source:
     - test_stubs.patch  # [osx]
 
 build:
-  number: 3
+  number: 0
   # conda 4.4+ can use this
   skip: True  # [blas_impl == 'openblas' and win]
   requires_features:
