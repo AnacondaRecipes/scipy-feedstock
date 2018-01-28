@@ -31,7 +31,7 @@ requirements:
     - numpy
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
-    - nomkl  # [blas_impl == 'openblas']
+    - nomkl  # [x86 and blas_impl == 'openblas']
     - msinttypes   # [win and vc<14]
   run:
     - python
@@ -41,7 +41,7 @@ test:
   requires:
     - pytest
     - mpmath
-    - nomkl  # [blas_impl == 'openblas']
+    - nomkl  # [x86 and blas_impl == 'openblas']
   commands:
     - conda inspect linkages -p $PREFIX scipy  # [not win]
     - conda inspect objects -p $PREFIX scipy  # [osx]
