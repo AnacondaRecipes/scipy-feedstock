@@ -1,5 +1,6 @@
 import sys
 import os
+import platform
 
 # Use OpenBLAS with 1 thread only as it seems to be using too many
 # on the CIs apparently.
@@ -91,5 +92,5 @@ except AttributeError:
 # .. maybe related to:
 #
 # TODO :: Investigate this properly.
-if sys.maxsize > 2**32:
+if sys.maxsize > 2**32 and platform.machine() != 'ppc64le':
     sys.exit(not scipy.test().wasSuccessful())
