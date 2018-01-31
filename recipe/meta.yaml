@@ -6,7 +6,14 @@ package:
 
 source:
   url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
-  sha256: a0eaaa6b6958db9d89f8ef0ce23391fedebac3fb416e05bdd966e6895dd6cd3d
+  sha256: c423a4511684554958dab55f2877df78e765b44f8eef46d5425891d6ac3b49bc
+  patches:
+    # patches to get unit tests to pass on ppc64le
+    - 0001-reduce-precision-in-legredre-tests.patch                 # [ppc64le]
+    - 0002-reduce-precision-in-special-orthogonal-tests.patch       # [ppc64le]
+    - 0003-supress-overflow-warning-in-special-test_basic.patch     # [ppc64le]
+    - 0004-limit-precision-of-complex256-in-test_signaltools.patch  # [ppc64le]
+    - 0005-relax-precision-in-sparse-linalg-isolve-lsmr-test.patch  # [ppc64le]
 
 build:
   number: 0
