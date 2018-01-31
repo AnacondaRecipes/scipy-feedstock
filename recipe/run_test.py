@@ -1,6 +1,5 @@
 import sys
 import os
-import platform
 
 # Use OpenBLAS with 1 thread only as it seems to be using too many
 # on the CIs apparently.
