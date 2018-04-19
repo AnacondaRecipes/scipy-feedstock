@@ -92,5 +92,5 @@ except AttributeError:
 # .. maybe related to:
 #
 # TODO :: Investigate this properly.
-if sys.maxsize > 2**32 and platform.machine() != 'ppc64le':
+if sys.maxsize > 2**32:
     sys.exit(not scipy.test().wasSuccessful())
