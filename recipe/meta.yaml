@@ -1,4 +1,4 @@
-{% set version = "1.0.1" %}
+{% set version = "1.1.0" %}
 
 package:
   name: scipy
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
-  sha256: a0eaaa6b6958db9d89f8ef0ce23391fedebac3fb416e05bdd966e6895dd6cd3d
+  sha256: 0291a2254d9a020af9b49ca648e8b41e1366be9a8a40849be9102626b2022422
   patches:
     # patches to get unit tests to pass on ppc64le
     - 0001-reduce-precision-in-legredre-tests.patch                 # [ppc64le]
@@ -14,8 +14,6 @@ source:
     - 0003-supress-overflow-warning-in-special-test_basic.patch     # [ppc64le]
     - 0004-limit-precision-of-complex256-in-test_signaltools.patch  # [ppc64le]
     - 0005-relax-precision-in-sparse-linalg-isolve-lsmr-test.patch  # [ppc64le]
-    # Relax precision in a few units tests so they pass when using MKL
-    - relax_precision_in_tests.patch
 
 build:
   number: 0
