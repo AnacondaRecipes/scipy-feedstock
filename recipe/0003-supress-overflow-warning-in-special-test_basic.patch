@@ -1,4 +1,4 @@
-From a57c766a3cb18e9967adedb0535384b36aa4e80f Mon Sep 17 00:00:00 2001
+From efc5c464d8362c21a3ad5415b2d56b7136a4b56e Mon Sep 17 00:00:00 2001
 From: Jonathan Helmus <jjhelmus@gmail.com>
 Date: Fri, 26 Jan 2018 13:04:10 -0500
 Subject: [PATCH 3/5] supress overflow warning in special test_basic
@@ -8,10 +8,10 @@ Subject: [PATCH 3/5] supress overflow warning in special test_basic
  1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/scipy/special/tests/test_basic.py b/scipy/special/tests/test_basic.py
-index 49e8c4a..1e2cbe3 100644
+index 8ad4654..b41cd6e 100644
 --- a/scipy/special/tests/test_basic.py
 +++ b/scipy/special/tests/test_basic.py
-@@ -2531,10 +2531,16 @@ class TestBessel(object):
+@@ -2575,10 +2575,16 @@ class TestBessel(object):
                                       rtol=rtol, atol=atol)
  
      def test_jv_cephes_vs_amos(self):
@@ -31,5 +31,5 @@ index 49e8c4a..1e2cbe3 100644
      def test_yv_cephes_vs_amos_only_small_orders(self):
          skipper = lambda v, z: (abs(v) > 50)
 -- 
-1.8.3.1
+2.7.4
 

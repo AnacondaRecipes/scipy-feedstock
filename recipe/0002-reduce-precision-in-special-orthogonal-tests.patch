@@ -1,4 +1,4 @@
-From 44b53a5d338a43a34bdec6528e2f577b3e5df699 Mon Sep 17 00:00:00 2001
+From ad0d964bba37de868e35b09a70836ec9462bee64 Mon Sep 17 00:00:00 2001
 From: Jonathan Helmus <jjhelmus@gmail.com>
 Date: Fri, 26 Jan 2018 13:03:33 -0500
 Subject: [PATCH 2/5] reduce precision in special orthogonal tests
@@ -8,7 +8,7 @@ Subject: [PATCH 2/5] reduce precision in special orthogonal tests
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/scipy/special/tests/test_orthogonal.py b/scipy/special/tests/test_orthogonal.py
-index 8464932..51c4233 100644
+index bd0a090..6adbea1 100644
 --- a/scipy/special/tests/test_orthogonal.py
 +++ b/scipy/special/tests/test_orthogonal.py
 @@ -331,7 +331,7 @@ def test_roots_jacobi():
@@ -20,7 +20,7 @@ index 8464932..51c4233 100644
      vgq(rf(18.24, 27.3), ef(18.24, 27.3), wf(18.24, 27.3), -1., 1.,
          100, atol=1e-13)
  
-@@ -718,11 +718,11 @@ def test_roots_genlaguerre():
+@@ -724,11 +724,11 @@ def test_roots_genlaguerre():
  
      vgq(rootf(0.1), evalf(0.1), weightf(0.1), 0., np.inf, 5)
      vgq(rootf(0.1), evalf(0.1), weightf(0.1), 0., np.inf, 25, atol=1e-13)
@@ -35,5 +35,5 @@ index 8464932..51c4233 100644
      vgq(rootf(10), evalf(10), weightf(10), 0., np.inf, 5)
      vgq(rootf(10), evalf(10), weightf(10), 0., np.inf, 25, atol=1e-13)
 -- 
-1.8.3.1
+2.7.4
 
