@@ -1,7 +1,7 @@
-From cf4991a697ea14ad4cdf5c6ea9e8651ee5a4e7be Mon Sep 17 00:00:00 2001
+From dbf7a32d6ec560f6513afca84da5885ac9872afa Mon Sep 17 00:00:00 2001
 From: Jonathan Helmus <jjhelmus@gmail.com>
 Date: Fri, 26 Jan 2018 17:53:54 -0500
-Subject: [PATCH 4/5] limit precision of complex256 in test_signaltools
+Subject: [PATCH 4/7] limit precision of complex256 in test_signaltools
 
 On ppc64le finfo indicates more precision than is provided
 ---
@@ -26,5 +26,5 @@ index ffb5c5b..0a1c593 100644
  
      def test_rank0(self, dt):
 -- 
-2.7.4
+1.8.3.1
 

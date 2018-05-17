@@ -1,7 +1,7 @@
-From 4ed007bb85db79e1de6d6870947fd9a33eeebea3 Mon Sep 17 00:00:00 2001
+From b1b6a5899bb54dce917f532a2c2d04e4fb999432 Mon Sep 17 00:00:00 2001
 From: Jonathan Helmus <jjhelmus@gmail.com>
 Date: Tue, 30 Jan 2018 20:59:19 -0500
-Subject: [PATCH 5/5] relax precision in sparse linalg isolve lsmr test
+Subject: [PATCH 5/7] relax precision in sparse linalg isolve lsmr test
 
 test is failing on ppc64le without relaxed precision
 ---
@@ -22,5 +22,5 @@ index 33c574e..62ea2a1 100644
  class TestLSMRReturns:
      def setup_method(self):
 -- 
-2.7.4
+1.8.3.1
 

@@ -1,7 +1,7 @@
-From efc5c464d8362c21a3ad5415b2d56b7136a4b56e Mon Sep 17 00:00:00 2001
+From 23ae9ff620f23eddf8bdf536ab5e635f22b478d0 Mon Sep 17 00:00:00 2001
 From: Jonathan Helmus <jjhelmus@gmail.com>
 Date: Fri, 26 Jan 2018 13:04:10 -0500
-Subject: [PATCH 3/5] supress overflow warning in special test_basic
+Subject: [PATCH 3/7] supress overflow warning in special test_basic
 
 ---
  scipy/special/tests/test_basic.py | 10 ++++++++--
@@ -31,5 +31,5 @@ index 8ad4654..b41cd6e 100644
      def test_yv_cephes_vs_amos_only_small_orders(self):
          skipper = lambda v, z: (abs(v) > 50)
 -- 
-2.7.4
+1.8.3.1
 

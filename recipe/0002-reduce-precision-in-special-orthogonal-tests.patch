@@ -1,7 +1,7 @@
-From ad0d964bba37de868e35b09a70836ec9462bee64 Mon Sep 17 00:00:00 2001
+From 9292e4e53e3c4056517194a9daa8c716e227b279 Mon Sep 17 00:00:00 2001
 From: Jonathan Helmus <jjhelmus@gmail.com>
 Date: Fri, 26 Jan 2018 13:03:33 -0500
-Subject: [PATCH 2/5] reduce precision in special orthogonal tests
+Subject: [PATCH 2/7] reduce precision in special orthogonal tests
 
 ---
  scipy/special/tests/test_orthogonal.py | 6 +++---
@@ -35,5 +35,5 @@ index bd0a090..6adbea1 100644
      vgq(rootf(10), evalf(10), weightf(10), 0., np.inf, 5)
      vgq(rootf(10), evalf(10), weightf(10), 0., np.inf, 25, atol=1e-13)
 -- 
-2.7.4
+1.8.3.1
 

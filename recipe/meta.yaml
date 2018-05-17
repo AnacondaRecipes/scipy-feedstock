@@ -14,6 +14,8 @@ source:
     - 0003-supress-overflow-warning-in-special-test_basic.patch     # [ppc64le]
     - 0004-limit-precision-of-complex256-in-test_signaltools.patch  # [ppc64le]
     - 0005-relax-precision-in-sparse-linalg-isolve-lsmr-test.patch  # [ppc64le]
+    - 0006-relax-tolerence-for-TestCorrelateReal.patch              # [ppc64le]
+    - 0007-skip-test_white_tophat03-test.patch                      # [ppc64le]
 
 build:
   number: 0
