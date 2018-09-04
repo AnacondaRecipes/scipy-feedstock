@@ -18,14 +18,8 @@ source:
     - 0007-skip-test_white_tophat03-test.patch                      # [ppc64le]
 
 build:
-  number: 0
-  # conda 4.4+ can use this
+  number: 1
   skip: True  # [blas_impl == 'openblas' and win]
-  requires_features:
-    blas: {{ blas_impl }}
-  # this is for conda 4.3 and below
-  features:
-    - nomkl    # [x86 and blas_impl != 'mkl']
 
 requirements:
   build:
@@ -37,23 +31,17 @@ requirements:
     - python
     - setuptools
     - cython
-    - numpy
+    - numpy-devel  {{ numpy }}
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
-    - nomkl  # [x86 and blas_impl == 'openblas']
     - msinttypes   # [win and vc<14]
   run:
     - python
-    - {{ pin_compatible('numpy') }}
 
 test:
   requires:
     - pytest
     - mpmath
-    - nomkl  # [x86 and blas_impl == 'openblas']
-  commands:
-    - conda inspect linkages -p $PREFIX scipy  # [not win]
-    - conda inspect objects -p $PREFIX scipy  # [osx]
 
 about:
   home: http://www.scipy.org/

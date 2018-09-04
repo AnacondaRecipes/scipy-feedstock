@@ -94,5 +94,5 @@ except AttributeError:
 #
 # TODO :: Investigate this properly.
 if sys.maxsize > 2**32:
-    result = scipy.test()
+    result = scipy.test(verbose=2)
     sys.exit(0 if result else 1)
