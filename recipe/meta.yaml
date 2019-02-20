@@ -1,4 +1,4 @@
-{% set version = "1.2.0" %}
+{% set version = "1.2.1" %}
 
 package:
   name: scipy
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
-  sha256: 4bb04ed281c55471b598f69eaa730825ddf613b9d9517834181c707dc4509fce
+  sha256: d4b9c1c1dee37ffd1653fd62ea52587212d3b1570c927f16719fd7c4077c0d0a
   patches:
     # patches to get unit tests to pass on ppc64le
     - 0001-reduce-precision-in-legredre-tests.patch                 # [ppc64le]
@@ -20,6 +20,8 @@ source:
     # https://github.com/scipy/scipy/issues/5117
     # https://github.com/scipy/scipy/issues/5335
     - 0008-xfail-last-pcol-test.patch                             # [blas_impl == 'mkl']
+    # https://github.com/scipy/scipy/issues/9777
+    - 0009-Disable-test_splrep_errors.patch
 
 build:
   number: 0
