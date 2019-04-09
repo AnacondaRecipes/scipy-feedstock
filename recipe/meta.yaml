@@ -21,7 +21,8 @@ source:
     # https://github.com/scipy/scipy/issues/5335
     - 0008-xfail-last-pcol-test.patch                             # [blas_impl == 'mkl']
     # https://github.com/scipy/scipy/issues/9777
-    - 0009-Disable-test_splrep_errors.patch
+    - 0009-adjust.tolerance.for.ppc.patch                         # [ppc64le]
+
 
 build:
   number: 0
