@@ -16,6 +16,7 @@ source:
     - 0005-relax-precision-in-sparse-linalg-isolve-lsmr-test.patch  # [ppc64le]
     - 0006-relax-tolerence-for-TestCorrelateReal.patch              # [ppc64le]
     - 0007-skip-test_white_tophat03-test.patch                      # [ppc64le]
+    - 0009-adjust.tolerance.for.ppc.patch                           # [ppc64le]
     # reported to Intel via email on 12/13/2018
     # https://github.com/scipy/scipy/issues/5117
     # https://github.com/scipy/scipy/issues/5335
