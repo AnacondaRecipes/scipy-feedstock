@@ -93,5 +93,5 @@ except AttributeError:
 #
 # TODO :: Investigate this properly.
 if sys.maxsize > 2**32:
-    result = scipy.test(verbose=2, extra_argv=['-k not test_parallel'])
+    result = scipy.test(verbose=2, extra_argv=['-k not test_parallel and not test_optimize'])
     sys.exit(0 if result else 1)
