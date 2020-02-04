@@ -9,8 +9,7 @@ os.environ["OMP_NUM_THREADS"] = "1"
 import scipy
 import scipy.cluster._hierarchy
 import scipy.cluster._vq
-import scipy.fftpack._fftpack
-import scipy.fftpack.convolve
+import scipy.fft
 import scipy.integrate._dop
 import scipy.integrate._odepack
 import scipy.integrate._quadpack
