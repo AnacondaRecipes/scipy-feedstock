@@ -34,6 +34,10 @@ requirements:
     - numpy-devel  {{ numpy }}
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
+    # pin intel-openmp to the same version as mkl, without this build may fail with
+    # Intel MKL FATAL ERROR: Cannot load libmkl_intel_thread.dylib.
+    # It may be needed to make this pinning explicit in the mkl package
+    - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
     - msinttypes   # [win and vc<14]
   run:
@@ -44,6 +48,8 @@ test:
     - pytest
     - pytest-xdist
     - mpmath
+    # see commend above
+    - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
 
 about:
   home: http://www.scipy.org/
