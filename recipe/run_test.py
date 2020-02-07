@@ -92,5 +92,7 @@ except AttributeError:
 #
 # TODO :: Investigate this properly.
 if sys.maxsize > 2**32:
-    result = scipy.test(verbose=2, extra_argv=['-k not test_parallel and not test_optimize'])
+    # run tests in parallel (-n4) to avoid deadlock on Python 3.8:
+    # https://github.com/scipy/scipy/issues/11033
+    result = scipy.test(verbose=2, extra_argv=['-n4', '-k not test_parallel and not test_optimize and not test_branch_cut and not test_expi_complex'])
     sys.exit(0 if result else 1)
