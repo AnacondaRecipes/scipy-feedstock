@@ -1,4 +1,4 @@
-{% set version = "1.5.2" %}
+{% set version = "1.5.4" %}
 
 package:
   name: scipy
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
-  sha256: f2c055e286a9421135407d3cb3efd3f1f7ae9a465b5edc0be14ac8c5c63f6ea1
+  sha256: 0d47f253609197c77b1b14ac813e1726f5dbaac7f4d9827d7e667a6a596793ae
   patches:
     - patches/0001-fortran-test-endianness.patch
     # removing assert based on expected dtype for little-endian systems.
