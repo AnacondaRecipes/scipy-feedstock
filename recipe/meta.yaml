@@ -1,4 +1,4 @@
-{% set version = "1.5.4" %}
+{% set version = "1.6.0" %}
 
 package:
   name: scipy
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
-  sha256: 0d47f253609197c77b1b14ac813e1726f5dbaac7f4d9827d7e667a6a596793ae
+  sha256: 51bd3c4799c545b8f11232a09cd824f99a0ea4daa6df612312ff40be11451ea8
   patches:
     - patches/0001-fortran-test-endianness.patch
     # removing assert based on expected dtype for little-endian systems.
@@ -19,7 +19,7 @@ source:
 build:
   number: 1
   skip: True  # [blas_impl == 'openblas' and win]
-  skip: True  # [py<34]
+  skip: True  # [py<37]
 
 requirements:
   build:
