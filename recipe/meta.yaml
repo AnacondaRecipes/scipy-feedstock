@@ -8,16 +8,14 @@ source:
   url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
   sha256: f1a1f5da834a7540afcc064608bcb28fbd8cdd49908973b50c2901aea4e026cf
   patches:
-    - patches/0001-fortran-test-endianness.patch
     # removing assert based on expected dtype for little-endian systems.
     - patches/0002-arff-nodata-test-remove-endian-check.patch                 # [s390x]
-    # Very similar patch was a part of the initial ppc64le builds. Applying for s390x.
-    - patches/0004-relax-precision-in-sparse-linalg-isolve-lsmr-test.patch    # [s390x]
+    # TODO: remove backport in version 1.7.0
     # Very similar patch was a part of the initial ppc64le builds. Applying for s390x.
     - patches/0005-backport-gaussian-kde-fix.patch                            # [s390x]
 
 build:
-  number: 0
+  number: 1
   skip: True  # [blas_impl == 'openblas' and win]
   skip: True  # [py<37]
 
