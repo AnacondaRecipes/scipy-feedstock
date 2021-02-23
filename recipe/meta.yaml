@@ -11,13 +11,13 @@ source:
     - patches/0001-fortran-test-endianness.patch
     # removing assert based on expected dtype for little-endian systems.
     - patches/0002-arff-nodata-test-remove-endian-check.patch                 # [s390x]
-    # Gaussian kernel-density estimate is failing on s390x. TODO: report / look into
-    - patches/0003-xfail-gaussian-kde-tests.patch                             # [s390x]
     # Very similar patch was a part of the initial ppc64le builds. Applying for s390x.
     - patches/0004-relax-precision-in-sparse-linalg-isolve-lsmr-test.patch    # [s390x]
+    # Very similar patch was a part of the initial ppc64le builds. Applying for s390x.
+    - patches/0005-backport-gaussian-kde-fix.patch                            # [s390x]
 
 build:
-  number: 1
+  number: 2
   skip: True  # [blas_impl == 'openblas' and win]
   skip: True  # [py<37]
 
