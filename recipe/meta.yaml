@@ -10,9 +10,6 @@ source:
   patches:
     # removing assert based on expected dtype for little-endian systems.
     - patches/0002-arff-nodata-test-remove-endian-check.patch                 # [s390x]
-    # TODO: remove backport in version 1.7.0 (or perhaps 1.6.2?)
-    # https://github.com/scipy/scipy/pull/13575
-    - patches/0005-backport-gaussian-kde-fix.patch                            # [s390x]
 
 build:
   number: 1
