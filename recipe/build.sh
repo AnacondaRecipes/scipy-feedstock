@@ -13,6 +13,9 @@ else
     export LDFLAGS="$LDFLAGS -shared"
 fi
 
-cp $PREFIX/site.cfg site.cfg
+case $( uname -m ) in
+aarch64) cp $PREFIX/aarch_site.cfg site.cfg;;
+*)       cp $PREFIX/site.cfg site.cfg;;
+esac
 
 $PYTHON -m pip install . -vv
