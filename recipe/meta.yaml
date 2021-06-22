@@ -1,4 +1,4 @@
-{% set version = "1.6.2" %}
+{% set version = "1.7.0" %}
 
 package:
   name: scipy
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
-  sha256: adfc9a8457ea16c08acd2cd1e54f4826ca8e7345060d1cc4c879b6f26c400c66
+  sha256: f1093296fcda1692aee16880528f6763a0a5bc45bbb3f052d3fcb66dbc92118e
   patches:
     # removing assert based on expected dtype for little-endian systems.
     - patches/0002-arff-nodata-test-remove-endian-check.patch                 # [s390x]
