@@ -1,18 +1,34 @@
-{% set version = "1.6.2" %}
+{% set version = "1.7.1" %}
 
 package:
   name: scipy
   version: {{ version }}
 
 source:
-  url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
-  sha256: adfc9a8457ea16c08acd2cd1e54f4826ca8e7345060d1cc4c879b6f26c400c66
-  patches:
-    # removing assert based on expected dtype for little-endian systems.
-    - patches/0002-arff-nodata-test-remove-endian-check.patch                 # [s390x]
+  # The sdist distributed by scipy contains pre-compiled pythran sources,
+  # as well as the boost-headers submodule (since 1.7.0). While it's
+  # preferable to compile from source in general, we make use of this
+  # on AARCH, which is _very_ prone to timeouts already, so
+  # every minute saved helps
+  - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz  # [aarch64]
+    sha256: 6b47d5fa7ea651054362561a28b1ccc8da9368a39514c1bbf6c0977a1c376764                         # [aarch64]
+  - url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz                                # [not aarch64]
+    sha256: 4c155376b5488ab596db3efedf7cf5d1598dfe17acffaf256a4814b2059b6fe2                         # [not aarch64]
+    patches:
+      - patches/0001-add-break_cycles-for-mmapped-file-in-test_netcdf.patch
+      - patches/0002-parametrize-test_wavfile.test_write_roundtrip.patch
+      - patches/0003-add-break_cycles-for-mmapped-file-in-test_wavfile.patch
+      # removing assert based on expected dtype for little-endian systems. (might be no longer required)
+      # - patches/0002-arff-nodata-test-remove-endian-check.patch                 # [s390x]
+
+  # include submodule (not in github tarball due to dear-github/dear-github#214), c.f.
+  # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/_lib
+  - git_url: https://github.com/scipy/boost-headers-only.git                                         # [not aarch64]
+    git_rev: 2110ce20e59917b85b12059b3ddd8b133549f662                                                # [not aarch64]
+    folder: scipy/_lib/boost                                                                         # [not aarch64]
 
 build:
-  number: 1
+  number: 2
   skip: True  # [blas_impl == 'openblas' and win]
   skip: True  # [py<37]
 
@@ -22,12 +38,16 @@ requirements:
     - {{ compiler('c') }}        # [not win]
     - {{ compiler('cxx') }}      # [not win]
     - {{ compiler('fortran') }}
+    # pythran code needs clang-cl on windows
+    - clang                                  # [win]
   host:
     - python
     - setuptools
     - cython
     - pybind11
-    - numpy-devel  {{ numpy }}
+    # this setting is actually an issue of the numpy version!!
+    - numpy-devel  {{ numpy }}  # [not (osx and arm64)]
+    - numpy {{ numpy }}         # [osx and arm64]
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
@@ -35,9 +55,11 @@ requirements:
     # It may be needed to make this pinning explicit in the mkl package
     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
+    - pythran
     - msinttypes   # [win and vc<14]
   run:
     - python
+    - {{ pin_compatible('numpy') }}
 
 test:
   requires:
@@ -46,6 +68,80 @@ test:
     - mpmath
     # see commend above
     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
+  commands:
+    # show SIMD features (some failures occur depending on presence/absence of e.g. AVX512)
+    # change to np.show_config() for v>=1.22.0, cf. numpy/numpy#19130
+    - python -c "import numpy; numpy._pytesttester._show_numpy_info()"
+    # Run only fast tests for key modules on drone as it times out; otherwise set label='full' (note default: label='fast')
+    {% set label = "'fast'" if aarch64 else "'full'" %}
+    {% set tests = "['scipy.linalg', 'scipy.fft']" if aarch64 else "None" %}
+    # for signature, see https://github.com/scipy/scipy/blob/v1.7.0/scipy/_lib/_testutils.py#L27
+    - python -c "import scipy; scipy.test(verbose=2, label={{ label }}, tests={{ tests }}, extra_argv=['--durations=50'])"
+  imports:
+    - scipy
+    - scipy.cluster._hierarchy
+    - scipy.cluster._vq
+    - scipy.fft
+    - scipy.integrate._dop
+    - scipy.integrate._odepack
+    - scipy.integrate._quadpack
+    - scipy.integrate._test_multivariate
+    - scipy.integrate._test_odeint_banded
+    - scipy.integrate.lsoda
+    - scipy.integrate.vode
+    - scipy.interpolate._fitpack
+    - scipy.interpolate._ppoly
+    - scipy.interpolate.dfitpack
+    - scipy.interpolate.interpnd
+    - scipy.io.matlab.mio5_utils
+    - scipy.io.matlab.mio_utils
+    - scipy.io.matlab.streams
+    - scipy.linalg._decomp_update
+    - scipy.linalg._fblas
+    - scipy.linalg._flapack
+    - scipy.linalg._flinalg
+    - scipy.linalg._interpolative
+    - scipy.linalg._solve_toeplitz
+    - scipy.linalg.cython_blas
+    - scipy.linalg.cython_lapack
+    - scipy.ndimage._nd_image
+    - scipy.ndimage._ni_label
+    - scipy.odr.__odrpack
+    - scipy.optimize._cobyla
+    - scipy.optimize._group_columns
+    - scipy.optimize._lbfgsb
+    - scipy.optimize._lsq.givens_elimination
+    - scipy.optimize._minpack
+    - scipy.optimize._nnls
+    - scipy.optimize._slsqp
+    - scipy.optimize._zeros
+    - scipy.optimize.minpack2
+    - scipy.optimize.moduleTNC
+    - scipy.signal._max_len_seq_inner
+    - scipy.signal._spectral
+    - scipy.signal.sigtools
+    - scipy.signal.spline
+    - scipy.sparse._csparsetools
+    - scipy.sparse._sparsetools
+    - scipy.sparse.csgraph._min_spanning_tree
+    - scipy.sparse.csgraph._reordering
+    - scipy.sparse.csgraph._shortest_path
+    - scipy.sparse.csgraph._tools
+    - scipy.sparse.csgraph._traversal
+    - scipy.sparse.linalg.dsolve._superlu
+    - scipy.sparse.linalg.eigen.arpack._arpack
+    - scipy.sparse.linalg.isolve._iterative
+    - scipy.spatial._distance_wrap
+    - scipy.spatial.ckdtree
+    - scipy.spatial.qhull
+    - scipy.special
+    - scipy.special._ellip_harm_2
+    - scipy.special._ufuncs
+    - scipy.special._ufuncs_cxx
+    - scipy.special.specfun
+    - scipy.stats
+    - scipy.stats.mvn
+    - scipy.stats.statlib
 
 about:
   home: http://www.scipy.org/
