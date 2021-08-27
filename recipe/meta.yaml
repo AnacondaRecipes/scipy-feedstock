@@ -34,6 +34,9 @@ build:
 
 requirements:
   build:
+    - git
+    - patch  # [unix]
+    - m2-patch  # [win]
     # on windows, Parallel studio activates the appropriate c/cxx compiler
     - {{ compiler('c') }}        # [not win]
     - {{ compiler('cxx') }}      # [not win]
