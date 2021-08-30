@@ -38,8 +38,8 @@ requirements:
     - patch  # [unix]
     - m2-patch  # [win]
     # on windows, Parallel studio activates the appropriate c/cxx compiler
-    - {{ compiler('c') }}        # [not win]
-    - {{ compiler('cxx') }}      # [not win]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
     # pythran code needs clang-cl on windows
     - clang                                  # [win]
