@@ -17,7 +17,10 @@ else
 fi
 
 case $( uname -m ) in
-aarch64) cp $PREFIX/aarch_site.cfg site.cfg;;
+# todo: update once ArmPL is ready.
+# We should look to include copy aarch_site.cfg in the ArmPL package, similar
+# to how OpenBLAS and MKL devels work. 
+# aarch64) cp $PREFIX/aarch_site.cfg site.cfg;;
 *)       cp $PREFIX/site.cfg site.cfg;;
 esac
 

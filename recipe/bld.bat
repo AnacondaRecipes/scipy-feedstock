@@ -20,11 +20,11 @@ REM creates an isolated DLL for these fortran functions and therefore it doesn't
 REM see these C functions. workaround this by compiling it ourselves and
 REM sneaking it with the blas libraries
 REM TODO: rewrite wrap_g77_abi.f with iso_c_binding when the compiler supports it
-cl.exe scipy\_build_utils\src\wrap_g77_abi_c.c -c /MD
-if %ERRORLEVEL% neq 0 exit 1
-echo. > scipy\_build_utils\src\wrap_g77_abi_c.c
-echo %SRC_DIR%\wrap_g77_abi_c.obj >> %LIBRARY_LIB%\lapack.fobjects
-echo %SRC_DIR%\wrap_g77_abi_c.obj >> %LIBRARY_LIB%\lapack.cobjects
+@REM cl.exe scipy\_build_utils\src\wrap_g77_abi_c.c -c /MD
+@REM if %ERRORLEVEL% neq 0 exit 1
+@REM echo. > scipy\_build_utils\src\wrap_g77_abi_c.c
+@REM echo %SRC_DIR%\wrap_g77_abi_c.obj >> %LIBRARY_LIB%\lapack.fobjects
+@REM echo %SRC_DIR%\wrap_g77_abi_c.obj >> %LIBRARY_LIB%\lapack.cobjects
 
 REM Add a file to load the fortran wrapper libraries in scipy/.libs
 del scipy\_distributor_init.py
@@ -37,8 +37,13 @@ clang-cl.exe --version
 if %ERRORLEVEL% neq 0 exit 1
 
 REM set compilers to clang-cl
-set "CC=clang-cl"
-set "CXX=clang-cl"
+if %ARCH% == 64 (
+  set "CC=clang-cl.exe"
+  set "CXX=clang-cl.exe"
+) else (
+  set "CC=clang-cl.exe -m32"
+  set "CXX=clang-cl.exe -m32"
+)
 
 REM clang-cl & gfortran use different LDFLAGS; unset it
 set "LDFLAGS="
