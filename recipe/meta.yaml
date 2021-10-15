@@ -49,20 +49,23 @@ requirements:
     - cython
     - pybind11
     # this setting is actually an issue of the numpy version!!
-    - numpy-devel  {{ numpy }}  # [not (osx and arm64)]
-    - numpy {{ numpy }}         # [osx and arm64]
+    - numpy-devel {{ numpy }}  # [not ((osx and arm64) or (linux and aarch64))]
+    - numpy {{ numpy }}        # [(osx and arm64) or ((linux and aarch64) and (blas_impl == 'openblas'))]
+    - numpy >=1.21             # [(linux and aarch64) and (blas_impl == 'armpl')]
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
     # Intel MKL FATAL ERROR: Cannot load libmkl_intel_thread.dylib.
     # It may be needed to make this pinning explicit in the mkl package
-    - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
+    - intel-openmp {{ mkl }}         # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
+    - armpl {{ armpl }}              # [blas_impl == 'armpl']
     - pythran
     - msinttypes   # [win and vc<14]
   run:
     - python
     - {{ pin_compatible('numpy') }}
+    - armpl {{ armpl }}              # [blas_impl == 'armpl']
 
 test:
   requires:
