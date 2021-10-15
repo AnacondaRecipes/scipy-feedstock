@@ -16,12 +16,20 @@ else
     export LDFLAGS="$LDFLAGS -shared"
 fi
 
-case $( uname -m ) in
+#case $( uname -m ) in
 # todo: update once ArmPL is ready.
 # We should look to include copy aarch_site.cfg in the ArmPL package, similar
 # to how OpenBLAS and MKL devels work. 
 # aarch64) cp $PREFIX/aarch_site.cfg site.cfg;;
-*)       cp $PREFIX/site.cfg site.cfg;;
-esac
+#*)       cp $PREFIX/site.cfg site.cfg;;
+#esac
+
+# To build the different BLAS variants, the site.cfg file is provided
+# by the BLAS packages (mkl-devel, openblas-devel, or armpl). See:
+#   intel_repack-feedstock/recipe/install-devel.sh
+#   openblas-feedstock/recipe/build.sh
+#   armpl-feedstock/recipe/repack_armpl.sh
+cp $PREFIX/site.cfg site.cfg
+
 
 $PYTHON -m pip install . -vv
