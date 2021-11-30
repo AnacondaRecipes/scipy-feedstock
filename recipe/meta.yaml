@@ -11,9 +11,9 @@ source:
   # on AARCH, which is _very_ prone to timeouts already, so
   # every minute saved helps
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz  # [aarch64]
-    sha256: ab5875facfdef77e0a47d5fd39ea178b58e60e454a4c85aa1e52fcb80db7babf                         # [aarch64]
+    sha256: efbc8e96339d794ea8c62f6652345e96d5283df75badbe18887838ecf5dd5bcc                         # [aarch64]
   - url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz                                # [not aarch64]
-    sha256: ab5875facfdef77e0a47d5fd39ea178b58e60e454a4c85aa1e52fcb80db7babf                         # [not aarch64]
+    sha256: efbc8e96339d794ea8c62f6652345e96d5283df75badbe18887838ecf5dd5bcc                         # [not aarch64]
     patches:
       - patches/0001-add-break_cycles-for-mmapped-file-in-test_netcdf.patch
       - patches/0002-parametrize-test_wavfile.test_write_roundtrip.patch
@@ -28,7 +28,7 @@ source:
     folder: scipy/_lib/boost                                                                         # [not aarch64]
 
 build:
-  number: 2
+  number: 0
   skip: True  # [blas_impl == 'openblas' and win]
   skip: True  # [py<37]
 
@@ -45,23 +45,24 @@ requirements:
     - clang                                  # [win]
   host:
     - python
-    - setuptools
-    - cython
-    - pybind11
-    # this setting is actually an issue of the numpy version!!
-    - numpy-devel  {{ numpy }}  # [not (osx and arm64)]
-    - numpy {{ numpy }}         # [osx and arm64]
-    - pip
-    - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
+    - cython >=18.0.0
     # pin intel-openmp to the same version as mkl, without this build may fail with
     # Intel MKL FATAL ERROR: Cannot load libmkl_intel_thread.dylib.
     # It may be needed to make this pinning explicit in the mkl package
     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
-    - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
-    - pythran
+    - mkl-devel {{ mkl }}  # [blas_impl == 'mkl']
     - msinttypes   # [win and vc<14]
+    # this setting is actually an issue of the numpy version!!
+    - numpy-devel {{ numpy }}  # [not (osx and arm64)]
+    - numpy {{ numpy }}         # [osx and arm64]
+    - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
+    - pip
+    - pybind11
+    - pythran >=0.9.11
+    - setuptools
+    - wheel
   run:
-    - python
+    - python >=3.7
     - {{ pin_compatible('numpy') }}
 
 test:
@@ -148,7 +149,8 @@ test:
 
 about:
   home: http://www.scipy.org/
-  license: BSD 3-Clause
+  license: BSD-3-Clause
+  license_family: BSD
   license_file: LICENSE.txt
   summary: Scientific Library for Python
   description: |
