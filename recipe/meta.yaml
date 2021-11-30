@@ -45,7 +45,7 @@ requirements:
     - clang                                  # [win]
   host:
     - python
-    - cython >=18.0.0
+    - cython >=0.29.18
     # pin intel-openmp to the same version as mkl, without this build may fail with
     # Intel MKL FATAL ERROR: Cannot load libmkl_intel_thread.dylib.
     # It may be needed to make this pinning explicit in the mkl package
@@ -57,9 +57,9 @@ requirements:
     - numpy {{ numpy }}         # [osx and arm64]
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
     - pip
-    - pybind11
-    - pythran >=0.9.11
-    - setuptools
+    - pybind11 >=2.4.3
+    - pythran >=0.9.12
+    - setuptools <58.5
     - wheel
   run:
     - python >=3.7
