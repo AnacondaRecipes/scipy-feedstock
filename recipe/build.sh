@@ -24,4 +24,4 @@ case $( uname -m ) in
 *)       cp $PREFIX/site.cfg site.cfg;;
 esac
 
-$PYTHON -m pip install . -vv
+$PYTHON -m pip install . -vvv
