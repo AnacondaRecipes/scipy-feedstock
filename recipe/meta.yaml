@@ -36,6 +36,10 @@ requirements:
     # pythran code needs clang-cl on windows
     - clang                                  # [win]
     - {{ compiler('fortran') }}
+    - patch     # [unix]
+    - m2-patch  # [win]
+    - git       # [unix]
+    - m2-git    # [win] 
   host:
     - python
     - setuptools
