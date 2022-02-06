@@ -1,4 +1,4 @@
-{% set version = "1.7.3" %}
+{% set version = "1.8.0" %}
 
 package:
   name: scipy
@@ -11,7 +11,7 @@ source:
   # The sdist distributed by scipy contains pre-compiled pythran sources,
   # as well as the boost-headers submodule (since 1.7.0).
   - url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
-    sha256: efbc8e96339d794ea8c62f6652345e96d5283df75badbe18887838ecf5dd5bcc
+    sha256: 0c5a87bfa416d38f0ab33c8604703db50b74034d0631cae5777dbda4ce365c86
     patches:
       # win+pypy fixes (scipy/scipy#14549), can be dropped for v>=1.8
       - patches/0001-add-break_cycles-for-mmapped-file-in-test_netcdf.patch
