@@ -27,7 +27,7 @@ source:
     folder: scipy/_lib/boost
 
 build:
-  number: 0
+  number: 1
   skip: true  # [py2k or py<=36]
   missing_dso_whitelist:  # [linux]
     - $RPATH/ld64.so.1    # [linux]
@@ -169,14 +169,15 @@ test:
     - scipy.stats.statlib
 
 about:
-  home: http://www.scipy.org/
-  license: BSD 3-Clause
+  home: https://www.scipy.org/
+  license: BSD-3-Clause
+  license_family: BSD
   license_file: LICENSE.txt
   summary: Scientific Library for Python
   description: |
     SciPy is a Python-based ecosystem of open-source software for mathematics,
     science, and engineering.
-  doc_url: http://www.scipy.org/docs.html
+  doc_url: https://www.scipy.org/docs.html
   dev_url: https://github.com/scipy/scipy
 
 extra:
