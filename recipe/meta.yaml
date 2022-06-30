@@ -46,11 +46,11 @@ requirements:
     - pkg-config    # [osx]
   host:
     - python
-    - cython >=0.29.18,<3.0
+    - cython
     - pybind11
     - pythran
-    - setuptools <58.0.0
-    - wheel <0.38.0
+    - setuptools <60
+    - wheel
     - numpy {{ numpy }}
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
