@@ -51,7 +51,7 @@ requirements:
     - pythran
     - setuptools <60
     - wheel
-    - numpy {{ numpy }}
+    - numpy
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
