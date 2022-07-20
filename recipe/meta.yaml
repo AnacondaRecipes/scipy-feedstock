@@ -53,7 +53,7 @@ requirements:
     - pybind11
     - pythran
     - setuptools <60
-    - wheel
+    - wheel <0.38.0
     - numpy
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
@@ -78,7 +78,7 @@ requirements:
 # on the slowest agents, these tests take more than 20min in emulation
 {% set tests_to_skip = tests_to_skip + " or (test_lsq_linear and test_large_rank_deficient)" %}   # [aarch64 or ppc64le]
 # These tests failed in v8.0.1 on linux64, s390x, and osx64:
-{% set tests_to_skip = tests_to_skip + " or test_estimate_spectral_norm_diff[complex128]" %}  # [linux]
+{% set tests_to_skip = tests_to_skip + " or test_estimate_spectral_norm_diff[complex128] or test_estimate_spectral_norm[complex128]" %}  # [linux]
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %}  # [linux and s390x]
 {% set tests_to_skip = tests_to_skip + " or test_gges_tgexc[float32] or test_qz_single" %}    # [osx]
 
