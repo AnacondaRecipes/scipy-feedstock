@@ -15,8 +15,6 @@ source:
     patches:
       # backport scipy/scipy#15532 to fix timeout of a long-running test
       - patches/0001-parametrize-test_ldl_type_size_combinations.patch
-      # backport of scipy/scipy#15010 to avoid test skip
-      - patches/0004-TST-remove-fragile-test-which-checks-if-g77-is-linke.patch
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
   # include submodule (not in github tarball due to dear-github/dear-github#214), c.f.
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/_lib
