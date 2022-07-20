@@ -1,4 +1,4 @@
-{% set version = "1.7.3" %}
+{% set version = "1.8.1" %}
 
 package:
   name: scipy
@@ -10,13 +10,11 @@ package:
 source:
   # The sdist distributed by scipy contains pre-compiled pythran sources,
   # as well as the boost-headers submodule (since 1.7.0).
-  - url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
-    sha256: efbc8e96339d794ea8c62f6652345e96d5283df75badbe18887838ecf5dd5bcc
+  - url: https://github.com/scipy/scipy/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: fb6936f0c4a4f94bd2af7922cd1a94577ec472d4626a29aa95d8c228cdb45b94
     patches:
-      # win+pypy fixes (scipy/scipy#14549), can be dropped for v>=1.8
-      - patches/0001-add-break_cycles-for-mmapped-file-in-test_netcdf.patch
-      - patches/0002-parametrize-test_wavfile.test_write_roundtrip.patch
-      - patches/0003-add-break_cycles-for-mmapped-file-in-test_wavfile.patch
+      # backport scipy/scipy#15532 to fix timeout of a long-running test
+      - patches/0001-parametrize-test_ldl_type_size_combinations.patch
       # backport of scipy/scipy#15010 to avoid test skip
       - patches/0004-TST-remove-fragile-test-which-checks-if-g77-is-linke.patch
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
@@ -25,10 +23,17 @@ source:
   - git_url: https://github.com/scipy/boost-headers-only.git
     git_rev: 2110ce20e59917b85b12059b3ddd8b133549f662
     folder: scipy/_lib/boost
+  - git_url: https://github.com/scipy/unuran.git
+    git_rev: a63d39160e5ecc4402e7ed0e8417f4c3ff9634cb
+    folder: scipy/_lib/unuran
+  # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/sparse/linalg/_propack
+  - git_url: https://github.com/scipy/PROPACK.git
+    git_rev: 92f466393256df649fc8542c39dd647816dded25
+    folder: scipy/sparse/linalg/_propack/PROPACK
 
 build:
   number: 0
-  skip: true  # [py2k or py<=36]
+  skip: true  # [py<=37]
   missing_dso_whitelist:  # [linux]
     - $RPATH/ld64.so.1    # [linux]
 
@@ -46,13 +51,12 @@ requirements:
     - pkg-config    # [osx]
   host:
     - python
-    - setuptools
     - cython
     - pybind11
     - pythran
-    # this setting is actually an issue of the numpy version!!
-    - numpy-devel  {{ numpy }}  # [not (osx and arm64) and py<=39]
-    - numpy {{ numpy }}         # [(osx and arm64) or py>39]
+    - setuptools <60
+    - wheel
+    - numpy
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
@@ -66,16 +70,55 @@ requirements:
     - {{ pin_compatible('numpy') }}
 
 {% set tests_to_skip = "_not_a_real_test" %}
-# skip some tests that hang/fail on pypy
-{% if python_impl == "pypy" %}
-  # hangs
-  {% set tests_to_skip = tests_to_skip + " or test_mixed_threads_processes" %}  # [aarch64 or ppc64le]
-  # failures
-  {% set tests_to_skip = tests_to_skip + " or test_cdist_refcount" %}           # [unix]
-  {% set tests_to_skip = tests_to_skip + " or test_boost_eval_issue_14606" %}   # [unix]
-{% endif %}
+# skip a test that fails with MKL + AVX512 (non-AVX512 passes)
+{% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab]" %}
+# these multithreading tests occasionally hang in emulation
+{% set tests_to_skip = tests_to_skip + " or test_immediate_updating" %}         # [aarch64 or ppc64le]
+{% set tests_to_skip = tests_to_skip + " or test_mixed_threads_processes" %}    # [aarch64 or ppc64le]
+{% set tests_to_skip = tests_to_skip + " or test_multiprocess[fft]" %}          # [aarch64 or ppc64le]
+{% set tests_to_skip = tests_to_skip + " or (test__differential_evolution and test_parallel)" %}  # [aarch64 or ppc64le]
+# on the slowest agents, these tests take more than 20min in emulation
+{% set tests_to_skip = tests_to_skip + " or (test_lsq_linear and test_large_rank_deficient)" %}   # [aarch64 or ppc64le]
 
 test:
+  imports:
+    - scipy
+    - scipy.cluster
+    - scipy.fft
+    - scipy.integrate
+    - scipy.integrate.lsoda
+    - scipy.integrate.vode
+    - scipy.interpolate
+    - scipy.interpolate.dfitpack
+    - scipy.interpolate.interpnd
+    - scipy.io.matlab.mio5_utils
+    - scipy.io.matlab.mio_utils
+    - scipy.io.matlab.streams
+    - scipy.linalg
+    - scipy.linalg.cython_blas
+    - scipy.linalg.cython_lapack
+    - scipy.ndimage
+    - scipy.odr
+    - scipy.optimize
+    - scipy.optimize.minpack2
+    - scipy.optimize.moduleTNC
+    - scipy.signal
+    - scipy.signal.sigtools
+    - scipy.signal.spline
+    - scipy.sparse
+    - scipy.sparse.csgraph
+    - scipy.sparse.linalg.dsolve
+    - scipy.sparse.linalg.eigen.arpack._arpack
+    - scipy.sparse.linalg.isolve
+    - scipy.spatial
+    - scipy.spatial.ckdtree
+    - scipy.spatial.qhull
+    - scipy.special
+    - scipy.special
+    - scipy.special.specfun
+    - scipy.stats
+    - scipy.stats.mvn
+    - scipy.stats.statlib
   requires:
     - pytest
     - pytest-timeout
@@ -83,100 +126,31 @@ test:
     - mpmath
     # see commend above
     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
-
   commands:
     # show SIMD features (some failures occur depending on presence/absence of e.g. AVX512)
-    # change to np.show_config() for v>=1.22.0, cf. numpy/numpy#19130
-    - python -c "import numpy; numpy._pytesttester._show_numpy_info()"
+    - python -c "import numpy; numpy.show_config()"
     # the tests ppc64le and aarch64 are currently run through emulation in QEMU;
     # since this takes much longer, do not run the most heavy-weight tests, i.e. use
     # label='fast'; same for PyPy due to huge runtime; otherwise set label='full'
     {% set label = "'fast'" if (aarch64 or ppc64le or python_impl == "pypy") else "'full'" %}
-    # aarch tests ran in reduced form on drone due to timing constraints;
-    # going back to the full test suite will need some debugging of hangs
-    {% set tests = "['scipy.linalg', 'scipy.fft']" if aarch64 else "None" %}
     # for signature of scipy.test see below (note default: label='fast'):
     # https://github.com/scipy/scipy/blob/v1.7.0/scipy/_lib/_testutils.py#L27
-    {% set param = "verbose=2, label=" + label + ", tests=" + tests %}
-    {% set extra = "extra_argv=['-k', 'not (" + tests_to_skip + ")', '--timeout=1200', '--durations=50']" %}
+    {% set param = "verbose=1, label=" + label + ", tests=None" %}
+    {% set extra = "extra_argv=['-k', 'not (" + tests_to_skip + ")', '-nauto', '--timeout=1200', '--durations=50']" %}
     - python -c "import scipy, sys; sys.exit(not scipy.test({{ param }}, {{ extra }}))"  # [not ppc64le]
     # NOTE: test suite is skipped on ppc due to bugs in QEMU code that cause
     # CI to fail, even though the tests would run through on native hardware
-  imports:
-    - scipy
-    - scipy.cluster._hierarchy
-    - scipy.cluster._vq
-    - scipy.fft
-    - scipy.integrate._dop
-    - scipy.integrate._odepack
-    - scipy.integrate._quadpack
-    - scipy.integrate._test_multivariate
-    - scipy.integrate._test_odeint_banded
-    - scipy.integrate.lsoda
-    - scipy.integrate.vode
-    - scipy.interpolate._fitpack
-    - scipy.interpolate._ppoly
-    - scipy.interpolate.dfitpack
-    - scipy.interpolate.interpnd
-    - scipy.io.matlab.mio5_utils
-    - scipy.io.matlab.mio_utils
-    - scipy.io.matlab.streams
-    - scipy.linalg._decomp_update
-    - scipy.linalg._fblas
-    - scipy.linalg._flapack
-    - scipy.linalg._flinalg
-    - scipy.linalg._interpolative
-    - scipy.linalg._solve_toeplitz
-    - scipy.linalg.cython_blas
-    - scipy.linalg.cython_lapack
-    - scipy.ndimage._nd_image
-    - scipy.ndimage._ni_label
-    - scipy.odr.__odrpack
-    - scipy.optimize._cobyla
-    - scipy.optimize._group_columns
-    - scipy.optimize._lbfgsb
-    - scipy.optimize._lsq.givens_elimination
-    - scipy.optimize._minpack
-    - scipy.optimize._nnls
-    - scipy.optimize._slsqp
-    - scipy.optimize._zeros
-    - scipy.optimize.minpack2
-    - scipy.optimize.moduleTNC
-    - scipy.signal._max_len_seq_inner
-    - scipy.signal._spectral
-    - scipy.signal.sigtools
-    - scipy.signal.spline
-    - scipy.sparse._csparsetools
-    - scipy.sparse._sparsetools
-    - scipy.sparse.csgraph._min_spanning_tree
-    - scipy.sparse.csgraph._reordering
-    - scipy.sparse.csgraph._shortest_path
-    - scipy.sparse.csgraph._tools
-    - scipy.sparse.csgraph._traversal
-    - scipy.sparse.linalg.dsolve._superlu
-    - scipy.sparse.linalg.eigen.arpack._arpack
-    - scipy.sparse.linalg.isolve._iterative
-    - scipy.spatial._distance_wrap
-    - scipy.spatial.ckdtree
-    - scipy.spatial.qhull
-    - scipy.special
-    - scipy.special._ellip_harm_2
-    - scipy.special._ufuncs
-    - scipy.special._ufuncs_cxx
-    - scipy.special.specfun
-    - scipy.stats
-    - scipy.stats.mvn
-    - scipy.stats.statlib
 
 about:
-  home: http://www.scipy.org/
-  license: BSD 3-Clause
+  home: https://www.scipy.org/
+  license: BSD-3-Clause
+  license_family: BSD
   license_file: LICENSE.txt
   summary: Scientific Library for Python
   description: |
     SciPy is a Python-based ecosystem of open-source software for mathematics,
     science, and engineering.
-  doc_url: http://www.scipy.org/docs.html
+  doc_url: https://www.scipy.org/docs.html
   dev_url: https://github.com/scipy/scipy
 
 extra:
