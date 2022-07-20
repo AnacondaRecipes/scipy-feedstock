@@ -14,7 +14,7 @@ source:
     sha256: fb6936f0c4a4f94bd2af7922cd1a94577ec472d4626a29aa95d8c228cdb45b94
     patches:
       # backport scipy/scipy#15532 to fix timeout of a long-running test
-      - patches/0001-parametrize-test_ldl_type_size_combinations.patch
+      - patches/0001-parametrize-test_ldl_type_size_combinations.patch  # [not win]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
   # include submodule (not in github tarball due to dear-github/dear-github#214), c.f.
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/_lib
@@ -81,42 +81,45 @@ requirements:
 test:
   imports:
     - scipy
+    # reference for public API is effectively
+    # https://github.com/scipy/scipy/blob/master/scipy/_lib/tests/test_public_api.py
     - scipy.cluster
+    - scipy.cluster.hierarchy
+    - scipy.cluster.vq
+    - scipy.constants
     - scipy.fft
+    - scipy.fftpack
     - scipy.integrate
-    - scipy.integrate.lsoda
-    - scipy.integrate.vode
     - scipy.interpolate
-    - scipy.interpolate.dfitpack
-    - scipy.interpolate.interpnd
-    - scipy.io.matlab.mio5_utils
-    - scipy.io.matlab.mio_utils
-    - scipy.io.matlab.streams
+    - scipy.io
+    - scipy.io.arff
+    - scipy.io.matlab
+    - scipy.io.wavfile
     - scipy.linalg
+    - scipy.linalg.blas
     - scipy.linalg.cython_blas
     - scipy.linalg.cython_lapack
+    - scipy.linalg.interpolative
+    - scipy.linalg.lapack
+    - scipy.misc
     - scipy.ndimage
     - scipy.odr
     - scipy.optimize
-    - scipy.optimize.minpack2
-    - scipy.optimize.moduleTNC
     - scipy.signal
-    - scipy.signal.sigtools
-    - scipy.signal.spline
+    - scipy.signal.windows
     - scipy.sparse
     - scipy.sparse.csgraph
-    - scipy.sparse.linalg.dsolve
-    - scipy.sparse.linalg.eigen.arpack._arpack
-    - scipy.sparse.linalg.isolve
+    - scipy.sparse.linalg
     - scipy.spatial
-    - scipy.spatial.ckdtree
-    - scipy.spatial.qhull
+    - scipy.spatial.distance
+    - scipy.spatial.transform
     - scipy.special
-    - scipy.special
-    - scipy.special.specfun
     - scipy.stats
-    - scipy.stats.mvn
-    - scipy.stats.statlib
+    - scipy.stats.contingency
+    - scipy.stats.distributions
+    - scipy.stats.mstats
+    - scipy.stats.qmc
+    - scipy.stats.sampling
   requires:
     - pytest
     - pytest-timeout
