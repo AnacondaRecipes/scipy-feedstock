@@ -65,6 +65,7 @@ requirements:
 # Some test_bug_10466 will be skipped in v1.9.0,
 # see https://github.com/scipy/scipy/pull/16225
 {% set tests_to_skip = tests_to_skip + " or test_bug_10466" %}
+{% set tests_to_skip = tests_to_skip + " or test_matvecs" %}  # [linux and s390x]
 {% set tests_to_skip = tests_to_skip + " or test_qz_single or test_gges_tgexc[float32]" %}  # [osx]
 {% set tests_to_skip = tests_to_skip + " or test_branch_cut or test_expi_comple or test_chi_complex or test_ci_complex or test_ei_complex" %}  # [win]
 {% set tests_to_skip = tests_to_skip + " or test_legenp_complex_3 or test_shi_complex or test_si_complex" %}  # [win]
