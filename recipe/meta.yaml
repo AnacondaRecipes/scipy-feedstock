@@ -13,10 +13,6 @@ source:
   - url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
     sha256: efbc8e96339d794ea8c62f6652345e96d5283df75badbe18887838ecf5dd5bcc
     patches:
-      # win+pypy fixes (scipy/scipy#14549), can be dropped for v>=1.8
-      - patches/0001-add-break_cycles-for-mmapped-file-in-test_netcdf.patch
-      - patches/0002-parametrize-test_wavfile.test_write_roundtrip.patch
-      - patches/0003-add-break_cycles-for-mmapped-file-in-test_wavfile.patch
       # backport of scipy/scipy#15010 to avoid test skip
       - patches/0004-TST-remove-fragile-test-which-checks-if-g77-is-linke.patch
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
@@ -68,7 +64,7 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_aligned_mem" %}
 # Some test_bug_10466 will be skipped in v1.9.0,
 # see https://github.com/scipy/scipy/pull/16225
-{% set tests_to_skip = tests_to_skip + " or test_bug_10466" %}  # [unix]
+{% set tests_to_skip = tests_to_skip + " or test_bug_10466" %}
 {% set tests_to_skip = tests_to_skip + " or test_qz_single or test_gges_tgexc[float32]" %}  # [osx]
 {% set tests_to_skip = tests_to_skip + " or test_branch_cut or test_expi_comple or test_chi_complex or test_ci_complex or test_ei_complex" %}  # [win]
 {% set tests_to_skip = tests_to_skip + " or test_legenp_complex_3 or test_shi_complex or test_si_complex" %}  # [win]
