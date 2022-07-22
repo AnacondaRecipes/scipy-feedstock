@@ -42,27 +42,28 @@ requirements:
     # pythran code needs clang-cl on windows
     - clang                                  # [win]
     - {{ compiler('fortran') }}
-    - patch     # [unix]
-    - m2-patch  # [win]
-    - git       # [unix]
-    - m2-git    # [win]
+    - patch         # [unix]
+    - m2-patch      # [win]
+    - git           # [unix]
+    - m2-git        # [win]
     - pkg-config    # [osx]
   host:
     - python
-    - cython
+    - cython >=0.29.18,<3.0
     - pybind11
-    - pythran
+    - pythran >=0.10.0,<0.11.0
     - setuptools <60
     - wheel <0.38.0
-    - numpy
+    - numpy   1.19  # [py==38 or py==39]
+    - numpy   1.21  # [py==310]
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
     # Intel MKL FATAL ERROR: Cannot load libmkl_intel_thread.dylib.
     # It may be needed to make this pinning explicit in the mkl package
-    - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
+    - intel-openmp {{ mkl }}         # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
-    - msinttypes   # [win and vc<14]
+    #- msinttypes                     # [win and vc<14]
   run:
     - python
     - {{ pin_compatible('numpy') }}
