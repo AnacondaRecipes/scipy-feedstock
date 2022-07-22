@@ -42,12 +42,13 @@ requirements:
     - pkg-config    # [osx]
   host:
     - python
-    - cython
+    - cython >=0.29.18,<3.0
     - pybind11
-    - pythran
-    - setuptools <60
-    - wheel
-    - numpy
+    - pythran >=0.9.11,<0.10.0
+    - setuptools <58.0.0
+    - wheel <0.38.0
+    - numpy 1.19  # [py==37 or py==38 or py==39]
+    - numpy 1.21  # [py==310]
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
