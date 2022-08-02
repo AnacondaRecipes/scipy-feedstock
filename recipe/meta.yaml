@@ -1,4 +1,4 @@
-{% set version = "1.8.1" %}
+{% set version = "1.9.0" %}
 
 package:
   name: scipy
@@ -11,16 +11,17 @@ source:
   # The sdist distributed by scipy contains pre-compiled pythran sources,
   # as well as the boost-headers submodule (since 1.7.0).
   - url: https://github.com/scipy/scipy/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: fb6936f0c4a4f94bd2af7922cd1a94577ec472d4626a29aa95d8c228cdb45b94
+    sha256: dd773d72500bbe607fe05251a8dd2439b6b38fe3133a7fc05ced82303ca73e95
     patches:
-      # backport scipy/scipy#15532 to fix timeout of a long-running test
-      - patches/0001-parametrize-test_ldl_type_size_combinations.patch  # [not win]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
   # include submodule (not in github tarball due to dear-github/dear-github#214), c.f.
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/_lib
   - git_url: https://github.com/scipy/boost-headers-only.git
     git_rev: 2110ce20e59917b85b12059b3ddd8b133549f662
     folder: scipy/_lib/boost
+  - git_url: https://github.com/scipy/highs.git
+    git_rev: 4a122958a82e67e725d08153e099efe4dad099a2
+    folder: scipy/_lib/highs
   - git_url: https://github.com/scipy/unuran.git
     git_rev: a63d39160e5ecc4402e7ed0e8417f4c3ff9634cb
     folder: scipy/_lib/unuran
@@ -49,9 +50,9 @@ requirements:
     - pkg-config    # [osx]
   host:
     - python
-    - cython >=0.29.18,<3.0
+    - cython >=0.29.21,<3.0
     - pybind11
-    - pythran >=0.10.0,<0.11.0
+    - pythran >=0.9.12,<0.12.0
     - setuptools <60
     - wheel <0.38.0
     - numpy   1.19  # [py==38 or py==39]
@@ -79,9 +80,9 @@ requirements:
 # on the slowest agents, these tests take more than 20min in emulation
 {% set tests_to_skip = tests_to_skip + " or (test_lsq_linear and test_large_rank_deficient)" %}   # [aarch64 or ppc64le]
 # These tests failed in v8.0.1 on linux64, s390x, and osx64:
-{% set tests_to_skip = tests_to_skip + " or test_estimate_spectral_norm_diff[complex128] or test_estimate_spectral_norm[complex128] or test_ppf_against_tables" %}  # [linux]
-{% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %}  # [linux and s390x]
-{% set tests_to_skip = tests_to_skip + " or test_gges_tgexc[float32] or test_qz_single" %}    # [osx]
+#{% set tests_to_skip = tests_to_skip + " or test_estimate_spectral_norm_diff[complex128] or test_estimate_spectral_norm[complex128] or test_ppf_against_tables" %}  # [linux]
+#{% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %}  # [linux and s390x]
+#{% set tests_to_skip = tests_to_skip + " or test_gges_tgexc[float32] or test_qz_single" %}    # [osx]
 
 test:
   imports:
