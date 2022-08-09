@@ -14,20 +14,15 @@ source:
     sha256: dd773d72500bbe607fe05251a8dd2439b6b38fe3133a7fc05ced82303ca73e95
     patches:
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
-  # include submodule (not in github tarball due to dear-github/dear-github#214), c.f.
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/_lib
-  - git_url: https://github.com/scipy/boost-headers-only.git
-    git_rev: 2110ce20e59917b85b12059b3ddd8b133549f662
+  - url: https://github.com/scipy/boost-headers-only/archive/2a1a7e920f39c44440d6908a080810abe9510f42.tar.gz
     folder: scipy/_lib/boost
-  - git_url: https://github.com/scipy/highs.git
-    git_rev: 4a122958a82e67e725d08153e099efe4dad099a2
+  - url: https://github.com/scipy/HiGHS/archive/4a122958a82e67e725d08153e099efe4dad099a2.tar.gz
     folder: scipy/_lib/highs
-  - git_url: https://github.com/scipy/unuran.git
-    git_rev: a63d39160e5ecc4402e7ed0e8417f4c3ff9634cb
+  - url: https://github.com/scipy/unuran/archive/a63d39160e5ecc4402e7ed0e8417f4c3ff9634cb.tar.gz
     folder: scipy/_lib/unuran
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/sparse/linalg/_propack
-  - git_url: https://github.com/scipy/PROPACK.git
-    git_rev: 92f466393256df649fc8542c39dd647816dded25
+  - url: https://github.com/scipy/PROPACK/archive/92f466393256df649fc8542c39dd647816dded25.tar.gz
     folder: scipy/sparse/linalg/_propack/PROPACK
 
 build:
