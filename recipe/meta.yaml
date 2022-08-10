@@ -84,24 +84,25 @@ test:
     # see commend above
     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
 
-  commands:
-    # show SIMD features (some failures occur depending on presence/absence of e.g. AVX512)
-    # change to np.show_config() for v>=1.22.0, cf. numpy/numpy#19130
-    - python -c "import numpy; numpy._pytesttester._show_numpy_info()"
-    # the tests ppc64le and aarch64 are currently run through emulation in QEMU;
-    # since this takes much longer, do not run the most heavy-weight tests, i.e. use
-    # label='fast'; same for PyPy due to huge runtime; otherwise set label='full'
-    {% set label = "'fast'" if (aarch64 or ppc64le or python_impl == "pypy") else "'full'" %}
-    # aarch tests ran in reduced form on drone due to timing constraints;
-    # going back to the full test suite will need some debugging of hangs
-    {% set tests = "['scipy.linalg', 'scipy.fft']" if aarch64 else "None" %}
-    # for signature of scipy.test see below (note default: label='fast'):
-    # https://github.com/scipy/scipy/blob/v1.7.0/scipy/_lib/_testutils.py#L27
-    {% set param = "verbose=2, label=" + label + ", tests=" + tests %}
-    {% set extra = "extra_argv=['-k', 'not (" + tests_to_skip + ")', '--timeout=1200', '--durations=50']" %}
-    - python -c "import scipy, sys; sys.exit(not scipy.test({{ param }}, {{ extra }}))"  # [not ppc64le]
-    # NOTE: test suite is skipped on ppc due to bugs in QEMU code that cause
-    # CI to fail, even though the tests would run through on native hardware
+# commands:
+#   # show SIMD features (some failures occur depending on presence/absence of e.g. AVX512)
+#   # change to np.show_config() for v>=1.22.0, cf. numpy/numpy#19130
+#   - python -c "import numpy; numpy._pytesttester._show_numpy_info()"
+#   # the tests ppc64le and aarch64 are currently run through emulation in QEMU;
+#   # since this takes much longer, do not run the most heavy-weight tests, i.e. use
+#   # label='fast'; same for PyPy due to huge runtime; otherwise set label='full'
+#   {% set label = "'fast'" if (aarch64 or ppc64le or python_impl == "pypy") else "'full'" %}
+#   # aarch tests ran in reduced form on drone due to timing constraints;
+#   # going back to the full test suite will need some debugging of hangs
+#   {% set tests = "['scipy.linalg', 'scipy.fft']" if aarch64 else "None" %}
+#   # for signature of scipy.test see below (note default: label='fast'):
+#   # https://github.com/scipy/scipy/blob/v1.7.0/scipy/_lib/_testutils.py#L27
+#   {% set param = "verbose=2, label=" + label + ", tests=" + tests %}
+#   {% set extra = "extra_argv=['-k', 'not (" + tests_to_skip + ")', '--timeout=1200', '--durations=50']" %}
+#   - python -c "import scipy, sys; sys.exit(not scipy.test({{ param }}, {{ extra }}))"  # [not ppc64le]
+#   # NOTE: test suite is skipped on ppc due to bugs in QEMU code that cause
+#   # CI to fail, even though the tests would run through on native hardware
+
   imports:
     - scipy
     - scipy.cluster._hierarchy
