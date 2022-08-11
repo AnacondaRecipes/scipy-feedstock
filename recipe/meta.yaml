@@ -30,7 +30,7 @@ build:
   number: 1
   skip: true  # [py2k or py<=36]
   missing_dso_whitelist:  # [linux]
-    - $RPATH/ld64.so.1    # [linux]
+    - $RPATH/ld64.so.1    # [linux and s390x]
 
 requirements:
   build:
@@ -49,7 +49,9 @@ requirements:
     - setuptools
     - cython
     - pybind11
-    - pythran
+    - pythran >=0.9.11,<0.10.0
+    - setuptools <58.0.0
+    - wheel <0.38.0
     # this setting is actually an issue of the numpy version!!
     - numpy-devel  {{ numpy }}  # [not (osx and arm64) and py<=39]
     - numpy {{ numpy }}         # [(osx and arm64) or py>39]
@@ -66,16 +68,17 @@ requirements:
     - {{ pin_compatible('numpy') }}
 
 {% set tests_to_skip = "_not_a_real_test" %}
-# skip some tests that hang/fail on pypy
-{% if python_impl == "pypy" %}
-  # hangs
-  {% set tests_to_skip = tests_to_skip + " or test_mixed_threads_processes" %}  # [aarch64 or ppc64le]
-  # failures
-  {% set tests_to_skip = tests_to_skip + " or test_cdist_refcount" %}           # [unix]
-  {% set tests_to_skip = tests_to_skip + " or test_boost_eval_issue_14606" %}   # [unix]
-{% endif %}
+{% set tests_to_skip = tests_to_skip + " or test_aligned_mem" %}
+# Some test_bug_10466 will be skipped in v1.9.0,
+# see https://github.com/scipy/scipy/pull/16225
+{% set tests_to_skip = tests_to_skip + " or test_bug_10466" %}
+{% set tests_to_skip = tests_to_skip + " or test_matvecs" %}  # [linux and s390x]
+{% set tests_to_skip = tests_to_skip + " or test_qz_single or test_gges_tgexc[float32]" %}  # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_branch_cut or test_expi_comple or test_chi_complex or test_ci_complex or test_ei_complex" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_legenp_complex_3 or test_shi_complex or test_si_complex" %}  # [win]
 
 test:
+
   requires:
     - pytest
     - pytest-timeout
@@ -99,84 +102,59 @@ test:
     # https://github.com/scipy/scipy/blob/v1.7.0/scipy/_lib/_testutils.py#L27
     {% set param = "verbose=2, label=" + label + ", tests=" + tests %}
     {% set extra = "extra_argv=['-k', 'not (" + tests_to_skip + ")', '--timeout=1200', '--durations=50']" %}
-    - python -c "import scipy, sys; sys.exit(not scipy.test({{ param }}, {{ extra }}))"  # [not ppc64le]
+    - python -c "import scipy, sys; sys.exit(not scipy.test({{ param }}, {{ extra }}))"  # [not ((linux and ppc64le) or (osx and arm64))]
     # NOTE: test suite is skipped on ppc due to bugs in QEMU code that cause
     # CI to fail, even though the tests would run through on native hardware
+
   imports:
     - scipy
-    - scipy.cluster._hierarchy
-    - scipy.cluster._vq
+    - scipy.cluster
     - scipy.fft
-    - scipy.integrate._dop
-    - scipy.integrate._odepack
-    - scipy.integrate._quadpack
-    - scipy.integrate._test_multivariate
-    - scipy.integrate._test_odeint_banded
+    - scipy.integrate
     - scipy.integrate.lsoda
     - scipy.integrate.vode
-    - scipy.interpolate._fitpack
-    - scipy.interpolate._ppoly
+    - scipy.interpolate
     - scipy.interpolate.dfitpack
     - scipy.interpolate.interpnd
     - scipy.io.matlab.mio5_utils
     - scipy.io.matlab.mio_utils
     - scipy.io.matlab.streams
-    - scipy.linalg._decomp_update
-    - scipy.linalg._fblas
-    - scipy.linalg._flapack
-    - scipy.linalg._flinalg
-    - scipy.linalg._interpolative
-    - scipy.linalg._solve_toeplitz
+    - scipy.linalg
     - scipy.linalg.cython_blas
     - scipy.linalg.cython_lapack
-    - scipy.ndimage._nd_image
-    - scipy.ndimage._ni_label
-    - scipy.odr.__odrpack
-    - scipy.optimize._cobyla
-    - scipy.optimize._group_columns
-    - scipy.optimize._lbfgsb
-    - scipy.optimize._lsq.givens_elimination
-    - scipy.optimize._minpack
-    - scipy.optimize._nnls
-    - scipy.optimize._slsqp
-    - scipy.optimize._zeros
+    - scipy.ndimage
+    - scipy.odr
+    - scipy.optimize
     - scipy.optimize.minpack2
     - scipy.optimize.moduleTNC
-    - scipy.signal._max_len_seq_inner
-    - scipy.signal._spectral
+    - scipy.signal
     - scipy.signal.sigtools
     - scipy.signal.spline
-    - scipy.sparse._csparsetools
-    - scipy.sparse._sparsetools
-    - scipy.sparse.csgraph._min_spanning_tree
-    - scipy.sparse.csgraph._reordering
-    - scipy.sparse.csgraph._shortest_path
-    - scipy.sparse.csgraph._tools
-    - scipy.sparse.csgraph._traversal
-    - scipy.sparse.linalg.dsolve._superlu
+    - scipy.sparse
+    - scipy.sparse.csgraph
+    - scipy.sparse.linalg.dsolve
     - scipy.sparse.linalg.eigen.arpack._arpack
-    - scipy.sparse.linalg.isolve._iterative
-    - scipy.spatial._distance_wrap
+    - scipy.sparse.linalg.isolve
+    - scipy.spatial
     - scipy.spatial.ckdtree
     - scipy.spatial.qhull
     - scipy.special
-    - scipy.special._ellip_harm_2
-    - scipy.special._ufuncs
-    - scipy.special._ufuncs_cxx
+    - scipy.special
     - scipy.special.specfun
     - scipy.stats
     - scipy.stats.mvn
     - scipy.stats.statlib
 
 about:
-  home: http://www.scipy.org/
-  license: BSD 3-Clause
+  home: https://www.scipy.org/
+  license: BSD-3-Clause
+  license_family: BSD
   license_file: LICENSE.txt
   summary: Scientific Library for Python
   description: |
     SciPy is a Python-based ecosystem of open-source software for mathematics,
     science, and engineering.
-  doc_url: http://www.scipy.org/docs.html
+  doc_url: https://www.scipy.org/docs.html
   dev_url: https://github.com/scipy/scipy
 
 extra:
