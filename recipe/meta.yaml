@@ -54,7 +54,7 @@ requirements:
     - wheel <0.38.0
     - numpy   1.19  # [py==38 or py==39]
     - numpy   1.21  # [py==310]
-    - pip >=18.0.0
+    - pip >=18.0.0,<22.0.0
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
     # Intel MKL FATAL ERROR: Cannot load libmkl_intel_thread.dylib.
@@ -65,7 +65,8 @@ requirements:
   run:
     - python
     # https://github.com/scipy/scipy/blob/v1.9.0/setup.py#L452
-    - numpy >=1.18.5,<1.25.0
+    - numpy >=1.19,<1.25.0  # [py==38 or py==39]
+    - numpy >=1.21,<1.25.0  # [py==310]
 
 {% set tests_to_skip = "_not_a_real_test" %}
 # skip a test that fails with MKL + AVX512 (non-AVX512 passes)
