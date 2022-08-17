@@ -40,21 +40,17 @@ requirements:
     - {{ compiler('fortran') }}
     - patch         # [unix]
     - m2-patch      # [win]
-    - git           # [unix]
-    - m2-git        # [win]
     - pkg-config    # [osx]
   host:
     - python
     - cython >=0.29.21,<3.0
     - pybind11 >=2.4.3,<2.10.0
     - pythran >=0.11.0,<0.12.0
-    - meson-python >=0.7.0,<0.8.0
-    - meson ==0.62.2
     - setuptools <60
     - wheel <0.38.0
     - numpy   1.19  # [py==38 or py==39]
     - numpy   1.21  # [py==310]
-    - pip >=18.0.0,<22.0.0
+    - pip >=18.0.0
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
     # Intel MKL FATAL ERROR: Cannot load libmkl_intel_thread.dylib.
@@ -130,6 +126,7 @@ test:
     - pytest-timeout
     - pytest-xdist
     - mpmath
+    - threadpoolctl
     # see commend above
     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
   commands:
@@ -141,7 +138,7 @@ test:
     {% set label = "'fast'" if (aarch64 or ppc64le or python_impl == "pypy") else "'full'" %}
     # for signature of scipy.test see below (note default: label='fast'):
     # https://github.com/scipy/scipy/blob/v1.7.0/scipy/_lib/_testutils.py#L27
-    {% set param = "verbose=1, label=" + label + ", tests=None" %}
+    {% set param = "verbose=2, label=" + label + ", tests=None" %}
     {% set extra = "extra_argv=['-vv', '-k', 'not (" + tests_to_skip + ")', '-nauto', '--timeout=1200', '--durations=50']" %}
     - python -c "import scipy, sys; sys.exit(not scipy.test({{ param }}, {{ extra }}))"  # [not ((linux and ppc64le) or (osx and arm64))]
     # NOTE: test suite is skipped on ppc due to bugs in QEMU code that cause
