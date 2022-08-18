@@ -51,7 +51,7 @@ requirements:
     - setuptools
     - cython
     - pybind11 >=2.4.0
-    - fftw  # [unix]
+    - fftw  # [not (linux and s390x)]
     - pythran
     # this setting is actually an issue of the numpy version!!
     - numpy-devel  {{ numpy }}  # [not (osx and arm64) and py<=39]
@@ -67,7 +67,7 @@ requirements:
   run:
     - python
     - {{ pin_compatible('numpy') }}
-    - {{ pin_compatible('fftw') }}
+    - {{ pin_compatible('fftw') }}  # [not (linux and s390x)]
 
 {% set tests_to_skip = "_not_a_real_test or TestSchur or test_solve_discrete_are or test_sygst" %}
 # skip some tests that hang/fail on pypy
