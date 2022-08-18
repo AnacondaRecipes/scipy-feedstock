@@ -69,7 +69,7 @@ requirements:
     - {{ pin_compatible('numpy') }}
     - {{ pin_compatible('fftw') }}
 
-{% set tests_to_skip = "_not_a_real_test or TestSchur or test_solve_discrete_arei or test_sygst" %}
+{% set tests_to_skip = "_not_a_real_test or TestSchur or test_solve_discrete_are or test_sygst" %}
 # skip some tests that hang/fail on pypy
 {% if python_impl == "pypy" %}
   # hangs
