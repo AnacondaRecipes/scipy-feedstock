@@ -20,6 +20,7 @@ source:
       # backport of scipy/scipy#15010 to avoid test skip
       - patches/0004-TST-remove-fragile-test-which-checks-if-g77-is-linke.patch
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
+      - patches/0005-pythran.patch
   # include submodule (not in github tarball due to dear-github/dear-github#214), c.f.
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/_lib
   - git_url: https://github.com/scipy/boost-headers-only.git
@@ -27,7 +28,7 @@ source:
     folder: scipy/_lib/boost
 
 build:
-  number: 0
+  number: 1
   skip: true  # [py2k or py<=36]
   missing_dso_whitelist:  # [linux]
     - $RPATH/ld64.so.1    # [linux]
@@ -44,11 +45,13 @@ requirements:
     - git       # [unix]
     - m2-git    # [win]
     - pkg-config    # [osx]
+    - swig
   host:
     - python
     - setuptools
     - cython
-    - pybind11
+    - pybind11 >=2.4.0
+    - fftw  # [unix]
     - pythran
     # this setting is actually an issue of the numpy version!!
     - numpy-devel  {{ numpy }}  # [not (osx and arm64) and py<=39]
@@ -64,8 +67,9 @@ requirements:
   run:
     - python
     - {{ pin_compatible('numpy') }}
+    - {{ pin_compatible('fftw') }}
 
-{% set tests_to_skip = "_not_a_real_test" %}
+{% set tests_to_skip = "_not_a_real_test or TestSchur or test_solve_discrete_arei or test_sygst" %}
 # skip some tests that hang/fail on pypy
 {% if python_impl == "pypy" %}
   # hangs
