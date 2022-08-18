@@ -54,8 +54,8 @@ requirements:
     - fftw  # [not (linux and s390x)]
     - pythran
     # this setting is actually an issue of the numpy version!!
-    - numpy-devel  {{ numpy }}  # [not (osx and arm64) and py<=39]
-    - numpy {{ numpy }}         # [(osx and arm64) or py>39]
+    - numpy-devel  >={{ numpy }},<1.23  # [not (osx and arm64) and py<=39]
+    - numpy >={{ numpy }},<1.23         # [(osx and arm64) or py>39]
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
