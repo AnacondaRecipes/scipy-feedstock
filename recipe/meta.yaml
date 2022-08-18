@@ -66,7 +66,7 @@ requirements:
     - msinttypes   # [win and vc<14]
   run:
     - python
-    - {{ pin_compatible('numpy') }}
+    - numpy >={{ numpy }},<1.23
     - {{ pin_compatible('fftw') }}  # [not (linux and s390x)]
 
 {% set tests_to_skip = "_not_a_real_test or TestSchur or test_solve_discrete_are or test_sygst" %}
