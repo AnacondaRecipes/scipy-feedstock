@@ -1,4 +1,7 @@
 {% set version = "1.7.3" %}
+{% set numpy = "1.16" %}  # [py<=39 and not (osx and arm64)]
+{% set numpy = "1.19" %}  # [py<=39 and osx and arm64]
+{% set numpy = "1.21" %}  # [py>=39]
 
 package:
   name: scipy
