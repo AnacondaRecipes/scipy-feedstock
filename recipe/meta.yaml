@@ -1,4 +1,6 @@
 {% set version = "1.9.0" %}
+{% set numpy = "1.19" %}  # [py==38 or py==39]
+{% set numpy = "1.21" %}  # [py>39]
 
 package:
   name: scipy
@@ -44,12 +46,12 @@ requirements:
   host:
     - python
     - cython >=0.29.21,<3.0
-    - pybind11 >=2.4.3,<2.10.0
+    - pybind11 >=2.4.3,<2.10.0    
+    - fftw  # [not (linux and s390x)]
     - pythran >=0.11.0,<0.12.0
     - setuptools <60
     - wheel <0.38.0
-    - numpy   1.19  # [py==38 or py==39]
-    - numpy   1.21  # [py==310]
+    - numpy >={{ numpy }},<1.25.0
     - pip >=18.0.0
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
@@ -57,27 +59,26 @@ requirements:
     # It may be needed to make this pinning explicit in the mkl package
     - intel-openmp {{ mkl }}         # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
-    #- msinttypes                     # [win and vc<14]
   run:
     - python
     # https://github.com/scipy/scipy/blob/v1.9.0/setup.py#L452
-    - numpy >=1.19,<1.25.0  # [py==38 or py==39]
-    - numpy >=1.21,<1.25.0  # [py==310]
+    - numpy >={{ numpy }},<1.25.0
 
 {% set tests_to_skip = "_not_a_real_test" %}
 # skip a test that fails with MKL + AVX512 (non-AVX512 passes)
 {% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab]" %}
-# these multithreading tests occasionally hang in emulation
-{% set tests_to_skip = tests_to_skip + " or test_immediate_updating" %}         # [aarch64 or ppc64le]
-{% set tests_to_skip = tests_to_skip + " or test_mixed_threads_processes" %}    # [aarch64 or ppc64le]
-{% set tests_to_skip = tests_to_skip + " or test_multiprocess[fft]" %}          # [aarch64 or ppc64le]
-{% set tests_to_skip = tests_to_skip + " or (test__differential_evolution and test_parallel)" %}  # [aarch64 or ppc64le]
-# on the slowest agents, these tests take more than 20min in emulation
-{% set tests_to_skip = tests_to_skip + " or (test_lsq_linear and test_large_rank_deficient)" %}   # [aarch64 or ppc64le]
-# These tests failed in v8.0.1 on linux64, s390x, and osx64:
-#{% set tests_to_skip = tests_to_skip + " or test_estimate_spectral_norm_diff[complex128] or test_estimate_spectral_norm[complex128] or test_ppf_against_tables" %}  # [linux]
-#{% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %}  # [linux and s390x]
-#{% set tests_to_skip = tests_to_skip + " or test_gges_tgexc[float32] or test_qz_single" %}    # [osx]
+# # these multithreading tests occasionally hang in emulation
+# {% set tests_to_skip = tests_to_skip + " or test_immediate_updating" %}         # [aarch64 or ppc64le]
+# {% set tests_to_skip = tests_to_skip + " or test_mixed_threads_processes" %}    # [aarch64 or ppc64le]
+# {% set tests_to_skip = tests_to_skip + " or test_multiprocess[fft]" %}          # [aarch64 or ppc64le]
+# {% set tests_to_skip = tests_to_skip + " or (test__differential_evolution and test_parallel)" %}  # [aarch64 or ppc64le]
+# # on the slowest agents, these tests take more than 20min in emulation
+# {% set tests_to_skip = tests_to_skip + " or (test_lsq_linear and test_large_rank_deficient)" %}   # [aarch64 or ppc64le]
+
+# linux-64 propack tests segfault when calling mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
+{% set tests_to_skip = tests_to_skip + " or test_svdp"             %} # [linux and x86_64 and py>39]
+{% set tests_to_skip = tests_to_skip + " or test_examples"         %} # [linux and x86_64 and py>39]
+
 
 test:
   imports:
@@ -140,7 +141,7 @@ test:
     # https://github.com/scipy/scipy/blob/v1.7.0/scipy/_lib/_testutils.py#L27
     {% set param = "verbose=2, label=" + label + ", tests=None" %}
     {% set extra = "extra_argv=['-vv', '-k', 'not (" + tests_to_skip + ")', '-nauto', '--timeout=1200', '--durations=50']" %}
-    - python -c "import scipy, sys; sys.exit(not scipy.test({{ param }}, {{ extra }}))"  # [not ((linux and ppc64le) or (osx and arm64))]
+    - python -c "import scipy, sys; sys.exit(not scipy.test({{ param }}, {{ extra }}))"
     # NOTE: test suite is skipped on ppc due to bugs in QEMU code that cause
     # CI to fail, even though the tests would run through on native hardware
 
