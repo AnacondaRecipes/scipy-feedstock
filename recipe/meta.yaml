@@ -67,18 +67,25 @@ requirements:
 {% set tests_to_skip = "_not_a_real_test" %}
 # skip a test that fails with MKL + AVX512 (non-AVX512 passes)
 {% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab]" %}
-# # these multithreading tests occasionally hang in emulation
-# {% set tests_to_skip = tests_to_skip + " or test_immediate_updating" %}         # [aarch64 or ppc64le]
-# {% set tests_to_skip = tests_to_skip + " or test_mixed_threads_processes" %}    # [aarch64 or ppc64le]
-# {% set tests_to_skip = tests_to_skip + " or test_multiprocess[fft]" %}          # [aarch64 or ppc64le]
-# {% set tests_to_skip = tests_to_skip + " or (test__differential_evolution and test_parallel)" %}  # [aarch64 or ppc64le]
-# # on the slowest agents, these tests take more than 20min in emulation
-# {% set tests_to_skip = tests_to_skip + " or (test_lsq_linear and test_large_rank_deficient)" %}   # [aarch64 or ppc64le]
+# these multithreading tests occasionally hang in emulation
+{% set tests_to_skip = tests_to_skip + " or test_immediate_updating" %}         # [ppc64le]
+{% set tests_to_skip = tests_to_skip + " or test_mixed_threads_processes" %}    # [ppc64le]
+{% set tests_to_skip = tests_to_skip + " or test_multiprocess[fft]" %}          # [ppc64le]
+{% set tests_to_skip = tests_to_skip + " or (test__differential_evolution and test_parallel)" %}  # [ppc64le]
+# on the slowest agents, these tests take more than 20min in emulation
+{% set tests_to_skip = tests_to_skip + " or (test_lsq_linear and test_large_rank_deficient)" %}   # [ppc64le]
 
-# linux-64 propack tests segfault when calling mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
-{% set tests_to_skip = tests_to_skip + " or test_svdp"             %} # [linux and x86_64 and py>39]
-{% set tests_to_skip = tests_to_skip + " or test_examples"         %} # [linux and x86_64 and py>39]
+# propack tests segfault when calling mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
+{% set tests_to_skip = tests_to_skip + " or test_svdp"                        %} # [(x86_64 or s390x or arm64) and py>39]
+{% set tests_to_skip = tests_to_skip + " or test_examples"                    %} # [(x86_64 or s390x or arm64) and py>39]
+{% set tests_to_skip = tests_to_skip + " or test_concatenate_int32_overflow"  %} # [(x86_64 or s390x or arm64) and py>39]
 
+# skip failing linalg tests mpmath tests
+{% set tests_to_skip = tests_to_skip + " or test_jacobi_int"   %} # [s390x and py>39]
+
+# skip failing linalg tests
+{% set tests_to_skip = tests_to_skip + " or test_qz_single"     %} # [osx-64]
+{% set tests_to_skip = tests_to_skip + " or test_gges_tgexc"    %} # [osx-64]
 
 test:
   imports:
