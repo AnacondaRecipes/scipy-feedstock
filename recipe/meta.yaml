@@ -80,17 +80,17 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or (test_lsq_linear and test_large_rank_deficient)" %}   # [ppc64le]
 
 # propack tests segfault when calling mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
-{% set tests_to_skip = tests_to_skip + " or test_svdp"                        %} # [(x86_64 or s390x or arm64) and py>39]
-{% set tests_to_skip = tests_to_skip + " or test_examples"                    %} # [(x86_64 or s390x or arm64) and py>39]
-{% set tests_to_skip = tests_to_skip + " or test_concatenate_int32_overflow"  %} # [(x86_64 or s390x or arm64) and py>39]
+{% set tests_to_skip = tests_to_skip + " or test_svdp"                        %} # [(linux and (x86_64 or s390x)) or (osx and arm64)]
+{% set tests_to_skip = tests_to_skip + " or test_examples"                    %} # [(linux and (x86_64 or s390x)) or (osx and arm64)]
+{% set tests_to_skip = tests_to_skip + " or test_concatenate_int32_overflow"  %} # [(linux and (x86_64 or s390x)) or (osx and arm64)]
 
 # skip failing linalg tests mpmath tests
-{% set tests_to_skip = tests_to_skip + " or test_jacobi_int"   %} # [s390x and py>39]
+{% set tests_to_skip = tests_to_skip + " or test_jacobi_int"   %} # [(linux and s390x) or (osx and arm64)]
 
 # skip failing linalg tests
-{% set tests_to_skip = tests_to_skip + " or test_qz_single"     %} # [osx-64]
-{% set tests_to_skip = tests_to_skip + " or test_gges_tgexc"    %} # [osx-64]
-{% set tests_to_skip = tests_to_skip + " or test_eigh"          %} # [osx-arm64]
+{% set tests_to_skip = tests_to_skip + " or test_qz_single"     %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_gges_tgexc"    %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_eigh"          %} # [osx and arm64]
 
 test:
   imports:
