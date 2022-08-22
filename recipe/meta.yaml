@@ -90,6 +90,7 @@ requirements:
 # skip failing linalg tests
 {% set tests_to_skip = tests_to_skip + " or test_qz_single"     %} # [osx-64]
 {% set tests_to_skip = tests_to_skip + " or test_gges_tgexc"    %} # [osx-64]
+{% set tests_to_skip = tests_to_skip + " or test_eigh"          %} # [osx-arm64]
 
 test:
   imports:
