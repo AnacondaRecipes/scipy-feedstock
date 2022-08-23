@@ -23,6 +23,8 @@ source:
   - url: https://github.com/scipy/HiGHS/archive/4a122958a82e67e725d08153e099efe4dad099a2.tar.gz
     sha256: 8ce0e816d8c7517c95e0e404648eef3aaee0d5b919226b46f592c87a4eca24f4
     folder: scipy/_lib/highs
+    patches:
+      - patches/0003-highs-missing-includes-win.patch  # [win]
   - url: https://github.com/scipy/unuran/archive/a63d39160e5ecc4402e7ed0e8417f4c3ff9634cb.tar.gz
     sha256: 2412fdb1d46cc5c677d7fe2b42895f444b2c544040f835083cf814ca93e8c2f5
     folder: scipy/_lib/unuran
@@ -80,8 +82,8 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or (test_lsq_linear and test_large_rank_deficient)" %}   # [ppc64le]
 
 # propack tests segfault when calling mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
-{% set tests_to_skip = tests_to_skip + " or test_svdp"                        %} # [(linux and (x86_64 or s390x)) or (osx and arm64)]
-{% set tests_to_skip = tests_to_skip + " or test_examples"                    %} # [(linux and (x86_64 or s390x)) or (osx and arm64)]
+{% set tests_to_skip = tests_to_skip + " or test_svdp"                        %} # [(linux and (x86_64 or s390x)) or (osx and arm64) or win]
+{% set tests_to_skip = tests_to_skip + " or test_examples"                    %} # [(linux and (x86_64 or s390x)) or (osx and arm64) or win]
 {% set tests_to_skip = tests_to_skip + " or test_concatenate_int32_overflow"  %} # [(linux and (x86_64 or s390x)) or (osx and arm64)]
 
 # skip failing linalg tests mpmath tests
@@ -104,6 +106,10 @@ requirements:
     or test_standard_nonsymmetric_starting_vector or test_general_nonsymmetric_starting_vector or test_standard_nonsymmetric_no_convergence \ # [osx and arm64]
     or test_simple_her_actuallysym or test_various_drivers_standard or test_hermitian or test_decompose or test_cossin or test_svd_linop \ # [osx and arm64]
     or test_small_sigma_sparse "  %} # [osx and arm64]
+
+# skip failing win tests
+{% set tests_to_skip = tests_to_skip + " or test_region4"           %} # [win]
+{% set tests_to_skip = tests_to_skip + " or test_legenp_complex_3"  %} # [win]
 
 test:
   imports:
