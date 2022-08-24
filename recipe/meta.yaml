@@ -35,6 +35,8 @@ build:
   skip: true                          # [py2k or py<=36]
   missing_dso_whitelist:              # [linux]
     - $RPATH/ld64.so.1                # [linux]
+  ignore_run_exports:
+    - numpy
 
 requirements:
   build:
