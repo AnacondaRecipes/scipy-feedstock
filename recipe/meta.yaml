@@ -185,7 +185,7 @@ about:
   description: |
     SciPy is a Python-based ecosystem of open-source software for mathematics,
     science, and engineering.
-  doc_url: http://www.scipy.org/docs.html
+  doc_url: https://docs.scipy.org/doc/scipy/
   dev_url: https://github.com/scipy/scipy
 
 extra:
