@@ -58,8 +58,8 @@ requirements:
     - fftw                            # [not (linux and s390x)]
     - pybind11 >=2.4.0
     - pythran
-    - numpy-devel >={{ numpy }},<1.23  # [not (osx and arm64) and py<=39]
-    - numpy >={{ numpy }},<1.23        # [(osx and arm64) or py>39]
+    - numpy-devel {{ numpy }}   # [not (osx and arm64) and py<=39]
+    - numpy {{ numpy }}         # [(osx and arm64) or py>39]
     - mkl-devel  {{ mkl }}            # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
     # Intel MKL FATAL ERROR: Cannot load libmkl_intel_thread.dylib.
