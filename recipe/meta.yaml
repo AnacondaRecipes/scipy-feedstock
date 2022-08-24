@@ -1,4 +1,7 @@
 {% set version = "1.7.3" %}
+{% set numpy = "1.16" %}  # [py<=39 and not (osx and arm64)]
+{% set numpy = "1.19" %}  # [py<=39 and osx and arm64]
+{% set numpy = "1.21" %}  # [py>39]
 
 package:
   name: scipy
@@ -28,7 +31,7 @@ source:
     folder: scipy/_lib/boost
 
 build:
-  number: 1
+  number: 2
   skip: true                          # [py2k or py<=36]
   missing_dso_whitelist:              # [linux]
     - $RPATH/ld64.so.1                # [linux]
@@ -55,8 +58,8 @@ requirements:
     - fftw                            # [not (linux and s390x)]
     - pybind11 >=2.4.0
     - pythran
-    - numpy >=1.19,<1.23.0            # [py==37 or py==38 or py==39]
-    - numpy >=1.21,<1.23.0            # [py==310]
+    - numpy-devel >={{ numpy }},<1.23  # [not (osx and arm64) and py<=39]
+    - numpy >={{ numpy }},<1.23        # [(osx and arm64) or py>39]
     - mkl-devel  {{ mkl }}            # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
     # Intel MKL FATAL ERROR: Cannot load libmkl_intel_thread.dylib.
@@ -66,8 +69,8 @@ requirements:
     - msinttypes                      # [win and vc<14]
   run:
     - python
-    - numpy >=1.19,<1.23.0            # [py==37 or py==38 or py==39]
-    - numpy >=1.21,<1.23.0            # [py==310]
+    - numpy >={{ numpy }},<1.23
+    - {{ pin_compatible('fftw') }}  # [not (linux and s390x)]
 
 {% set tests_to_skip = "_not_a_real_test or TestSchur or test_solve_discrete_are or test_sygst" %}
 # skip some tests that hang/fail on pypy
