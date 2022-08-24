@@ -178,8 +178,8 @@ test:
     - scipy.stats.statlib
 
 about:
-  home: http://www.scipy.org/
-  license: BSD 3-Clause
+  home: https://www.scipy.org/
+  license: BSD-3-Clause
   license_file: LICENSE.txt
   summary: Scientific Library for Python
   description: |
