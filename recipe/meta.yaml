@@ -1,6 +1,7 @@
 {% set version = "1.9.0" %}
-{% set numpy = "1.19" %}  # [py==38 or py==39]
-{% set numpy = "1.21" %}  # [py>39]
+{% set numpy = "1.19" %}  # [not win and (py==38 or py==39)]
+{% set numpy = "1.21" %}  # [not win and py>39]
+{% set numpy = "1.23" %}  # [win] ; build issue with fortran on lower numpy versions
 
 package:
   name: scipy
@@ -37,7 +38,9 @@ build:
   number: 0
   skip: true  # [py<=37]
   missing_dso_whitelist:  # [linux and s390x]
-    - $RPATH/ld64.so.1    # [linux and s390x]
+    - $RPATH/ld64.so.1    # [linux and s390x] 
+  ignore_run_exports:
+    - numpy
 
 requirements:
   build:
@@ -57,7 +60,7 @@ requirements:
     - pythran >=0.11.0,<0.12.0
     - setuptools <60
     - wheel <0.38.0
-    - numpy >={{ numpy }},<1.25.0
+    - numpy {{ numpy }}
     - pip >=18.0.0
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
@@ -69,10 +72,20 @@ requirements:
     - python
     # https://github.com/scipy/scipy/blob/v1.9.0/setup.py#L452
     - numpy >={{ numpy }},<1.25.0
+    - {{ pin_compatible('fftw') }} # [not (linux and s390x)]
+    - {{ pin_compatible('intel-openmp') }}  # [blas_impl == 'mkl']
 
 {% set tests_to_skip = "_not_a_real_test" %}
-# skip a test that fails with MKL + AVX512 (non-AVX512 passes)
-{% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab]" %}
+# skip a test that fails with MKL + AVX512 (non-AVX512 passes) (See: https://github.com/scipy/scipy/issues/15533)
+{% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab]" %} # [blas_impl == 'mkl']
+
+# Scipy segfault when calling solver PROPACK _svdp at mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
+# The use of PROPACK is disabled by default on 1.9.0 : see https://github.com/scipy/scipy/pull/16420
+# However PROPACK tests themselves are not disabled, so we skip test_propack.py tests.
+{% set tests_to_skip = tests_to_skip + " or test_svdp"                        %} # [blas_impl == 'mkl']
+{% set tests_to_skip = tests_to_skip + " or test_examples"                    %} # [blas_impl == 'mkl']
+
+# skip failing ppc64le tests
 # these multithreading tests occasionally hang in emulation
 {% set tests_to_skip = tests_to_skip + " or test_immediate_updating" %}         # [ppc64le]
 {% set tests_to_skip = tests_to_skip + " or test_mixed_threads_processes" %}    # [ppc64le]
@@ -81,17 +94,22 @@ requirements:
 # on the slowest agents, these tests take more than 20min in emulation
 {% set tests_to_skip = tests_to_skip + " or (test_lsq_linear and test_large_rank_deficient)" %}   # [ppc64le]
 
-# propack tests segfault when calling mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
-{% set tests_to_skip = tests_to_skip + " or test_svdp"                        %} # [(linux and (x86_64 or s390x)) or (osx and arm64) or win]
-{% set tests_to_skip = tests_to_skip + " or test_examples"                    %} # [(linux and (x86_64 or s390x)) or (osx and arm64) or win]
-{% set tests_to_skip = tests_to_skip + " or test_concatenate_int32_overflow"  %} # [(linux and (x86_64 or s390x)) or (osx and arm64)]
+# skip failing s390x tests
+{% set tests_to_skip = tests_to_skip + " or test_jacobi_int"                    %} # [s390x]
+{% set tests_to_skip = tests_to_skip + " or test_concatenate_int32_overflow"    %} # [s390x]
 
-# skip failing linalg tests mpmath tests
-{% set tests_to_skip = tests_to_skip + " or test_jacobi_int"   %} # [(linux and s390x) or (osx and arm64)]
-
-# skip failing linalg tests
-{% set tests_to_skip = tests_to_skip + " or test_qz_single"     %} # [osx]
-{% set tests_to_skip = tests_to_skip + " or test_gges_tgexc"    %} # [osx]
+# skip failing osx-64 tests
+{% set tests_to_skip = tests_to_skip + " or test_qz_single"             %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_gges_tgexc"            %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_inf_nan_domains"       %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_basic"                 %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_ppf"                   %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_negative_guide_factor_raises_warning"  %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_guide_factor_gt3_raises_warning"       %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_deprecations"          %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_u_error"               %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_custom_distribution"   %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_inaccurate_CDF"        %} # [osx]
 
 # skip failing osx-arm64 tests
 {% set tests_to_skip = tests_to_skip + " or test_eigh or test_two_scalar_params or test_random_complex_exact or test_various_drivers_standard \ # [osx and arm64]
@@ -105,7 +123,7 @@ requirements:
     or test_solve_discrete_are or test_small_sigma_sparse or test_hermitian_modes or test_real_nonsymmetric_modes or test_complex_nonsymmetric_modes \ # [osx and arm64]
     or test_standard_nonsymmetric_starting_vector or test_general_nonsymmetric_starting_vector or test_standard_nonsymmetric_no_convergence \ # [osx and arm64]
     or test_simple_her_actuallysym or test_various_drivers_standard or test_hermitian or test_decompose or test_cossin or test_svd_linop \ # [osx and arm64]
-    or test_small_sigma_sparse "  %} # [osx and arm64]
+    or test_small_sigma_sparse or test_jacobi_int or test_concatenate_int32_overflow"  %} # [osx and arm64]
 
 # skip failing win tests
 {% set tests_to_skip = tests_to_skip + " or test_region4"           %} # [win]
@@ -174,12 +192,12 @@ test:
 
     # run tests except tests_to_skip
     {% set param = "verbose=1, label=" + label + ", tests=None" %} # set verbose to 2 for additional logs
-    {% set extra = "extra_argv=['-k', 'not (" + tests_to_skip + ")', '-nauto', '--timeout=1200', '--durations=50']" %}
+    {% set extra = "extra_argv=['-k', 'not (" + tests_to_skip + ")', '-n', '3', '--timeout=1200', '--durations=50']" %}
     - python -c "import scipy, sys; sys.exit(not scipy.test({{ param }}, {{ extra }}))"
 
     # run tests_to_skip tests, but ignore results (to keep a record of failures)
     {% set param_fail = "verbose=2, label=" + label + ", tests=None" %}
-    {% set extra_fail = "extra_argv=['-k', '(" + tests_to_skip + ")', '-nauto', '--timeout=1200', '--durations=50']" %}
+    {% set extra_fail = "extra_argv=['-k', '(" + tests_to_skip + ")', '-n', '3', '--timeout=1200', '--durations=50']" %}
     - python -c "import scipy, sys; scipy.test({{ param }}, {{ extra_fail }}); sys.exit(0)"
 
 about:
