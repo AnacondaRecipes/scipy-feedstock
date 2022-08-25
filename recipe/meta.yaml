@@ -1,7 +1,7 @@
-{% set version = "1.7.3" %}
-{% set numpy = "1.16" %}  # [py<=39 and not (osx and arm64)]
-{% set numpy = "1.19" %}  # [py<=39 and osx and arm64]
-{% set numpy = "1.21" %}  # [py>39]
+{% set version = "1.9.0" %}
+{% set numpy = "1.19" %}  # [not win and (py==38 or py==39)]
+{% set numpy = "1.21" %}  # [not win and py>39]
+{% set numpy = "1.23" %}  # [win] ; build issue with fortran on lower numpy versions
 
 package:
   name: scipy
@@ -13,28 +13,32 @@ package:
 source:
   # The sdist distributed by scipy contains pre-compiled pythran sources,
   # as well as the boost-headers submodule (since 1.7.0).
-  - url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
-    sha256: efbc8e96339d794ea8c62f6652345e96d5283df75badbe18887838ecf5dd5bcc
+  - url: https://github.com/scipy/scipy/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: dd773d72500bbe607fe05251a8dd2439b6b38fe3133a7fc05ced82303ca73e95
     patches:
-      # win+pypy fixes (scipy/scipy#14549), can be dropped for v>=1.8
-      - patches/0001-add-break_cycles-for-mmapped-file-in-test_netcdf.patch
-      - patches/0002-parametrize-test_wavfile.test_write_roundtrip.patch
-      - patches/0003-add-break_cycles-for-mmapped-file-in-test_wavfile.patch
-      # backport of scipy/scipy#15010 to avoid test skip
-      - patches/0004-TST-remove-fragile-test-which-checks-if-g77-is-linke.patch
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
-      - patches/0005-pythran.patch
-  # include submodule (not in github tarball due to dear-github/dear-github#214), c.f.
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/_lib
-  - git_url: https://github.com/scipy/boost-headers-only.git
-    git_rev: 2110ce20e59917b85b12059b3ddd8b133549f662
+  - url: https://github.com/scipy/boost-headers-only/archive/2a1a7e920f39c44440d6908a080810abe9510f42.tar.gz
+    sha256: 6c5cfff0650c5d0b933e6e804eb520f228c8910d85cd4839268c01acf92b4c7c
     folder: scipy/_lib/boost
+  - url: https://github.com/scipy/HiGHS/archive/4a122958a82e67e725d08153e099efe4dad099a2.tar.gz
+    sha256: 8ce0e816d8c7517c95e0e404648eef3aaee0d5b919226b46f592c87a4eca24f4
+    folder: scipy/_lib/highs
+    patches:
+      - patches/0003-highs-missing-includes-win.patch  # [win]
+  - url: https://github.com/scipy/unuran/archive/a63d39160e5ecc4402e7ed0e8417f4c3ff9634cb.tar.gz
+    sha256: 2412fdb1d46cc5c677d7fe2b42895f444b2c544040f835083cf814ca93e8c2f5
+    folder: scipy/_lib/unuran
+  # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/sparse/linalg/_propack
+  - url: https://github.com/scipy/PROPACK/archive/92f466393256df649fc8542c39dd647816dded25.tar.gz
+    sha256: e0069ac6b2f888838ff14f1c5696759914bb451ac60607d1d41c4d6ff0c37324
+    folder: scipy/sparse/linalg/_propack/PROPACK
 
 build:
-  number: 2
-  skip: true                          # [py2k or py<=36]
-  missing_dso_whitelist:              # [linux]
-    - $RPATH/ld64.so.1                # [linux]
+  number: 0
+  skip: true  # [py<=37]
+  missing_dso_whitelist:  # [linux and s390x]
+    - $RPATH/ld64.so.1    # [linux and s390x] 
   ignore_run_exports:
     - numpy
 
@@ -45,147 +49,161 @@ requirements:
     # pythran code needs clang-cl on windows
     - clang                           # [win]
     - {{ compiler('fortran') }}
-    - patch                           # [unix]
-    - m2-patch                        # [win]
-    - git                             # [unix]
-    - m2-git                          # [win]
-    - pkg-config                      # [osx]
-    - swig
+    - patch         # [unix]
+    - m2-patch      # [win]
+    - pkg-config    # [osx]
   host:
     - python
+    - cython >=0.29.21,<3.0
+    - pybind11 >=2.4.3,<2.10.0    
+    - fftw  # [not (linux and s390x)]
+    - pythran >=0.11.0,<0.12.0
     - setuptools <60
-    - wheel <0.38
-    - pip <22
-    - cython
-    - fftw                            # [not (linux and s390x)]
-    - pybind11 >=2.4.0
-    - pythran
-    - numpy-devel {{ numpy }}   # [not (osx and arm64) and py<=39]
-    - numpy {{ numpy }}         # [(osx and arm64) or py>39]
-    - mkl-devel  {{ mkl }}            # [blas_impl == 'mkl']
+    - wheel <0.38.0
+    - numpy {{ numpy }}
+    - pip >=18.0.0
+    - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     # pin intel-openmp to the same version as mkl, without this build may fail with
     # Intel MKL FATAL ERROR: Cannot load libmkl_intel_thread.dylib.
     # It may be needed to make this pinning explicit in the mkl package
-    - intel-openmp {{ mkl }}          # [blas_impl == 'mkl']
-    - openblas-devel {{ openblas }}   # [blas_impl == 'openblas']
-    - msinttypes                      # [win and vc<14]
+    - intel-openmp {{ mkl }}         # [blas_impl == 'mkl']
+    - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
-    - numpy >={{ numpy }},<1.23
-    - {{ pin_compatible('fftw') }}  # [not (linux and s390x)]
+    # https://github.com/scipy/scipy/blob/v1.9.0/setup.py#L452
+    - numpy >={{ numpy }},<1.25.0
+    - {{ pin_compatible('fftw') }} # [not (linux and s390x)]
+    - {{ pin_compatible('intel-openmp') }}  # [blas_impl == 'mkl']
 
-{% set tests_to_skip = "_not_a_real_test or TestSchur or test_solve_discrete_are or test_sygst" %}
-# skip some tests that hang/fail on pypy
-{% if python_impl == "pypy" %}
-  # hangs
-  {% set tests_to_skip = tests_to_skip + " or test_mixed_threads_processes" %}  # [aarch64 or ppc64le]
-  # failures
-  {% set tests_to_skip = tests_to_skip + " or test_cdist_refcount" %}           # [unix]
-  {% set tests_to_skip = tests_to_skip + " or test_boost_eval_issue_14606" %}   # [unix]
-{% endif %}
+{% set tests_to_skip = "_not_a_real_test" %}
+
+# skip a test that fails with MKL + AVX512 (non-AVX512 passes) (See: https://github.com/scipy/scipy/issues/15533)
+{% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab]" %} # [blas_impl == 'mkl']
+
+# Scipy segfault when calling solver PROPACK _svdp at mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
+# The use of PROPACK is disabled by default on 1.9.0 : see https://github.com/scipy/scipy/pull/16420
+# However PROPACK tests themselves are not disabled, so we skip test_propack.py tests.
+{% set tests_to_skip = tests_to_skip + " or test_svdp"      %}
+{% set tests_to_skip = tests_to_skip + " or test_examples"  %}
+
+# skip failing s390x tests
+{% set tests_to_skip = tests_to_skip + " or test_jacobi_int"                    %} # [s390x]
+{% set tests_to_skip = tests_to_skip + " or test_concatenate_int32_overflow"    %} # [s390x]
+
+# skip failing osx-64 tests
+{% set tests_to_skip = tests_to_skip + " or test_qz_single"             %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_gges_tgexc"            %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_inf_nan_domains"       %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_basic"                 %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_ppf"                   %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_negative_guide_factor_raises_warning"  %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_guide_factor_gt3_raises_warning"       %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_deprecations"          %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_u_error"               %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_custom_distribution"   %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_inaccurate_CDF"        %} # [osx]
+
+# skip failing osx-arm64 tests
+{% set tests_to_skip = tests_to_skip + " or test_eigh or test_two_scalar_params or test_random_complex_exact or test_various_drivers_standard" %} # [osx and arm64]
+{% set tests_to_skip = tests_to_skip + " or test_lhp or test_cossin_mixed_types or test_ldl_type_size_combinations_complex or test_syr_her or test_simple_complex or test_ouc" %} # [osx and arm64]
+{% set tests_to_skip = tests_to_skip + " or test_cossin or test_simple or test_vector_param or test_banded_ode_solvers or test_one_scalar_param or test_zvode or test_no_params" %} # [osx and arm64]
+{% set tests_to_skip = tests_to_skip + " or test_simple_overdet_complex or test_various_drivers_standard or test_concurrent_ok or test_pteqr or test_qz_double_complex or test_pteqr" %} # [osx and arm64]
+{% set tests_to_skip = tests_to_skip + " or test_various_drivers_standard or test_make_eigvals or test_cossin or test_eig_banded or test_cossin or test_random_complex" %} # [osx and arm64]
+{% set tests_to_skip = tests_to_skip + " or test_ldl_type_size_combinations_complex or test_random_complex_overdet or test_ref or test_cossin or test_zhbevx or test_orcsd_uncsd" %} # [osx and arm64]
+{% set tests_to_skip = tests_to_skip + " or test_qz_complex or test_cef or test_orcsd_uncsd or test_iuc or test_cossin or test_ldl_type_size_combinations_complex or test_zhbevd" %} # [osx and arm64]
+{% set tests_to_skip = tests_to_skip + " or test_various_drivers_standard or test_qz_complex64 or test_gelsd or test_rhp or test_tpqrt_tpmqrt or test_ldl_type_size_combinations_complex" %} # [osx and arm64]
+{% set tests_to_skip = tests_to_skip + " or test_solve_discrete_are or test_small_sigma_sparse or test_hermitian_modes or test_real_nonsymmetric_modes or test_complex_nonsymmetric_modes" %} # [osx and arm64]
+{% set tests_to_skip = tests_to_skip + " or test_standard_nonsymmetric_starting_vector or test_general_nonsymmetric_starting_vector or test_standard_nonsymmetric_no_convergence" %} # [osx and arm64]
+{% set tests_to_skip = tests_to_skip + " or test_simple_her_actuallysym or test_various_drivers_standard or test_hermitian or test_decompose or test_cossin or test_svd_linop" %} # [osx and arm64]
+{% set tests_to_skip = tests_to_skip + " or test_small_sigma_sparse or test_jacobi_int or test_concatenate_int32_overflow"  %} # [osx and arm64]
+
+# skip failing win tests
+{% set tests_to_skip = tests_to_skip + " or test_region4"           %} # [win]
+{% set tests_to_skip = tests_to_skip + " or test_legenp_complex_3"  %} # [win]
 
 test:
+  imports:
+    - scipy
+    # reference for public API is effectively
+    # https://github.com/scipy/scipy/blob/master/scipy/_lib/tests/test_public_api.py
+    - scipy.cluster
+    - scipy.cluster.hierarchy
+    - scipy.cluster.vq
+    - scipy.constants
+    - scipy.fft
+    - scipy.fftpack
+    - scipy.integrate
+    - scipy.interpolate
+    - scipy.io
+    - scipy.io.arff
+    - scipy.io.matlab
+    - scipy.io.wavfile
+    - scipy.linalg
+    - scipy.linalg.blas
+    - scipy.linalg.cython_blas
+    - scipy.linalg.cython_lapack
+    - scipy.linalg.interpolative
+    - scipy.linalg.lapack
+    - scipy.misc
+    - scipy.ndimage
+    - scipy.odr
+    - scipy.optimize
+    - scipy.signal
+    - scipy.signal.windows
+    - scipy.sparse
+    - scipy.sparse.csgraph
+    - scipy.sparse.linalg
+    - scipy.spatial
+    - scipy.spatial.distance
+    - scipy.spatial.transform
+    - scipy.special
+    - scipy.stats
+    - scipy.stats.contingency
+    - scipy.stats.distributions
+    - scipy.stats.mstats
+    - scipy.stats.qmc
+    - scipy.stats.sampling
   requires:
-    - pytest <7.0  # pytest>=7.0 leads to errors for linalg and optimize tests.
+    - pytest
     - pytest-timeout
     - pytest-xdist
     - mpmath
-    # see commend above
+    - threadpoolctl
+    # see comment above
     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
-
   commands:
     # show SIMD features (some failures occur depending on presence/absence of e.g. AVX512)
-    # change to np.show_config() for v>=1.22.0, cf. numpy/numpy#19130
-    - python -c "import numpy; numpy._pytesttester._show_numpy_info()"
+    - python -c "import numpy; numpy.show_config()"
+
     # the tests ppc64le and aarch64 are currently run through emulation in QEMU;
     # since this takes much longer, do not run the most heavy-weight tests, i.e. use
     # label='fast'; same for PyPy due to huge runtime; otherwise set label='full'
-    {% set label = "'fast'" if (aarch64 or ppc64le or python_impl == "pypy") else "'full'" %}
-    # aarch tests ran in reduced form on drone due to timing constraints;
-    # going back to the full test suite will need some debugging of hangs
-    {% set tests = "['scipy.linalg', 'scipy.fft']" if aarch64 else "None" %}
+    {% set label = "'fast'" if (arm64 or aarch64 or ppc64le or python_impl == "pypy") else "'full'" %}
     # for signature of scipy.test see below (note default: label='fast'):
     # https://github.com/scipy/scipy/blob/v1.7.0/scipy/_lib/_testutils.py#L27
-    {% set param = "verbose=2, label=" + label + ", tests=" + tests %}
-    {% set extra = "extra_argv=['-k', 'not (" + tests_to_skip + ")', '--timeout=1200', '--durations=50']" %}
-    - python -c "import scipy, sys; scipy.test({{ param }}, {{ extra }}); sys.exit(0);" # [not ppc64le]
-    # NOTE: test suite is skipped on ppc due to bugs in QEMU code that cause
-    # CI to fail, even though the tests would run through on native hardware
-  imports:
-    - scipy
-    - scipy.cluster._hierarchy
-    - scipy.cluster._vq
-    - scipy.fft
-    - scipy.integrate._dop
-    - scipy.integrate._odepack
-    - scipy.integrate._quadpack
-    - scipy.integrate._test_multivariate
-    - scipy.integrate._test_odeint_banded
-    - scipy.integrate.lsoda
-    - scipy.integrate.vode
-    - scipy.interpolate._fitpack
-    - scipy.interpolate._ppoly
-    - scipy.interpolate.dfitpack
-    - scipy.interpolate.interpnd
-    - scipy.io.matlab.mio5_utils
-    - scipy.io.matlab.mio_utils
-    - scipy.io.matlab.streams
-    - scipy.linalg._decomp_update
-    - scipy.linalg._fblas
-    - scipy.linalg._flapack
-    - scipy.linalg._flinalg
-    - scipy.linalg._interpolative
-    - scipy.linalg._solve_toeplitz
-    - scipy.linalg.cython_blas
-    - scipy.linalg.cython_lapack
-    - scipy.ndimage._nd_image
-    - scipy.ndimage._ni_label
-    - scipy.odr.__odrpack
-    - scipy.optimize._cobyla
-    - scipy.optimize._group_columns
-    - scipy.optimize._lbfgsb
-    - scipy.optimize._lsq.givens_elimination
-    - scipy.optimize._minpack
-    - scipy.optimize._nnls
-    - scipy.optimize._slsqp
-    - scipy.optimize._zeros
-    - scipy.optimize.minpack2
-    - scipy.optimize.moduleTNC
-    - scipy.signal._max_len_seq_inner
-    - scipy.signal._spectral
-    - scipy.signal.sigtools
-    - scipy.signal.spline
-    - scipy.sparse._csparsetools
-    - scipy.sparse._sparsetools
-    - scipy.sparse.csgraph._min_spanning_tree
-    - scipy.sparse.csgraph._reordering
-    - scipy.sparse.csgraph._shortest_path
-    - scipy.sparse.csgraph._tools
-    - scipy.sparse.csgraph._traversal
-    - scipy.sparse.linalg.dsolve._superlu
-    - scipy.sparse.linalg.eigen.arpack._arpack
-    - scipy.sparse.linalg.isolve._iterative
-    - scipy.spatial._distance_wrap
-    - scipy.spatial.ckdtree
-    - scipy.spatial.qhull
-    - scipy.special
-    - scipy.special._ellip_harm_2
-    - scipy.special._ufuncs
-    - scipy.special._ufuncs_cxx
-    - scipy.special.specfun
-    - scipy.stats
-    - scipy.stats.mvn
-    - scipy.stats.statlib
+
+    # run tests except tests_to_skip
+    {% set param = "verbose=1, label=" + label + ", tests=None" %} # set verbose to 2 for additional logs
+    {% set extra = "extra_argv=['-k', 'not (" + tests_to_skip + ")', '-n', '3', '--timeout=1200', '--durations=50']" %}
+    - python -c "import scipy, sys; sys.exit(not scipy.test({{ param }}, {{ extra }}))"
+
+    # run tests_to_skip tests, but ignore results (to keep a record of failures)
+    {% set param_fail = "verbose=2, label=" + label + ", tests=None" %}
+    {% set extra_fail = "extra_argv=['-k', '(" + tests_to_skip + ")', '-n', '3', '--timeout=1200', '--durations=50']" %}
+    - python -c "import scipy, sys; scipy.test({{ param }}, {{ extra_fail }}); sys.exit(0)"
 
 about:
-  home: https://www.scipy.org/
+  home: https://scipy.org/
   license: BSD-3-Clause
+  license_family: BSD
   license_file: LICENSE.txt
+  license_url: https://github.com/scipy/scipy/blob/main/LICENSE.txt
   summary: Scientific Library for Python
   description: |
     SciPy is a Python-based ecosystem of open-source software for mathematics,
     science, and engineering.
   doc_url: https://docs.scipy.org/doc/scipy/
+  doc_source_url: https://github.com/scipy/scipy/tree/main/doc
   dev_url: https://github.com/scipy/scipy
 
 extra:
