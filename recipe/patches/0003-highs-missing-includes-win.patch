@@ -1,0 +1,60 @@
+diff --git a/extern/catch.hpp b/extern/catch.hpp
+index db1fed3..f8a6734 100644
+--- a/extern/catch.hpp
++++ b/extern/catch.hpp
+@@ -476,6 +476,7 @@ namespace Catch {
+ #include <iosfwd>
+ #include <string>
+ #include <cstdint>
++#include <cctype>
+ 
+ // We need a dummy global operator<< so we can bring it into Catch namespace later
+ struct Catch_global_namespace_dummy {};
+diff --git a/src/lp_data/HighsOptions.cpp b/src/lp_data/HighsOptions.cpp
+index 926583b..9e4914b 100644
+--- a/src/lp_data/HighsOptions.cpp
++++ b/src/lp_data/HighsOptions.cpp
+@@ -17,6 +17,7 @@
+ 
+ #include <algorithm>
+ #include <cassert>
++#include <cctype>
+ 
+ // void setLogOptions();
+ 
+diff --git a/src/presolve/ICrash.cpp b/src/presolve/ICrash.cpp
+index a72a520..51e4710 100644
+--- a/src/presolve/ICrash.cpp
++++ b/src/presolve/ICrash.cpp
+@@ -18,6 +18,7 @@
+ #include <cmath>
+ #include <iomanip>
+ #include <sstream>
++#include <cctype>
+ 
+ #include "HighsStatus.h"
+ #include "io/HighsIO.h"
+diff --git a/src/util/HighsTimer.h b/src/util/HighsTimer.h
+index 6f1d304..97b6312 100644
+--- a/src/util/HighsTimer.h
++++ b/src/util/HighsTimer.h
+@@ -22,6 +22,7 @@
+ #include <cstdlib>
+ #include <string>
+ #include <vector>
++#include <algorithm>
+ 
+ #include "util/HighsInt.h"
+ 
+diff --git a/src/util/HighsUtils.cpp b/src/util/HighsUtils.cpp
+index 8ad1db1..b21766d 100644
+--- a/src/util/HighsUtils.cpp
++++ b/src/util/HighsUtils.cpp
+@@ -20,6 +20,7 @@
+ #include <cmath>
+ #include <cstdio>
+ #include <vector>
++#include <algorithm>
+ 
+ #include "util/HighsSort.h"
+ 
