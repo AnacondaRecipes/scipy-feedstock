@@ -182,7 +182,8 @@ test:
     # run tests_to_skip tests, but ignore results (to keep a record of failures)
     {% set param_fail = "verbose=2, label=" + label + ", tests=None" %}
     {% set extra_fail = "extra_argv=['-k', '(" + tests_to_skip + ")', '-n', '3', '--timeout=1200', '--durations=50']" %}
-    - python -c "import scipy, sys; scipy.test({{ param }}, {{ extra_fail }}); sys.exit(0)"
+    - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_fail }}); sys.exit(0)" || true   # [unix]
+    - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_fail }}); sys.exit(0)" || exit 1 # [win]
 
 about:
   home: https://scipy.org/
