@@ -1,4 +1,4 @@
-{% set version = "1.9.0" %}
+{% set version = "1.9.1" %}
 {% set numpy = "1.19" %}  # [not win and (py==38 or py==39)]
 {% set numpy = "1.21" %}  # [not win and py>39]
 {% set numpy = "1.23" %}  # [win] ; build issue with fortran on lower numpy versions
@@ -14,7 +14,7 @@ source:
   # The sdist distributed by scipy contains pre-compiled pythran sources,
   # as well as the boost-headers submodule (since 1.7.0).
   - url: https://github.com/scipy/scipy/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: dd773d72500bbe607fe05251a8dd2439b6b38fe3133a7fc05ced82303ca73e95
+    sha256: 1e59e624eb99aeb88cfddd0ccc6bc774ffe203820b98dd89d54b40bcb062f45d
     patches:
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/_lib
