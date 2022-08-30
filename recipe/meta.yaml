@@ -106,7 +106,7 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_solve_discrete_are or test_small_sigma_sparse or test_hermitian_modes or test_real_nonsymmetric_modes or test_complex_nonsymmetric_modes" %} # [osx and arm64]
 {% set tests_to_skip = tests_to_skip + " or test_standard_nonsymmetric_starting_vector or test_general_nonsymmetric_starting_vector or test_standard_nonsymmetric_no_convergence" %} # [osx and arm64]
 {% set tests_to_skip = tests_to_skip + " or test_simple_her_actuallysym or test_various_drivers_standard or test_hermitian or test_decompose or test_cossin or test_svd_linop" %} # [osx and arm64]
-{% set tests_to_skip = tests_to_skip + " or test_small_sigma_sparse or test_jacobi_int or test_concatenate_int32_overflow"  %} # [osx and arm64]
+{% set tests_to_skip = tests_to_skip + " or test_small_sigma_sparse or test_jacobi_int or test_concatenate_int32_overflow or test_gges_tgexc"  %} # [osx and arm64]
 
 # skip failing win tests
 {% set tests_to_skip = tests_to_skip + " or test_region4"           %} # [win]
