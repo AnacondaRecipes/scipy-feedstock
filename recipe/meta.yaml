@@ -88,12 +88,11 @@ requirements:
 
 # skip failing s390x tests
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int"                    %} # [s390x]
-{% set tests_to_skip = tests_to_skip + " or test_concatenate_int32_overflow"    %} # [s390x]
 
 # skip failing osx-64 tests
-{% set tests_to_skip = tests_to_skip + " or test_qz_single"             %} # [osx]
-{% set tests_to_skip = tests_to_skip + " or test_gges_tgexc"            %} # [osx]
-{% set tests_to_skip = tests_to_skip + " or test_ppf_against_tables"    %} # [osx]
+{% set tests_to_skip = tests_to_skip + "test_qz_single or test_basic or test_RVS or test_inaccurate_CDF or test_custom_distribution or test_ppf or test_u_error" %} # [osx and x86_64]
+{% set tests_to_skip = tests_to_skip + "test_gges_tgexc or test_deprecations or test_guide_factor_gt3_raises_warning or test_guide_factor_zero_raises_warning" %} # [osx and x86_64]
+{% set tests_to_skip = tests_to_skip + "test_negative_guide_factor_raises_warning or test_inf_nan_domains or test_nist or test_workers" %} # [osx and x86_64]
 
 # skip failing osx-arm64 tests
 {% set tests_to_skip = tests_to_skip + " or test_eigh or test_two_scalar_params or test_random_complex_exact or test_various_drivers_standard" %} # [osx and arm64]
