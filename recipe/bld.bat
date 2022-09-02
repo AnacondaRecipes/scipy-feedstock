@@ -1,5 +1,9 @@
 @echo on
 
+REM some versions of numpy are missing flag /fpp (fortran preprocessor)
+powershell -Command "(gc %SP_DIR%\numpy\distutils\fcompiler\intel.py) -replace '''/nologo'', ', '''/nologo'', ''/fpp'', ' | Out-File -encoding ASCII %SP_DIR%\numpy\distutils\fcompiler\intel.py"
+if errorlevel 1 exit 1
+
 COPY %PREFIX%\site.cfg site.cfg
 
 REM these are done automatically for openblas by numpy.distutils, but

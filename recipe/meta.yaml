@@ -1,7 +1,6 @@
 {% set version = "1.9.1" %}
-{% set numpy = "1.19" %}  # [not win and (py==38 or py==39)]
-{% set numpy = "1.21" %}  # [not win and py>39]
-{% set numpy = "1.23" %}  # [win] ; build issue with fortran on lower numpy versions
+{% set numpy = "1.19" %}  # [py<=39]
+{% set numpy = "1.21" %}  # [py>39]
 
 package:
   name: scipy
@@ -85,16 +84,13 @@ requirements:
 # skip a test that fails with MKL + AVX512 (non-AVX512 passes) (See: https://github.com/scipy/scipy/issues/15533)
 {% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab]" %} # [blas_impl == 'mkl']
 
-# skip failing s390x tests - test_jacobi_int timeout after 1200s
-{% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x]
+# skip failing s390x tests
+{% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
 
-# skip failing osx-64 tests - tolerance mismatch
-{% set tests_to_skip = tests_to_skip + " or test_qz_single or test_ppf_against_tables or test_gges_tgexc" %} # [osx and x86_64]
-
-# skip failing osx-64 tests - tempfile Too many open files - raising ulimit to mitigate this
-# {% set tests_to_skip = tests_to_skip + " or test_basic or test_RVS or test_inaccurate_CDF or test_custom_distribution or test_u_error" %} # [osx and x86_64]
-# {% set tests_to_skip = tests_to_skip + " or test_deprecations or test_guide_factor_gt3_raises_warning or test_guide_factor_zero_raises_warning" %} # [osx and x86_64]
-# {% set tests_to_skip = tests_to_skip + " or test_negative_guide_factor_raises_warning or test_inf_nan_domains or test_nist or test_workers" %} # [osx and x86_64]
+# skip failing osx-64 tests
+{% set tests_to_skip = tests_to_skip + " or test_qz_single"           %} # [osx and x86_64]
+{% set tests_to_skip = tests_to_skip + " or test_ppf_against_tables"  %} # [osx and x86_64]
+{% set tests_to_skip = tests_to_skip + " or test_gges_tgexc[float32]" %} # [osx and x86_64]
 
 # skip failing osx-arm64 tests
 {% set tests_to_skip = tests_to_skip + " or test_eigh or test_two_scalar_params or test_random_complex_exact or test_various_drivers_standard" %} # [osx and arm64]
@@ -112,7 +108,14 @@ requirements:
 
 # skip failing win tests
 {% set tests_to_skip = tests_to_skip + " or test_region4"           %} # [win] test_region4: new test since 1.7.3. tolerance mismatch
-{% set tests_to_skip = tests_to_skip + " or test_legenp_complex_3"  %} # [win]
+{% set tests_to_skip = tests_to_skip + " or test_legenp_complex_3"  %} # [win] Max |rdiff|: 2 but on some tests rdiff is 2.
+{% set tests_to_skip = tests_to_skip + " or test_branch_cut"        %} # [win] test_exponential_integrals.py
+{% set tests_to_skip = tests_to_skip + " or test_expi_complex"      %} # [win] test_mpmath.py
+{% set tests_to_skip = tests_to_skip + " or test_chi_complex"       %} # [win] test_mpmath.py
+{% set tests_to_skip = tests_to_skip + " or test_ci_complex"        %} # [win] test_mpmath.py
+{% set tests_to_skip = tests_to_skip + " or test_ei_complex"        %} # [win] test_mpmath.py
+{% set tests_to_skip = tests_to_skip + " or test_shi_complex"       %} # [win] test_mpmath.py
+{% set tests_to_skip = tests_to_skip + " or test_si_complex"        %} # [win] test_mpmath.py
 
 test:
   imports:
