@@ -2,3 +2,7 @@ c_compiler:                    # [win]
   - vs2017                     # [win]
 cxx_compiler:                  # [win]
   - vs2017                     # [win]
+
+# openblas 0.3.21 has better osx-arm64 support than openblas 0.3.20
+openblas:
+  - 0.3.21
