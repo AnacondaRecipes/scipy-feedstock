@@ -84,6 +84,9 @@ requirements:
 # skip a test that fails with MKL + AVX512 (non-AVX512 passes) (See: https://github.com/scipy/scipy/issues/15533)
 {% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab]" %} # [blas_impl == 'mkl']
 
+# skip a test that fails with openblas 0.3.21
+{% set tests_to_skip = tests_to_skip + " or test_solve_discrete_are"  %} # [blas_impl == 'openblas']
+
 # skip failing s390x tests
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
 
@@ -100,7 +103,6 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_one_scalar_param"    %} # [osx and arm64]
 {% set tests_to_skip = tests_to_skip + " or test_vector_param"        %} # [osx and arm64]
 {% set tests_to_skip = tests_to_skip + " or test_two_scalar_params"   %} # [osx and arm64]
-{% set tests_to_skip = tests_to_skip + " or test_solve_discrete_are"  %} # [osx and arm64]
 {% set tests_to_skip = tests_to_skip + " or test_standard_nonsymmetric_no_convergence"  %} # [osx and arm64]
 {% set tests_to_skip = tests_to_skip + " or test_small_sigma_sparse"  %} # [osx and arm64]
 {% set tests_to_skip = tests_to_skip + " or test_maxiter_worsening"   %} # [osx and arm64]
