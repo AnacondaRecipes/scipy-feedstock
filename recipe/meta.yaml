@@ -84,7 +84,7 @@ requirements:
 # skip a test that fails with MKL + AVX512 (non-AVX512 passes) (See: https://github.com/scipy/scipy/issues/15533)
 {% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab]" %} # [blas_impl == 'mkl']
 
-# skip a test that fails with openblas 0.3.21
+# mark one linalg.solve_discrete_are as knownfail https://github.com/scipy/scipy/issues/16926
 {% set tests_to_skip = tests_to_skip + " or test_solve_discrete_are"  %} # [blas_impl == 'openblas']
 
 # skip failing s390x tests
@@ -94,6 +94,7 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_qz_single"           %} # [osx and x86_64]
 {% set tests_to_skip = tests_to_skip + " or test_ppf_against_tables"  %} # [osx and x86_64]
 {% set tests_to_skip = tests_to_skip + " or test_gges_tgexc[float32]" %} # [osx and x86_64]
+{% set tests_to_skip = tests_to_skip + " or test_bad_geneig"          %} # [osx and x86_64]
 
 # skip failing osx-arm64 tests
 {% set tests_to_skip = tests_to_skip + " or test_zvode"               %} # [osx and arm64]
