@@ -90,34 +90,14 @@ requirements:
 # skip failing s390x tests
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
 
-# skip failing osx-64 tests
-{% set tests_to_skip = tests_to_skip + " or test_qz_single"           %} # [osx and x86_64]
-{% set tests_to_skip = tests_to_skip + " or test_ppf_against_tables"  %} # [osx and x86_64]
-{% set tests_to_skip = tests_to_skip + " or test_gges_tgexc[float32]" %} # [osx and x86_64]
-{% set tests_to_skip = tests_to_skip + " or test_bad_geneig"          %} # [osx and x86_64]
-
-# skip failing osx-arm64 tests
-{% set tests_to_skip = tests_to_skip + " or test_zvode"               %} # [osx and arm64]
-{% set tests_to_skip = tests_to_skip + " or test_banded_ode_solvers"  %} # [osx and arm64]
-{% set tests_to_skip = tests_to_skip + " or test_concurrent_ok"       %} # [osx and arm64]
-{% set tests_to_skip = tests_to_skip + " or test_no_params"           %} # [osx and arm64]
-{% set tests_to_skip = tests_to_skip + " or test_one_scalar_param"    %} # [osx and arm64]
-{% set tests_to_skip = tests_to_skip + " or test_vector_param"        %} # [osx and arm64]
-{% set tests_to_skip = tests_to_skip + " or test_two_scalar_params"   %} # [osx and arm64]
-{% set tests_to_skip = tests_to_skip + " or test_standard_nonsymmetric_no_convergence"  %} # [osx and arm64]
-{% set tests_to_skip = tests_to_skip + " or test_small_sigma_sparse"  %} # [osx and arm64]
-{% set tests_to_skip = tests_to_skip + " or test_maxiter_worsening"   %} # [osx and arm64]
-
 # skip failing win tests
-{% set tests_to_skip = tests_to_skip + " or test_region4"           %} # [win] test_region4: new test since 1.7.3. tolerance mismatch
-{% set tests_to_skip = tests_to_skip + " or test_legenp_complex_3"  %} # [win] Max |rdiff|: 2 but on some tests rdiff is 2.
-{% set tests_to_skip = tests_to_skip + " or test_branch_cut"        %} # [win] test_exponential_integrals.py
-{% set tests_to_skip = tests_to_skip + " or test_expi_complex"      %} # [win] test_mpmath.py
-{% set tests_to_skip = tests_to_skip + " or test_chi_complex"       %} # [win] test_mpmath.py
-{% set tests_to_skip = tests_to_skip + " or test_ci_complex"        %} # [win] test_mpmath.py
-{% set tests_to_skip = tests_to_skip + " or test_ei_complex"        %} # [win] test_mpmath.py
-{% set tests_to_skip = tests_to_skip + " or test_shi_complex"       %} # [win] test_mpmath.py
-{% set tests_to_skip = tests_to_skip + " or test_si_complex"        %} # [win] test_mpmath.py
+{% set tests_to_skip = tests_to_skip + " or test_region4" %} # [win] tolerance mismatch (See: https://github.com/scipy/scipy/issues/17123)
+
+# skip failing osx-64 tests
+{% set tests_to_skip = tests_to_skip + " or test_qz_single"           %} # [osx and x86_64] xfail in main. (See: https://github.com/scipy/scipy/issues/16949)
+{% set tests_to_skip = tests_to_skip + " or test_gges_tgexc[float32]" %} # [osx and x86_64] xfail in main. (See: https://github.com/scipy/scipy/issues/16949)
+{% set tests_to_skip = tests_to_skip + " or test_ppf_against_tables"  %} # [osx and x86_64] todo: open issue: shouldn't be getting a nan - might be a fundamental issue
+{% set tests_to_skip = tests_to_skip + " or test_bad_geneig"          %} # [osx and x86_64] todo: open issue: looks like numerical error - permutation problem
 
 test:
   imports:
@@ -173,6 +153,9 @@ test:
     # Attempt to fix some file number limits when testing on osx.
     - ulimit -n 64000 # [osx]
 
+    # show configuration - required for bug reports to scipy
+    - python -c "import sys, scipy, numpy; print(scipy.__version__, numpy.__version__, sys.version_info)"
+
     # show SIMD features (some failures occur depending on presence/absence of e.g. AVX512)
     - python -c "import numpy; numpy.show_config()"
 
@@ -192,8 +175,8 @@ test:
     {% set param_fail = "verbose=2, label=" + label + ", tests=None" %}
     {% set extra_crash = "extra_argv=['-k', '(" + tests_known_to_crash + ")', '-n', '3', '--timeout=1800', '--durations=50']" %}
     {% set extra_fail = "extra_argv=['-k', '(" + tests_to_skip + ")', '-n', '3', '--timeout=1800', '--durations=50']" %}
-    - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_crash }}); sys.exit(0)"
-    - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_fail }}); sys.exit(0)"
+    - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_crash }}); sys.exit(0)" # [not s390x]
+    - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_fail }}); sys.exit(0)"  # [not s390x]
 
 about:
   home: https://scipy.org/

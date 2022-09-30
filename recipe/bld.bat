@@ -1,7 +1,9 @@
 @echo on
 
-REM some versions of numpy are missing flag /fpp (fortran preprocessor)
-powershell -Command "(gc %SP_DIR%\numpy\distutils\fcompiler\intel.py) -replace '''/nologo'', ', '''/nologo'', ''/fpp'', ' | Out-File -encoding ASCII %SP_DIR%\numpy\distutils\fcompiler\intel.py"
+REM Align numpy intel fortran compiler flags with what is expected by scipy.
+REM Regarding /fp:strict and /assume:minus0 see: https://github.com/scipy/scipy/issues/17075 
+REM Regarding /fpp The pre-processor flag is not enabled on older numpy.
+powershell -Command "(gc %SP_DIR%\numpy\distutils\fcompiler\intel.py) -replace '''/nologo'', ', '''/nologo'', ''/fpp'', ''/fp:strict'', ''/assume:minus0'', ' | Out-File -encoding ASCII %SP_DIR%\numpy\distutils\fcompiler\intel.py"
 if errorlevel 1 exit 1
 
 COPY %PREFIX%\site.cfg site.cfg
