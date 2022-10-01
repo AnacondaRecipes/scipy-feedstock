@@ -91,13 +91,13 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
 
 # skip failing win tests
-{% set tests_to_skip = tests_to_skip + " or test_region4" %} # [win] tolerance mismatch (See: https://github.com/scipy/scipy/issues/17123)
+{% set tests_to_skip = tests_to_skip + " or test_region4" %} # [win] tolerance mismatch (See open issue: https://github.com/scipy/scipy/issues/17123)
 
 # skip failing osx-64 tests
 {% set tests_to_skip = tests_to_skip + " or test_qz_single"           %} # [osx and x86_64] xfail in main. (See: https://github.com/scipy/scipy/issues/16949)
 {% set tests_to_skip = tests_to_skip + " or test_gges_tgexc[float32]" %} # [osx and x86_64] xfail in main. (See: https://github.com/scipy/scipy/issues/16949)
-{% set tests_to_skip = tests_to_skip + " or test_ppf_against_tables"  %} # [osx and x86_64] todo: open issue: shouldn't be getting a nan - might be a fundamental issue
-{% set tests_to_skip = tests_to_skip + " or test_bad_geneig"          %} # [osx and x86_64] todo: open issue: looks like numerical error - permutation problem
+{% set tests_to_skip = tests_to_skip + " or test_ppf_against_tables"  %} # [osx and x86_64] See open issue: https://github.com/scipy/scipy/issues/17124
+{% set tests_to_skip = tests_to_skip + " or test_bad_geneig"          %} # [osx and x86_64] See open issue: https://github.com/scipy/scipy/issues/17125
 
 test:
   imports:
