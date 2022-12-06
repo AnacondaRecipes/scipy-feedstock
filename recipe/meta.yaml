@@ -1,6 +1,7 @@
 {% set version = "1.9.3" %}
 {% set numpy = "1.19" %}  # [py<=39]
-{% set numpy = "1.21" %}  # [py>39]
+{% set numpy = "1.21" %}  # [py>39 and py<311]
+{% set numpy = "1.23" %}  # [py>=311]
 
 package:
   name: scipy
@@ -32,7 +33,7 @@ source:
     folder: scipy/sparse/linalg/_propack/PROPACK
 
 build:
-  number: 0
+  number: 1
   skip: true  # [py<=37]
   missing_dso_whitelist:  # [linux and s390x]
     - $RPATH/ld64.so.1    # [linux and s390x] 
