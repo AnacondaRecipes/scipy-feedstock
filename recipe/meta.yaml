@@ -179,13 +179,11 @@ about:
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE.txt
-  license_url: https://github.com/scipy/scipy/blob/main/LICENSE.txt
   summary: Scientific Library for Python
   description: |
     SciPy is a Python-based ecosystem of open-source software for mathematics,
     science, and engineering.
   doc_url: https://docs.scipy.org/doc/scipy/
-  doc_source_url: https://github.com/scipy/scipy/tree/main/doc
   dev_url: https://github.com/scipy/scipy
 
 extra:
