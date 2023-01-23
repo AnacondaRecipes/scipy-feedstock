@@ -47,7 +47,7 @@ requirements:
     # pythran code needs clang-cl on windows
     - clang                           # [win]
     - {{ compiler('fortran') }}
-    - patch         # [unix]
+    - patch         # [s390x]
     - m2-patch      # [win]
     - pkg-config    # [osx]
   host:
