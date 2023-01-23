@@ -36,4 +36,4 @@ case $( uname -m ) in
 *)       cp $PREFIX/site.cfg site.cfg;;
 esac
 
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+$PYTHON -m pip install . --no-deps
