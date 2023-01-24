@@ -91,9 +91,6 @@ requirements:
 # skip failing s390x tests
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
 
-# skip failing win tests
-{% set tests_to_skip = tests_to_skip + " or test_region4" %} # [win] tolerance mismatch (See open issue: https://github.com/scipy/scipy/issues/17123)
-
 # skip failing osx-64 tests
 {% set tests_to_skip = tests_to_skip + " or test_bad_geneig"          %} # [osx and x86_64] See open issue: https://github.com/scipy/scipy/issues/17125
 
