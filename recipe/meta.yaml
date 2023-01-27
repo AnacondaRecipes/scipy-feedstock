@@ -95,7 +95,7 @@ requirements:
 # See open issues:
 #   - https://github.com/scipy/scipy/issues/17125
 #   - https://github.com/scipy/scipy/issues/17137 (issue does not mention a platform, but seems to only fail for osx-64)
-{% set tests_to_skip = tests_to_skip + " or test_bad_genei or test_milp_timeout_16545g" %}  # [osx and x86_64]
+{% set tests_to_skip = tests_to_skip + " or test_bad_genei or test_milp_timeout_16545" %}  # [osx and x86_64]
 
 test:
   imports:
