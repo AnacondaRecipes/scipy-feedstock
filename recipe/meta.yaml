@@ -92,7 +92,10 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
 
 # skip failing osx-64 tests
-{% set tests_to_skip = tests_to_skip + " or test_bad_geneig"          %} # [osx and x86_64] See open issue: https://github.com/scipy/scipy/issues/17125
+# See open issues:
+#   - https://github.com/scipy/scipy/issues/17125
+#   - https://github.com/scipy/scipy/issues/17137 (issue does not mention a platform, but seems to only fail for osx-64)
+{% set tests_to_skip = tests_to_skip + " or test_bad_genei or test_milp_timeout_16545g" %}  # [osx and x86_64]
 
 test:
   imports:
