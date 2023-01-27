@@ -106,6 +106,7 @@ test:
     - scipy.cluster.hierarchy
     - scipy.cluster.vq
     - scipy.constants
+    - scipy.datasets
     - scipy.fft
     - scipy.fftpack
     - scipy.integrate
