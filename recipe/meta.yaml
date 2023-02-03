@@ -13,7 +13,7 @@ package:
 source:
   - url: https://github.com/scipy/scipy/archive/refs/tags/v{{ version }}.tar.gz
     sha256: 3f9e587a96844a9b4ee7f998cfe4dc3964dc95c4ca94d7de6a77bffb99f873da
-    patches:
+    patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/_lib
   - url: https://github.com/scipy/boost-headers-only/archive/3af99e6d566043072e95bc882d32c9c26f37e0ba.tar.gz
@@ -22,7 +22,7 @@ source:
   - url: https://github.com/scipy/HiGHS/archive/4a122958a82e67e725d08153e099efe4dad099a2.tar.gz
     sha256: 8ce0e816d8c7517c95e0e404648eef3aaee0d5b919226b46f592c87a4eca24f4
     folder: scipy/_lib/highs
-    patches:
+    patches:                                           # [win]
       - patches/0003-highs-missing-includes-win.patch  # [win]
   - url: https://github.com/scipy/unuran/archive/a63d39160e5ecc4402e7ed0e8417f4c3ff9634cb.tar.gz
     sha256: 2412fdb1d46cc5c677d7fe2b42895f444b2c544040f835083cf814ca93e8c2f5
