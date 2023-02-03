@@ -1,4 +1,4 @@
-{% set version = "1.9.3" %}
+{% set version = "1.10.0" %}
 {% set numpy = "1.19" %}  # [py<=39]
 {% set numpy = "1.21" %}  # [py>39 and py<311]
 {% set numpy = "1.23" %}  # [py>=311]
@@ -12,28 +12,28 @@ package:
 
 source:
   - url: https://github.com/scipy/scipy/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 6ad2df96f141be7bf661461daf15c8d7d8032d77a0d772a52cb9feb236248eae
-    patches:
+    sha256: 3f9e587a96844a9b4ee7f998cfe4dc3964dc95c4ca94d7de6a77bffb99f873da
+    patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/_lib
-  - url: https://github.com/scipy/boost-headers-only/archive/2a1a7e920f39c44440d6908a080810abe9510f42.tar.gz
-    sha256: 6c5cfff0650c5d0b933e6e804eb520f228c8910d85cd4839268c01acf92b4c7c
+  - url: https://github.com/scipy/boost-headers-only/archive/3af99e6d566043072e95bc882d32c9c26f37e0ba.tar.gz
+    sha256: 088c4ddd32e1318069eca8f98610a74e8effd52f0b9509a062ea7e380b610b63
     folder: scipy/_lib/boost
   - url: https://github.com/scipy/HiGHS/archive/4a122958a82e67e725d08153e099efe4dad099a2.tar.gz
     sha256: 8ce0e816d8c7517c95e0e404648eef3aaee0d5b919226b46f592c87a4eca24f4
     folder: scipy/_lib/highs
-    patches:
+    patches:                                           # [win]
       - patches/0003-highs-missing-includes-win.patch  # [win]
   - url: https://github.com/scipy/unuran/archive/a63d39160e5ecc4402e7ed0e8417f4c3ff9634cb.tar.gz
     sha256: 2412fdb1d46cc5c677d7fe2b42895f444b2c544040f835083cf814ca93e8c2f5
     folder: scipy/_lib/unuran
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/sparse/linalg/_propack
-  - url: https://github.com/scipy/PROPACK/archive/92f466393256df649fc8542c39dd647816dded25.tar.gz
-    sha256: e0069ac6b2f888838ff14f1c5696759914bb451ac60607d1d41c4d6ff0c37324
+  - url: https://github.com/scipy/PROPACK/archive/cc32f3ba6cf941e4f9f96d96e2fc5762ea0c1014.tar.gz
+    sha256: 15880c83d2d77e748ab8273ed8b61e152bcb43d828dd0938bdf6f82950bc9b25
     folder: scipy/sparse/linalg/_propack/PROPACK
 
 build:
-  number: 1
+  number: 0
   skip: true  # [py<=37]
   missing_dso_whitelist:  # [linux and s390x]
     - $RPATH/ld64.so.1    # [linux and s390x] 
@@ -47,17 +47,17 @@ requirements:
     # pythran code needs clang-cl on windows
     - clang                           # [win]
     - {{ compiler('fortran') }}
-    - patch         # [unix]
+    - patch         # [s390x]
     - m2-patch      # [win]
     - pkg-config    # [osx]
   host:
     - python
-    - cython >=0.29.32,<3.0
-    - pybind11 >=2.4.3,<2.11.0    
-    - fftw  # [not (linux and s390x)]
-    - pythran >=0.11.0,<0.13.0
+    - cython 0.29.32
+    - pybind11 2.10.1
+    - fftw 3.3.9  # [not (linux and s390x)]
+    - pythran 0.12.1
     - setuptools <60
-    - wheel <0.38.0
+    - wheel <0.39.0
     - numpy {{ numpy }}
     - pip >=18.0.0
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
@@ -68,10 +68,12 @@ requirements:
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
-    # https://github.com/scipy/scipy/blob/v1.9.3/setup.py#L452
-    - numpy >={{ numpy }},<1.26.0
+    # https://github.com/scipy/scipy/blob/v1.10.0/setup.py#L452-L453
+    - numpy >={{ numpy }},<1.27.0
     - {{ pin_compatible('fftw') }} # [not (linux and s390x)]
     - {{ pin_compatible('intel-openmp') }}  # [blas_impl == 'mkl']
+    # Needed for scipy.datasets
+    - pooch
 
 # Scipy segfault when calling solver PROPACK _svdp at mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
 # The use of PROPACK is disabled by default on 1.9.0 : see https://github.com/scipy/scipy/pull/16420
@@ -89,11 +91,11 @@ requirements:
 # skip failing s390x tests
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
 
-# skip failing win tests
-{% set tests_to_skip = tests_to_skip + " or test_region4" %} # [win] tolerance mismatch (See open issue: https://github.com/scipy/scipy/issues/17123)
-
 # skip failing osx-64 tests
-{% set tests_to_skip = tests_to_skip + " or test_bad_geneig"          %} # [osx and x86_64] See open issue: https://github.com/scipy/scipy/issues/17125
+# See open issues:
+#   - https://github.com/scipy/scipy/issues/17125
+#   - https://github.com/scipy/scipy/issues/17137 (issue does not mention a platform, but seems to only fail for osx-64)
+{% set tests_to_skip = tests_to_skip + " or test_bad_genei or test_milp_timeout_16545" %}  # [osx and x86_64]
 
 test:
   imports:
@@ -104,6 +106,7 @@ test:
     - scipy.cluster.hierarchy
     - scipy.cluster.vq
     - scipy.constants
+    - scipy.datasets
     - scipy.fft
     - scipy.fftpack
     - scipy.integrate
@@ -179,13 +182,11 @@ about:
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE.txt
-  license_url: https://github.com/scipy/scipy/blob/main/LICENSE.txt
   summary: Scientific Library for Python
   description: |
     SciPy is a Python-based ecosystem of open-source software for mathematics,
     science, and engineering.
   doc_url: https://docs.scipy.org/doc/scipy/
-  doc_source_url: https://github.com/scipy/scipy/tree/main/doc
   dev_url: https://github.com/scipy/scipy
 
 extra:

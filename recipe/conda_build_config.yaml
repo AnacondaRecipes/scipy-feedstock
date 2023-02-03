@@ -4,3 +4,9 @@ mkl:
 # openblas 0.3.21 has better osx-arm64 support than openblas 0.3.20
 openblas:
   - 0.3.21
+c_compiler_version:    # [osx and arm64]
+  - 12                 # [osx and arm64]
+cxx_compiler_version:  # [osx and arm64]
+  - 12                 # [osx and arm64]
+c_compiler:            # [win]
+  - vs2019             # [win]
