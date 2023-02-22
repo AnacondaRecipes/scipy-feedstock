@@ -33,7 +33,7 @@ source:
     folder: scipy/sparse/linalg/_propack/PROPACK
 
 build:
-  number: 0
+  number: 1
   skip: true  # [py<=37]
   missing_dso_whitelist:  # [linux and s390x]
     - $RPATH/ld64.so.1    # [linux and s390x] 
