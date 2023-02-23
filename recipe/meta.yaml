@@ -70,7 +70,6 @@ requirements:
     - python
     # https://github.com/scipy/scipy/blob/v1.10.0/setup.py#L452-L453
     - numpy >={{ numpy }},<1.27.0
-    - {{ pin_compatible('fftw') }} # [not (linux and s390x)]
     - {{ pin_compatible('intel-openmp') }}  # [blas_impl == 'mkl']
     # Needed for scipy.datasets
     - pooch
