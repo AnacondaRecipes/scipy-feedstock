@@ -55,7 +55,6 @@ requirements:
     - python
     - cython 0.29.32
     - pybind11 2.10.1
-    - fftw 3.3.9  # [not (linux and s390x)]
     - pythran 0.12.1
     - setuptools <60
     - wheel <0.39.0
