@@ -1,5 +1,6 @@
 {% set version = "1.10.0" %}
-{% set numpy = "1.19.5" %}  # [py<=39]
+{% set numpy = "1.19.5" %}  # [py<=39 and not (osx and arm64)]
+{% set numpy = "1.21" %}  # [py<=39 and (osx and arm64)]
 {% set numpy = "1.21" %}  # [py>39 and py<311]
 {% set numpy = "1.23" %}  # [py>=311]
 
