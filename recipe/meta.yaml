@@ -1,5 +1,6 @@
 {% set version = "1.10.0" %}
-{% set numpy = "1.19" %}  # [py<=39]
+{% set numpy = "1.19.5" %}  # [py<=39 and not (osx and arm64)]
+{% set numpy = "1.21" %}  # [py<=39 and (osx and arm64)]
 {% set numpy = "1.21" %}  # [py>39 and py<311]
 {% set numpy = "1.23" %}  # [py>=311]
 
@@ -33,7 +34,7 @@ source:
     folder: scipy/sparse/linalg/_propack/PROPACK
 
 build:
-  number: 0
+  number: 1
   skip: true  # [py<=37]
   missing_dso_whitelist:  # [linux and s390x]
     - $RPATH/ld64.so.1    # [linux and s390x] 
@@ -54,7 +55,6 @@ requirements:
     - python
     - cython 0.29.32
     - pybind11 2.10.1
-    - fftw 3.3.9  # [not (linux and s390x)]
     - pythran 0.12.1
     - setuptools <60
     - wheel <0.39.0
@@ -70,7 +70,6 @@ requirements:
     - python
     # https://github.com/scipy/scipy/blob/v1.10.0/setup.py#L452-L453
     - numpy >={{ numpy }},<1.27.0
-    - {{ pin_compatible('fftw') }} # [not (linux and s390x)]
     - {{ pin_compatible('intel-openmp') }}  # [blas_impl == 'mkl']
     # Needed for scipy.datasets
     - pooch
