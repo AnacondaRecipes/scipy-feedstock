@@ -1,4 +1,4 @@
-{% set version = "1.10.0" %}
+{% set version = "1.10.1" %}
 {% set numpy = "1.19.5" %}  # [py<=39 and not (osx and arm64)]
 {% set numpy = "1.21" %}  # [py<=39 and (osx and arm64)]
 {% set numpy = "1.21" %}  # [py>39 and py<311]
@@ -13,7 +13,7 @@ package:
 
 source:
   - url: https://github.com/scipy/scipy/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 3f9e587a96844a9b4ee7f998cfe4dc3964dc95c4ca94d7de6a77bffb99f873da
+    sha256: 8f08e1742c9b09eb58640fa5a56031d6e1844806899e883fbe7447ca86fe8c55
     patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/_lib
@@ -34,7 +34,7 @@ source:
     folder: scipy/sparse/linalg/_propack/PROPACK
 
 build:
-  number: 1
+  number: 0
   skip: true  # [py<=37]
   missing_dso_whitelist:  # [linux and s390x]
     - $RPATH/ld64.so.1    # [linux and s390x] 
@@ -195,3 +195,11 @@ extra:
     - rgommers
     - ocefpaf
     - h-vetinari
+  skip-lints:
+    # See the following for full context: 
+    #   - https://github.com/AnacondaRecipes/scipy-feedstock/pull/25
+    #   - The commit message for this line change
+    # tl;dr We have attempted to migrate this package to use `pip --no-deps` but
+    # `mesonpy` has limited support for certain platforms.
+    - uses_setup_py
+
