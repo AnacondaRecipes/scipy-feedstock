@@ -1,6 +1,6 @@
-# mkl 2021 until dependencies get rebuild against 2022
+# mkl 2023
 mkl:
-  - 2021.*
+  - 2023.*
 # openblas 0.3.21 has better osx-arm64 support than openblas 0.3.20
 openblas:
   - 0.3.21
