@@ -34,7 +34,7 @@ source:
     folder: scipy/sparse/linalg/_propack/PROPACK
 
 build:
-  number: 0
+  number: 1
   skip: true  # [py<=37]
   missing_dso_whitelist:  # [linux and s390x]
     - $RPATH/ld64.so.1    # [linux and s390x] 
@@ -88,6 +88,9 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_solve_discrete_are"  %} # [blas_impl == 'openblas']
 
 # skip failing s390x tests
+# See open issues:
+# - https://github.com/scipy/scipy/issues/17137
+{% set tests_to_skip = tests_to_skip + " or test_milp_timeout_16545" %} # [s390x]
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
 
 # skip failing osx-64 tests
