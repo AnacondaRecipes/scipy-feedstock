@@ -88,6 +88,9 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_solve_discrete_are"  %} # [blas_impl == 'openblas']
 
 # skip failing s390x tests
+# See open issues:
+# - https://github.com/scipy/scipy/issues/17137
+{% set tests_to_skip = tests_to_skip + " or test_milp_timeout_16545" %} # [s390x]
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
 
 # skip failing osx-64 tests
