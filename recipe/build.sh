@@ -2,10 +2,6 @@
 
 set -x
 
-# Use the G77 ABI wrapper everywhere so that the underlying blas implementation
-# can have a G77 ABI (currently only MKL)
-export SCIPY_USE_G77_ABI_WRAPPER=1
-
 # Use OpenBLAS with 1 thread only as it seems to be using too many
 # on the CIs apparently.
 export OPENBLAS_NUM_THREADS=1
@@ -36,4 +32,13 @@ case $( uname -m ) in
 *)       cp $PREFIX/site.cfg site.cfg;;
 esac
 
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+if [[ ${blas_impl} == openblas ]]; then
+    BLAS=openblas
+else
+    BLAS=mkl
+fi
+$PYTHON -m pip install . --no-index --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv \
+    --config-settings=setup-args="-Duse-g77-abi=true" \
+    --config-settings=setup-args="-Duse-pythran=true" \
+    --config-settings=setup-args="-Dblas=${BLAS}" \
+    --config-settings=setup-args="-Dlapack=${BLAS}"
