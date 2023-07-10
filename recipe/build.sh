@@ -2,6 +2,8 @@
 
 set -x
 
+cd ${SRC_DIR}
+
 # Use OpenBLAS with 1 thread only as it seems to be using too many
 # on the CIs apparently.
 export OPENBLAS_NUM_THREADS=1
