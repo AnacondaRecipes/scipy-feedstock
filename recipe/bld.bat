@@ -1,7 +1,5 @@
 @echo on
 
-COPY %PREFIX%\site.cfg site.cfg
-
 REM Add a file to load the fortran wrapper libraries in scipy/.libs
 del scipy\_distributor_init.py
 if %ERRORLEVEL% neq 0 exit 1
@@ -26,14 +24,14 @@ if "%blas_impl%" == "openblas" (
     set "BLAS=openblas"
 )
 else (
-    set "BLAS=mkl"
-    set "BLAS=mkl"
+    set "BLAS=mkl_rt"
+    set "BLAS=mkl_rt"
 )
 "%PYTHON%" -m pip install . --no-index --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv ^
     --config-settings=setup-args="-Duse-g77-abi=true" ^
     --config-settings=setup-args="-Duse-pythran=true" ^
-    --config-settings=setup-args="-Dblas=${BLAS}" ^
-    --config-settings=setup-args="-Dlapack=${BLAS}"
+    --config-settings=setup-args="-Dblas=%BLAS%" ^
+    --config-settings=setup-args="-Dlapack=%BLAS%"
 if %ERRORLEVEL% neq 0 exit 1
 
 REM make sure these aren't packaged

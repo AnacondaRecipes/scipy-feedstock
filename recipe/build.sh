@@ -26,20 +26,15 @@ if [[ "${target_platform}" == "osx-arm64" ]]; then
     export FORTRANFLAGS="${FORTRANFLAGS//armv8.3-a/armv8-a}"
 fi
 
-case $( uname -m ) in
-# todo: update once ArmPL is ready.
-# We should look to include copy aarch_site.cfg in the ArmPL package, similar
-# to how OpenBLAS and MKL devels work. 
-# aarch64) cp $PREFIX/aarch_site.cfg site.cfg;;
-*)       cp $PREFIX/site.cfg site.cfg;;
-esac
-
 if [[ ${blas_impl} == openblas ]]; then
     BLAS=openblas
 else
-    BLAS=mkl
+    BLAS=mkl_rt
 fi
+
 $PYTHON -m pip install . --no-index --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv \
+    --config-settings=setup-args="--prefix=${PREFIX}" \
+    --config-settings=setup-args="-Dlibdir=lib" \
     --config-settings=setup-args="-Duse-g77-abi=true" \
     --config-settings=setup-args="-Duse-pythran=true" \
     --config-settings=setup-args="-Dblas=${BLAS}" \
