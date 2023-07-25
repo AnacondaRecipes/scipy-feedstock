@@ -8,14 +8,6 @@ cd ${SRC_DIR}
 # on the CIs apparently.
 export OPENBLAS_NUM_THREADS=1
 
-# Depending on our platform, shared libraries end with either .so or .dylib
-if [[ $(uname) == 'Darwin' ]]; then
-    export LDFLAGS="$LDFLAGS -undefined dynamic_lookup"
-    export CFLAGS="$CFLAGS -fno-lto"
-else
-    export LDFLAGS="$LDFLAGS -shared"
-fi
-
 # gfortran 11.2.0 on osx-arm64 is buggy and causes a number of test failures.
 # Setting a more generic set of instructions (armv8-a instead of armv8.3-a) ensures a proper compilation.
 # This comes at the cost of some missed optimization.
