@@ -21,7 +21,7 @@ fi
 if [[ ${blas_impl} == openblas ]]; then
     BLAS=openblas
 else
-    BLAS=mkl_rt
+    BLAS=mkl
 fi
 
 $PYTHON -m pip install . --no-index --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv \
