@@ -78,6 +78,7 @@ requirements:
 
 # skip failing s390x tests
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
+{% set tests_to_skip = tests_to_skip + " or test_distance_transform_cdt05" %} # [s390x](See: https://github.com/scipy/scipy/issues/18878)
 
 # skip failing osx-64 tests
 # See open issues:
