@@ -145,7 +145,7 @@ test:
   commands:
     # Use OpenBLAS with 1 thread only as it seems to be using too many
     # on the CIs apparently.
-    - export OPENBLAS_NUM_THREADS=1 # [osx and blas_impl == 'openblas']
+    - export OPENBLAS_NUM_THREADS=1 # [ppc64le and blas_impl == 'openblas']
 
     # Attempt to fix some file number limits when testing on osx.
     - ulimit -n 64000 # [osx]
