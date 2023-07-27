@@ -21,7 +21,9 @@ fi
 if [[ ${blas_impl} == openblas ]]; then
     BLAS=openblas
 else
-    BLAS=mkl
+    BLAS=mkl-sdl
+    # mkl-devel 2023.1.0 b0 is not packaged correctly...
+    cp -r $PREFIX/mkl-devel/* $PREFIX/
 fi
 
 $PYTHON -m pip install . --no-index --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv \
