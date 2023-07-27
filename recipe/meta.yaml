@@ -41,7 +41,7 @@ requirements:
     - clang                           # [win]
     - {{ compiler('fortran') }}
     - patch         # [s390x]
-    - pkg-config    # [osx]
+    - pkg-config    # [unix]
   host:
     - python
     - cython >=0.29.35,<3.0
