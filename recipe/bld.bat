@@ -21,11 +21,9 @@ set "SRC_DIR="
 
 if "%blas_impl%" == "openblas" (
     set "BLAS=openblas"
-    set "BLAS=openblas"
 )
 else (
-    set "BLAS=mkl_rt"
-    set "BLAS=mkl_rt"
+    set "BLAS=mkl-sdl"
 )
 "%PYTHON%" -m pip install . --no-index --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv ^
     --config-settings=setup-args="-Duse-g77-abi=true" ^
