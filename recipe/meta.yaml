@@ -48,6 +48,7 @@ requirements:
     - pythran >=0.12.0,<0.14.0
     - meson-python >=0.12.1,<0.14.0
     - wheel <0.41.0
+    - python-build
     - numpy {{ numpy }}
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
@@ -70,7 +71,7 @@ requirements:
 {% set tests_to_skip = "_not_a_real_test" %}
 
 # skip a test that fails with MKL + AVX512 (non-AVX512 passes) (See: https://github.com/scipy/scipy/issues/15533)
-{% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab]" %} # [blas_impl == 'mkl']
+{% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab] or test_x0_equals_Mb[bicgstab-nonsymposdef-F]" %} # [blas_impl == 'mkl']
 
 # mark one linalg.solve_discrete_are as knownfail https://github.com/scipy/scipy/issues/16926
 {% set tests_to_skip = tests_to_skip + " or test_solve_discrete_are"  %} # [blas_impl == 'openblas']

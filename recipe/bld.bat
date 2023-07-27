@@ -25,11 +25,20 @@ if "%blas_impl%" == "openblas" (
 else (
     set "BLAS=mkl-sdl"
 )
-"%PYTHON%" -m pip install . --no-index --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv ^
-    --config-settings=setup-args="-Duse-g77-abi=true" ^
-    --config-settings=setup-args="-Duse-pythran=true" ^
-    --config-settings=setup-args="-Dblas=%BLAS%" ^
-    --config-settings=setup-args="-Dlapack=%BLAS%"
+
+mkdir builddir
+REM -wnx flags mean: --wheel --no-isolation --skip-dependency-check
+"%PYTHON%" -m build -w -n -x ^
+    -Cbuilddir=builddir ^
+    -Csetup-args=-Dblas=%BLAS% ^
+    -Csetup-args=-Dlapack=%BLAS% ^
+    -Csetup-args=-Duse-g77-abi=true ^
+    -Csetup-args=-Duse-pythran=true
+if errorlevel 1 (
+  type builddir\meson-logs\meson-log.txt
+  exit /b 1
+)
+"%PYTHON%" -m pip install dist/scipy*.whl
 if %ERRORLEVEL% neq 0 exit 1
 
 REM make sure these aren't packaged
