@@ -37,7 +37,8 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     # pythran code needs clang-cl on windows
-    - clang                           # [win]
+    - clang   # [win]
+    - lld     # [win]
     - {{ compiler('fortran') }}
     - patch         # [s390x]
     - pkg-config
