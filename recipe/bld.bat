@@ -25,6 +25,7 @@ if "%blas_impl%" == "openblas" (
 else (
     set "BLAS=mkl-sdl"
 )
+set "PKG_CONFIG_PATH=%LIBRARY_LIB%\pkgconfig;%LIBRARY_PREFIX%\share\pkgconfig;%BUILD_PREFIX%\Library\lib\pkgconfig"
 
 mkdir builddir
 REM -wnx flags mean: --wheel --no-isolation --skip-dependency-check
