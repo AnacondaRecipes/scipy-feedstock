@@ -40,7 +40,8 @@ requirements:
     - clang   # [win]
     - lld     # [win]
     - {{ compiler('fortran') }}
-    - patch         # [s390x]
+    - patch   # [s390x]
+    - m2-sed  # [win]
     - pkg-config
   host:
     - python
@@ -61,7 +62,7 @@ requirements:
   run:
     - python
     # https://github.com/scipy/scipy/blob/v1.11.1/pyproject.toml#L69
-    - numpy >={{ numpy }},<1.28.0
+    - {{ pin_compatible('numpy', upper_bound='1.28') }}
     - {{ pin_compatible('intel-openmp') }}  # [blas_impl == 'mkl']
 
 # Scipy segfault when calling solver PROPACK _svdp at mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
