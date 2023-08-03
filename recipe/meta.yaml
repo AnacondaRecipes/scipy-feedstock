@@ -41,16 +41,16 @@ requirements:
     - lld     # [win]
     - {{ compiler('fortran') }}
     - patch   # [s390x]
-    - m2-sed  # [win]
     - pkg-config
   host:
     - python
     - cython >=0.29.35,<3.0
     - pybind11 >=2.10.4,<2.11.0
     - pythran >=0.12.0,<0.14.0
-    - meson-python >=0.12.1,<0.14.0
+    - meson-python >=0.12.1,<0.14.0 # [unix]
+    - python-build                  # [unix]
+    - setuptools <60                # [win]
     - wheel <0.41.0
-    - python-build
     - numpy {{ numpy }}
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
