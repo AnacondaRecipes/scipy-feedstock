@@ -21,10 +21,6 @@ if [[ ${blas_impl} == openblas ]]; then
     export OPENBLAS_NUM_THREADS=1
 else
     BLAS=mkl-sdl
-    if [[ "${target_platform}" == "linux-64" ]]; then
-        # mkl-devel 2023.1.0 b0 is not packaged correctly on linux-64
-        cp -r $PREFIX/mkl-devel/lib/* $PREFIX/lib/
-    fi
 fi
 
 mkdir builddir
