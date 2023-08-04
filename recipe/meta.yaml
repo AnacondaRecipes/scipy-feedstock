@@ -54,16 +54,11 @@ requirements:
     - numpy {{ numpy }}
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
-    # pin intel-openmp to the same version as mkl, without this build may fail with
-    # Intel MKL FATAL ERROR: Cannot load libmkl_intel_thread.dylib.
-    # It may be needed to make this pinning explicit in the mkl package
-    - intel-openmp {{ mkl }}         # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
     # https://github.com/scipy/scipy/blob/v1.11.1/pyproject.toml#L69
     - {{ pin_compatible('numpy', upper_bound='1.28') }}
-    - {{ pin_compatible('intel-openmp') }}  # [blas_impl == 'mkl']
 
 # Scipy segfault when calling solver PROPACK _svdp at mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
 # The use of PROPACK is disabled by default on 1.9.0 : see https://github.com/scipy/scipy/pull/16420
