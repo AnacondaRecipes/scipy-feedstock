@@ -1,41 +1,32 @@
-{% set version = "1.10.1" %}
-{% set numpy = "1.19.5" %}  # [py<=39 and not (osx and arm64)]
-{% set numpy = "1.21" %}  # [py<=39 and (osx and arm64)]
-{% set numpy = "1.21" %}  # [py>39 and py<311]
-{% set numpy = "1.23" %}  # [py>=311]
+{% set version = "1.11.1" %}
 
 package:
   name: scipy
   version: {{ version }}
 
-# use 'python_impl' in meta.yaml so it gets picked up by rendering
-# [python_impl == "pypy"]
-
 source:
   - url: https://github.com/scipy/scipy/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 8f08e1742c9b09eb58640fa5a56031d6e1844806899e883fbe7447ca86fe8c55
+    sha256: 2605c91a4d00ea77838ecb6db2fcf4e71199f402ff0fd8e80d4ae80bfe0ac80e
     patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/_lib
-  - url: https://github.com/scipy/boost-headers-only/archive/3af99e6d566043072e95bc882d32c9c26f37e0ba.tar.gz
-    sha256: 088c4ddd32e1318069eca8f98610a74e8effd52f0b9509a062ea7e380b610b63
-    folder: scipy/_lib/boost
+  - url: https://github.com/boostorg/math/archive/298a243ccd3639b6eaa59bcdab7ab9d5f008fb36.tar.gz
+    sha256: 119d92c145f0d5a56b0faae3d68088de77ad1fcce803fde1ea9ca6692ae9f1f8
+    folder: scipy/_lib/boost_math
   - url: https://github.com/scipy/HiGHS/archive/4a122958a82e67e725d08153e099efe4dad099a2.tar.gz
     sha256: 8ce0e816d8c7517c95e0e404648eef3aaee0d5b919226b46f592c87a4eca24f4
     folder: scipy/_lib/highs
-    patches:                                           # [win]
-      - patches/0003-highs-missing-includes-win.patch  # [win]
-  - url: https://github.com/scipy/unuran/archive/a63d39160e5ecc4402e7ed0e8417f4c3ff9634cb.tar.gz
-    sha256: 2412fdb1d46cc5c677d7fe2b42895f444b2c544040f835083cf814ca93e8c2f5
+  - url: https://github.com/scipy/unuran/archive/81a1fd118b326880e00cc7d8989fb063782a6bdd.tar.gz
+    sha256: f08642f4e54f59c03cb828fa10b13e8b6921cde8a62d41dfd71d797b6e29564b
     folder: scipy/_lib/unuran
   # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/sparse/linalg/_propack
-  - url: https://github.com/scipy/PROPACK/archive/cc32f3ba6cf941e4f9f96d96e2fc5762ea0c1014.tar.gz
-    sha256: 15880c83d2d77e748ab8273ed8b61e152bcb43d828dd0938bdf6f82950bc9b25
+  - url: https://github.com/scipy/PROPACK/archive/96f6800451372dd003e627bbfd732937ac0c685e.tar.gz
+    sha256: a90cd12cf35dabc119442a868573c602893d255b27bb0d8e912552537a39d1c9
     folder: scipy/sparse/linalg/_propack/PROPACK
 
 build:
-  number: 1
-  skip: true  # [py<=37]
+  number: 0
+  skip: true  # [py<39]
   missing_dso_whitelist:  # [linux and s390x]
     - $RPATH/ld64.so.1    # [linux and s390x] 
   ignore_run_exports:
@@ -46,33 +37,28 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     # pythran code needs clang-cl on windows
-    - clang                           # [win]
+    - clang   # [win]
+    - lld     # [win]
     - {{ compiler('fortran') }}
-    - patch         # [s390x]
-    - m2-patch      # [win]
-    - pkg-config    # [osx]
+    - patch   # [s390x]
+    - pkg-config
   host:
     - python
-    - cython 0.29.32
-    - pybind11 2.10.1
-    - pythran 0.12.1
-    - setuptools <60
-    - wheel <0.39.0
+    - cython >=0.29.35,<3.0
+    - pybind11 >=2.10.4,<2.11.0
+    - pythran >=0.12.0,<0.14.0
+    - meson-python >=0.12.1,<0.14.0 # [unix]
+    - python-build                  # [unix]
+    - setuptools <60                # [win]
+    - wheel <0.41.0
     - numpy {{ numpy }}
-    - pip >=18.0.0
+    - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
-    # pin intel-openmp to the same version as mkl, without this build may fail with
-    # Intel MKL FATAL ERROR: Cannot load libmkl_intel_thread.dylib.
-    # It may be needed to make this pinning explicit in the mkl package
-    - intel-openmp {{ mkl }}         # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
-    # https://github.com/scipy/scipy/blob/v1.10.0/setup.py#L452-L453
-    - numpy >={{ numpy }},<1.27.0
-    - {{ pin_compatible('intel-openmp') }}  # [blas_impl == 'mkl']
-    # Needed for scipy.datasets
-    - pooch
+    # https://github.com/scipy/scipy/blob/v1.11.1/pyproject.toml#L69
+    - {{ pin_compatible('numpy', upper_bound='1.28') }}
 
 # Scipy segfault when calling solver PROPACK _svdp at mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
 # The use of PROPACK is disabled by default on 1.9.0 : see https://github.com/scipy/scipy/pull/16420
@@ -82,22 +68,22 @@ requirements:
 {% set tests_to_skip = "_not_a_real_test" %}
 
 # skip a test that fails with MKL + AVX512 (non-AVX512 passes) (See: https://github.com/scipy/scipy/issues/15533)
-{% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab]" %} # [blas_impl == 'mkl']
+{% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab] or test_x0_equals_Mb[bicgstab-nonsymposdef-F]" %} # [blas_impl == 'mkl']
 
 # mark one linalg.solve_discrete_are as knownfail https://github.com/scipy/scipy/issues/16926
 {% set tests_to_skip = tests_to_skip + " or test_solve_discrete_are"  %} # [blas_impl == 'openblas']
 
 # skip failing s390x tests
-# See open issues:
-# - https://github.com/scipy/scipy/issues/17137
-{% set tests_to_skip = tests_to_skip + " or test_milp_timeout_16545" %} # [s390x]
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
+{% set tests_to_skip = tests_to_skip + " or test_distance_transform_cdt05" %} # [s390x](See: https://github.com/scipy/scipy/issues/18878)
 
 # skip failing osx-64 tests
 # See open issues:
 #   - https://github.com/scipy/scipy/issues/17125
-#   - https://github.com/scipy/scipy/issues/17137 (issue does not mention a platform, but seems to only fail for osx-64)
-{% set tests_to_skip = tests_to_skip + " or test_bad_genei or test_milp_timeout_16545" %}  # [osx and x86_64]
+{% set tests_to_skip = tests_to_skip + " or test_bad_genei" %}  # [osx and x86_64]
+
+# skip failing osx-arm64 tests
+{% set tests_to_skip = tests_to_skip + " or test_roots" %}  # [osx and arm64]
 
 test:
   imports:
@@ -146,11 +132,18 @@ test:
     - pytest
     - pytest-timeout
     - pytest-xdist
+    - asv
     - mpmath
+    - gmpy2
     - threadpoolctl
+    - pooch
     # see comment above
     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
   commands:
+    # Use OpenBLAS with 1 thread only as it seems to be using too many
+    # on the CIs apparently.
+    - export OPENBLAS_NUM_THREADS=1 # [ppc64le and blas_impl == 'openblas']
+
     # Attempt to fix some file number limits when testing on osx.
     - ulimit -n 64000 # [osx]
 
@@ -163,7 +156,7 @@ test:
     # the tests ppc64le and aarch64 are currently run through emulation in QEMU;
     # since this takes much longer, do not run the most heavy-weight tests, i.e. use
     # label='fast'; same for PyPy due to huge runtime; otherwise set label='full'
-    {% set label = "'fast'" if (arm64 or aarch64 or ppc64le or python_impl == "pypy") else "'full'" %}
+    {% set label = "'fast'" if (arm64 or aarch64 or ppc64le) else "'full'" %}
     # for signature of scipy.test see below (note default: label='fast'):
     # https://github.com/scipy/scipy/blob/v1.7.0/scipy/_lib/_testutils.py#L27
 
@@ -198,11 +191,4 @@ extra:
     - rgommers
     - ocefpaf
     - h-vetinari
-  skip-lints:
-    # See the following for full context: 
-    #   - https://github.com/AnacondaRecipes/scipy-feedstock/pull/25
-    #   - The commit message for this line change
-    # tl;dr We have attempted to migrate this package to use `pip --no-deps` but
-    # `mesonpy` has limited support for certain platforms.
-    - uses_setup_py
 

@@ -2,21 +2,7 @@
 
 set -x
 
-# Use the G77 ABI wrapper everywhere so that the underlying blas implementation
-# can have a G77 ABI (currently only MKL)
-export SCIPY_USE_G77_ABI_WRAPPER=1
-
-# Use OpenBLAS with 1 thread only as it seems to be using too many
-# on the CIs apparently.
-export OPENBLAS_NUM_THREADS=1
-
-# Depending on our platform, shared libraries end with either .so or .dylib
-if [[ $(uname) == 'Darwin' ]]; then
-    export LDFLAGS="$LDFLAGS -undefined dynamic_lookup"
-    export CFLAGS="$CFLAGS -fno-lto"
-else
-    export LDFLAGS="$LDFLAGS -shared"
-fi
+cd ${SRC_DIR}
 
 # gfortran 11.2.0 on osx-arm64 is buggy and causes a number of test failures.
 # Setting a more generic set of instructions (armv8-a instead of armv8.3-a) ensures a proper compilation.
@@ -28,12 +14,22 @@ if [[ "${target_platform}" == "osx-arm64" ]]; then
     export FORTRANFLAGS="${FORTRANFLAGS//armv8.3-a/armv8-a}"
 fi
 
-case $( uname -m ) in
-# todo: update once ArmPL is ready.
-# We should look to include copy aarch_site.cfg in the ArmPL package, similar
-# to how OpenBLAS and MKL devels work. 
-# aarch64) cp $PREFIX/aarch_site.cfg site.cfg;;
-*)       cp $PREFIX/site.cfg site.cfg;;
-esac
+if [[ ${blas_impl} == openblas ]]; then
+    BLAS=openblas
+    # Use OpenBLAS with 1 thread only as it seems to be using too many
+    # on the CIs apparently.
+    export OPENBLAS_NUM_THREADS=1
+else
+    BLAS=mkl-sdl
+fi
 
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+mkdir builddir
+# -wnx flags mean: --wheel --no-isolation --skip-dependency-check
+$PYTHON -m build -w -n -x \
+    -Cbuilddir=builddir \
+    -Csetup-args=-Dblas=${BLAS} \
+    -Csetup-args=-Dlapack=${BLAS} \
+    -Csetup-args=-Duse-g77-abi=true \
+    -Csetup-args=-Duse-pythran=true \
+    || (cat builddir/meson-logs/meson-log.txt && exit 1)
+$PYTHON -m pip install dist/scipy*.whl

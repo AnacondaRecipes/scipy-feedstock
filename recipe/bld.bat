@@ -50,6 +50,8 @@ REM clang-cl & gfortran use different LDFLAGS; unset it
 set "LDFLAGS="
 REM don't add d1trimfile option because clang doesn't recognize it.
 set "SRC_DIR="
+REM add %PREFIX%\include for inclusion of Python.h in linalg
+set "INCLUDE=%INCLUDE%;%PREFIX%\include"
 
 %PYTHON% setup.py install --single-version-externally-managed --record=record.txt
 if %ERRORLEVEL% neq 0 exit 1
