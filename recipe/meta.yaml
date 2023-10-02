@@ -47,9 +47,8 @@ requirements:
     - cython >=0.29.35,<3.0
     - pybind11 >=2.10.4,<2.11.1
     - pythran >=0.12.0,<0.15.0
-    - meson-python >=0.12.1,<0.15.0 # [unix]
-    - python-build                  # [unix]
-    - setuptools <60                # [win]
+    - meson-python >=0.12.1,<0.15.0
+    - python-build
     - numpy {{ numpy }}
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
