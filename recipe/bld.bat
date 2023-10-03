@@ -41,6 +41,7 @@ set "INCLUDE=%INCLUDE%;%PREFIX%\include"
 
 %PYTHON% _setup.py install --single-version-externally-managed --record=record.txt
 if %ERRORLEVEL% neq 0 exit 1
+exit 0
 
 
 
