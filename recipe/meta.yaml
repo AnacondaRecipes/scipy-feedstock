@@ -31,8 +31,6 @@ build:
     - $RPATH/ld64.so.1    # [linux and s390x] 
   ignore_run_exports:
     - numpy
-  script: bld_meson.bat # [win and py>=312]
-  script: bld_setuppy.bat # [win and py<312]
 
 requirements:
   build:
