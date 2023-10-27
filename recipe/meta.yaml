@@ -149,7 +149,7 @@ test:
     - pytest-xdist
     - asv
     - mpmath
-    - gmpy2           # [py<312] (until gmpy2 2.2 is released)
+    # - gmpy2           (until gmpy2 2.2 is released)
     - threadpoolctl
     - pooch
     # see comment above
