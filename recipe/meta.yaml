@@ -1,28 +1,14 @@
-{% set version = "1.11.3" %}
+{% set version = "1.11.4" %}
 
 package:
   name: scipy
   version: {{ version }}
 
 source:
-  - url: https://github.com/scipy/scipy/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 86712f1dff2cf674d823ad5489db54928b44149f76d7ba891ad19a6ae118abcf
+  - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
+    sha256: 90a2b78e7f5733b9de748f589f09225013685f9b218275257f8a8168ededaeaa
     patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
-  # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/_lib
-  - url: https://github.com/boostorg/math/archive/298a243ccd3639b6eaa59bcdab7ab9d5f008fb36.tar.gz
-    sha256: 119d92c145f0d5a56b0faae3d68088de77ad1fcce803fde1ea9ca6692ae9f1f8
-    folder: scipy/_lib/boost_math
-  - url: https://github.com/scipy/HiGHS/archive/4a122958a82e67e725d08153e099efe4dad099a2.tar.gz
-    sha256: 8ce0e816d8c7517c95e0e404648eef3aaee0d5b919226b46f592c87a4eca24f4
-    folder: scipy/_lib/highs
-  - url: https://github.com/scipy/unuran/archive/81a1fd118b326880e00cc7d8989fb063782a6bdd.tar.gz
-    sha256: f08642f4e54f59c03cb828fa10b13e8b6921cde8a62d41dfd71d797b6e29564b
-    folder: scipy/_lib/unuran
-  # https://github.com/scipy/scipy/tree/v{{ version }}/scipy/sparse/linalg/_propack
-  - url: https://github.com/scipy/PROPACK/archive/96f6800451372dd003e627bbfd732937ac0c685e.tar.gz
-    sha256: a90cd12cf35dabc119442a868573c602893d255b27bb0d8e912552537a39d1c9
-    folder: scipy/sparse/linalg/_propack/PROPACK
 
 build:
   number: 0
