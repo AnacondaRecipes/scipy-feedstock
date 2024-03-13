@@ -2,3 +2,6 @@ build_parameters:
   - "--suppress-variables"
   - "--error-overlinking"
   - "--error-overdepending"
+
+channels:
+  - https://staging.continuum.io/prefect/fs/pythran-feedstock/pr11/54d9456
