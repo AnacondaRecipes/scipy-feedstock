@@ -63,9 +63,8 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_distance_transform_cdt05" %} # [s390x] (See: https://github.com/scipy/scipy/issues/18878)
 
 # skip failing osx-64 tests
-# See open issues:
-#   - https://github.com/scipy/scipy/issues/17125
-{% set tests_to_skip = tests_to_skip + " or test_bad_genei" %}  # [osx and x86_64]
+{% set tests_to_skip = tests_to_skip + " or test_bad_genei" %}  # [osx and x86_64] (See: https://github.com/scipy/scipy/issues/17125)
+{% set tests_to_skip = tests_to_skip + " or test_tgsyl" %}  # [osx and x86_64 and blas_impl == 'openblas'] (See: https://github.com/scipy/scipy/pull/18571, could potentially be fixed with openblas 0.3.23)
 
 test:
   imports:
