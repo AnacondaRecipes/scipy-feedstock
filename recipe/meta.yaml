@@ -66,6 +66,10 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_bad_genei" %}  # [osx and x86_64] (See: https://github.com/scipy/scipy/issues/17125)
 {% set tests_to_skip = tests_to_skip + " or test_tgsyl" %}  # [osx and x86_64 and blas_impl == 'openblas'] (See: https://github.com/scipy/scipy/pull/18571, could potentially be fixed with openblas 0.3.23)
 
+# skip failing win-64 tests - fortran related regression, from switching to meson
+# see https://github.com/scipy/scipy/issues/17075
+{% set tests_to_skip = tests_to_skip + " or TestODR" %}  # [win]
+
 test:
   imports:
     - scipy
