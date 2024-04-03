@@ -1,4 +1,4 @@
-{% set version = "1.12.0" %}
+{% set version = "1.13.0" %}
 
 package:
   name: scipy
@@ -6,7 +6,7 @@ package:
 
 source:
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
-    sha256: 4bf5abab8a36d20193c698b0f1fc282c1d083c94723902c447e5d2f1780936a3
+    sha256: 72e29d3dc0a00fe6cb71d3210f30b3f8f63e6bdd456c6218d25bc702eb10a8c9
     patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
 
@@ -30,20 +30,26 @@ requirements:
     - pkg-config
   host:
     - python
-    - cython >=0.29.35,!=3.0.3,<3.1.0
-    - pybind11 >=2.10.4,<2.12.0
-    - pythran >=0.15.0,<0.16.0
-    - meson-python >=0.15.0,<0.16.0
+    - cython >=3.0.8,<3.1.0
+    - pybind11 >=2.12.0,<2.13.0
+    - pybind11-abi
+    - pythran >=0.14.0,<0.16.0
+    - meson-python >=0.15.0,<0.18.0
     - python-build
-    - numpy 1.22 # [py<311]
-    - numpy {{ numpy }} # [py>=311]
+    # upstream builds against numpy 2
+    # building against an older numpy works fine too due to using npy_2_compt.h
+    # see: https://github.com/scipy/scipy/blob/v1.13.0/pyproject.toml#L28-L34
+    # see: https://github.com/scipy/scipy/blob/v1.13.0/scipy/_build_utils/src/npy_2_compat.h
+    - numpy 1.26
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
-    # https://github.com/scipy/scipy/blob/v1.12.0/pyproject.toml#L57
-    - {{ pin_compatible('numpy', upper_bound='1.29') }}
+    # see explanation of numpy bounds here
+    # https://github.com/scipy/scipy/blob/v1.13.0/pyproject.toml#L28-L34
+    # https://github.com/scipy/scipy/blob/v1.13.0/pyproject.toml#L55
+    - {{ pin_compatible('numpy', lower_bound='1.22.4', upper_bound='2.3') }}
 
 # Scipy segfault when calling solver PROPACK _svdp at mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
 # The use of PROPACK is disabled by default on 1.9.0 : see https://github.com/scipy/scipy/pull/16420
@@ -122,7 +128,8 @@ test:
     # - gmpy2           (until gmpy2 2.2 is released)
     - threadpoolctl
     - pooch
-    - hypothesis
+    - hypothesis >=6.30
+    - array-api-strict
     # see comment above
     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
     # output of numpy.show_config()
