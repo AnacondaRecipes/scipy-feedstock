@@ -36,11 +36,9 @@ requirements:
     - pythran >=0.14.0,<0.16.0
     - meson-python >=0.15.0,<0.18.0
     - python-build
-    # upstream builds against numpy 2
-    # building against an older numpy works fine too due to using npy_2_compt.h
     # see: https://github.com/scipy/scipy/blob/v1.13.0/pyproject.toml#L28-L34
-    # see: https://github.com/scipy/scipy/blob/v1.13.0/scipy/_build_utils/src/npy_2_compat.h
-    - numpy 1.26
+    - numpy 1.23 # [py<311]
+    - numpy {{ numpy }} # [py>=311]
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
@@ -49,12 +47,9 @@ requirements:
     # see explanation of numpy bounds here
     # https://github.com/scipy/scipy/blob/v1.13.0/pyproject.toml#L28-L34
     # https://github.com/scipy/scipy/blob/v1.13.0/pyproject.toml#L55
-    - {{ pin_compatible('numpy', lower_bound='1.22.4', upper_bound='2.3') }}
-
-# Scipy segfault when calling solver PROPACK _svdp at mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
-# The use of PROPACK is disabled by default on 1.9.0 : see https://github.com/scipy/scipy/pull/16420
-# However PROPACK tests themselves are not disabled, so we skip test_propack.py tests.
-{% set tests_known_to_crash = "test_svdp or test_examples"%}
+    # code compiled against numpy 1 is incompatible with numpy 2 ABI
+    # code compiled against numpy 2 can work with numpy 1
+    - {{ pin_compatible('numpy', upper_bound='1.29') }}
 
 {% set tests_to_skip = "_not_a_real_test" %}
 
@@ -69,7 +64,6 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_distance_transform_cdt05" %} # [s390x] (See: https://github.com/scipy/scipy/issues/18878)
 
 # skip failing osx-64 tests
-{% set tests_to_skip = tests_to_skip + " or test_bad_genei" %}  # [osx and x86_64] (See: https://github.com/scipy/scipy/issues/17125)
 {% set tests_to_skip = tests_to_skip + " or test_tgsyl" %}  # [osx and x86_64 and blas_impl == 'openblas'] (See: https://github.com/scipy/scipy/pull/18571, could potentially be fixed with openblas 0.3.23)
 
 # skip failing win-64 tests - fortran related regression, from switching to meson
@@ -157,15 +151,13 @@ test:
 
     # run tests except tests_to_skip
     {% set param = "verbose=1, label=" + label + ", tests=None" %} # set verbose to 2 for additional logs
-    {% set extra = "extra_argv=['-k', 'not (" + tests_to_skip + " or " + tests_known_to_crash + ")', '-n', '3', '--timeout=1800', '--durations=50']" %}
+    {% set extra = "extra_argv=['-k', 'not (" + tests_to_skip + ")', '-n', '3', '--timeout=1800', '--durations=50']" %}
     - python -c "import scipy, sys; sys.exit(not scipy.test({{ param }}, {{ extra }}))"
 
     # run tests_to_skip tests, but ignore results (to keep a record of failures)
     {% set param_fail = "verbose=2, label=" + label + ", tests=None" %}
-    {% set extra_crash = "extra_argv=['-k', '(" + tests_known_to_crash + ")', '-n', '3', '--timeout=1800', '--durations=50']" %}
     {% set extra_fail = "extra_argv=['-k', '(" + tests_to_skip + ")', '-n', '3', '--timeout=1800', '--durations=50']" %}
-    - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_crash }}); sys.exit(0)" # [not s390x]
-    - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_fail }}); sys.exit(0)"  # [not s390x]
+    - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_fail }}); sys.exit(0)"
 
 about:
   home: https://scipy.org/
