@@ -6,7 +6,7 @@ package:
 
 source:
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
-    sha256: 72e29d3dc0a00fe6cb71d3210f30b3f8f63e6bdd456c6218d25bc702eb10a8c9
+    sha256: 58569af537ea29d3f78e5abd18398459f195546bb3be23d16677fb26616cc11e
     patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
 
