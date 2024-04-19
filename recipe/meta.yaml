@@ -92,12 +92,12 @@ requirements:
 # skip failing mkl tests
 # see https://github.com/scipy/scipy/issues/20470
 {% set tests_to_skip = tests_to_skip + " or test_nnls_inner_loop_case1" %} # [blas_impl == 'mkl']
-# see https://github.com/scipy/scipy/issues/20471
-{% set tests_to_skip = tests_to_skip + " or test_falker" %} # [blas_impl == 'mkl']
 
-# flaky test observerd on linux-64 and osx-64
+# flaky test observerd on multiple platforms
 # see https://github.com/scipy/scipy/issues/18880
 {% set tests_to_skip = tests_to_skip + " or test_expm_multiply_dtype[True-float32-float32]" %}
+# see https://github.com/scipy/scipy/issues/20471
+{% set tests_to_skip = tests_to_skip + " or test_falker" %}
 
 test:
   imports:
