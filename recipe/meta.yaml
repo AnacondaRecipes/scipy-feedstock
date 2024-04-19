@@ -9,6 +9,13 @@ source:
     sha256: 58569af537ea29d3f78e5abd18398459f195546bb3be23d16677fb26616cc11e
     patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
+  # The  version of pocketfft pinned to scipy 1.13.0 is incompatible with osx <10.15.
+  # This is fixed in pocketfft commit https://github.com/mreineck/pocketfft/commit/33ae5dc94c9cdc7f1c78346504a85de87cadaa12
+  # See: https://github.com/scipy/scipy/issues/20300
+  # TODO remove on the next update
+  - git_url: https://github.com/scipy/pocketfft.git              # [osx and x86_64]
+    git_rev: 9367142748fcc9696a1c9e5a99b76ed9897c9daa            # [osx and x86_64]
+    folder: pocketfft                                            # [osx and x86_64]
 
 build:
   number: 0
@@ -28,6 +35,7 @@ requirements:
     - {{ compiler('fortran') }}
     - patch   # [s390x]
     - pkg-config
+    - git     # [osx and x86_64]
   host:
     - python
     - cython >=3.0.8,<3.1.0

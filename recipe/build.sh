@@ -4,6 +4,15 @@ set -x
 
 cd ${SRC_DIR}
 
+# The  version of pocketfft pinned to scipy 1.13.0 is incompatible with osx <10.15.
+# This is fixed in pocketfft commit https://github.com/mreineck/pocketfft/commit/33ae5dc94c9cdc7f1c78346504a85de87cadaa12
+# See: https://github.com/scipy/scipy/issues/20300
+# TODO remove on the next update
+if [[ "${target_platform}" == "osx-64" ]]; then
+    rm -rf scipy/_lib/pocketfft
+    cp -r pocketfft scipy/_lib/
+fi
+
 # gfortran 11.2.0 on osx-arm64 is buggy and causes a number of test failures.
 # Setting a more generic set of instructions (armv8-a instead of armv8.3-a) ensures a proper compilation.
 # This comes at the cost of some missed optimization.
