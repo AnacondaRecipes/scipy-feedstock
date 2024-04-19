@@ -38,7 +38,10 @@ requirements:
     - git     # [osx and x86_64]
   host:
     - python
-    - cython >=3.0.8,<3.1.0
+    # compilation fails with 3.0.10 and numpy 1.x
+    # compilation fails with 3.0.8 and numpy 2.x
+    #- cython >=3.0.8,<3.1.0
+    - cython 3.0.8
     - pybind11 >=2.12.0,<2.13.0
     - pybind11-abi
     - pythran >=0.14.0,<0.16.0
