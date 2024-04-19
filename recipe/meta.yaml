@@ -72,17 +72,20 @@ requirements:
 
 # skip failing s390x tests
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
-{% set tests_to_skip = tests_to_skip + " or test_distance_transform_cdt05" %} # [s390x] (See: https://github.com/scipy/scipy/issues/18878)
+{% set tests_to_skip = tests_to_skip + " or test_distance_transform_cdt05" %} # [s390x] See: https://github.com/scipy/scipy/issues/18878
 
 # skip failing osx-64 tests
-{% set tests_to_skip = tests_to_skip + " or test_tgsyl" %}  # [osx and x86_64 and blas_impl == 'openblas'] (See: https://github.com/scipy/scipy/pull/18571, could potentially be fixed with openblas 0.3.23)
+{% set tests_to_skip = tests_to_skip + " or test_tgsyl" %}  # [osx and x86_64 and blas_impl == 'openblas'] See: https://github.com/scipy/scipy/pull/18571, could potentially be fixed with openblas 0.3.23
 
 # skip failing win-64 tests - fortran related regression, from switching to meson
 # see https://github.com/scipy/scipy/issues/17075
 {% set tests_to_skip = tests_to_skip + " or TestODR" %}  # [win]
 
 # skip failing mkl tests
+# see https://github.com/scipy/scipy/issues/20470
 {% set tests_to_skip = tests_to_skip + " or test_nnls_inner_loop_case1" %} # [blas_impl == 'mkl']
+# see https://github.com/scipy/scipy/issues/20471
+{% set tests_to_skip = tests_to_skip + " or test_falker" %} # [blas_impl == 'mkl']
 
 test:
   imports:
