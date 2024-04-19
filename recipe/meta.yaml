@@ -80,12 +80,24 @@ requirements:
 # skip failing win-64 tests - fortran related regression, from switching to meson
 # see https://github.com/scipy/scipy/issues/17075
 {% set tests_to_skip = tests_to_skip + " or TestODR" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_hermitian_modes" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_complex_nonsymmetric_modes" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_standard_nonsymmetric_starting_vector" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_general_nonsymmetric_starting_vector" %}  # [win]
+
+# skip failing win-64 tests - propack/arpack issues
+# see https://github.com/scipy/scipy/issues/15108
+{% set tests_to_skip = tests_to_skip + " or test_svd_linop or test_svdp or test_examples" %}  # [win]                                                                                                      
 
 # skip failing mkl tests
 # see https://github.com/scipy/scipy/issues/20470
 {% set tests_to_skip = tests_to_skip + " or test_nnls_inner_loop_case1" %} # [blas_impl == 'mkl']
 # see https://github.com/scipy/scipy/issues/20471
 {% set tests_to_skip = tests_to_skip + " or test_falker" %} # [blas_impl == 'mkl']
+
+# flaky test observerd on linux-64 and osx-64
+# see https://github.com/scipy/scipy/issues/18880
+{% set tests_to_skip = tests_to_skip + " or test_expm_multiply_dtype[True-float32-float32]" %}
 
 test:
   imports:
