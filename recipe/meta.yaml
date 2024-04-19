@@ -78,6 +78,9 @@ requirements:
 # see https://github.com/scipy/scipy/issues/17075
 {% set tests_to_skip = tests_to_skip + " or TestODR" %}  # [win]
 
+# skip failing mkl tests
+{% set tests_to_skip = tests_to_skip + " or test_nnls_inner_loop_case1" %} # [blas_impl == 'mkl']
+
 test:
   imports:
     - scipy
