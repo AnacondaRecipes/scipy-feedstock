@@ -1,4 +1,4 @@
-{% set version = "1.12.0" %}
+{% set version = "1.13.0" %}
 
 package:
   name: scipy
@@ -6,9 +6,16 @@ package:
 
 source:
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
-    sha256: 4bf5abab8a36d20193c698b0f1fc282c1d083c94723902c447e5d2f1780936a3
+    sha256: 58569af537ea29d3f78e5abd18398459f195546bb3be23d16677fb26616cc11e
     patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
+  # The  version of pocketfft pinned to scipy 1.13.0 is incompatible with osx <10.15.
+  # This is fixed in pocketfft commit https://github.com/mreineck/pocketfft/commit/33ae5dc94c9cdc7f1c78346504a85de87cadaa12
+  # See: https://github.com/scipy/scipy/issues/20300
+  # TODO remove on the next update
+  - git_url: https://github.com/scipy/pocketfft.git              # [osx and x86_64]
+    git_rev: 9367142748fcc9696a1c9e5a99b76ed9897c9daa            # [osx and x86_64]
+    folder: pocketfft                                            # [osx and x86_64]
 
 build:
   number: 0
@@ -28,27 +35,32 @@ requirements:
     - {{ compiler('fortran') }}
     - patch   # [s390x]
     - pkg-config
+    - git     # [osx and x86_64]
   host:
     - python
-    - cython >=0.29.35,!=3.0.3,<3.1.0
-    - pybind11 >=2.10.4,<2.12.0
-    - pythran >=0.15.0,<0.16.0
-    - meson-python >=0.15.0,<0.16.0
+    # compilation fails with 3.0.10 and numpy 1.x
+    # compilation fails with 3.0.8 and numpy 2.x
+    #- cython >=3.0.8,<3.1.0
+    - cython 3.0.8
+    - pybind11 >=2.12.0,<2.13.0
+    - pybind11-abi
+    - pythran >=0.14.0,<0.16.0
+    - meson-python >=0.15.0,<0.18.0
     - python-build
-    - numpy 1.22 # [py<311]
+    # see: https://github.com/scipy/scipy/blob/v1.13.0/pyproject.toml#L28-L34
+    - numpy 1.23 # [py<311]
     - numpy {{ numpy }} # [py>=311]
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
-    # https://github.com/scipy/scipy/blob/v1.12.0/pyproject.toml#L57
+    # see explanation of numpy bounds here
+    # https://github.com/scipy/scipy/blob/v1.13.0/pyproject.toml#L28-L34
+    # https://github.com/scipy/scipy/blob/v1.13.0/pyproject.toml#L55
+    # code compiled against numpy 1 is incompatible with numpy 2 ABI
+    # code compiled against numpy 2 can work with numpy 1
     - {{ pin_compatible('numpy', upper_bound='1.29') }}
-
-# Scipy segfault when calling solver PROPACK _svdp at mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
-# The use of PROPACK is disabled by default on 1.9.0 : see https://github.com/scipy/scipy/pull/16420
-# However PROPACK tests themselves are not disabled, so we skip test_propack.py tests.
-{% set tests_known_to_crash = "test_svdp or test_examples"%}
 
 {% set tests_to_skip = "_not_a_real_test" %}
 
@@ -60,15 +72,32 @@ requirements:
 
 # skip failing s390x tests
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
-{% set tests_to_skip = tests_to_skip + " or test_distance_transform_cdt05" %} # [s390x] (See: https://github.com/scipy/scipy/issues/18878)
+{% set tests_to_skip = tests_to_skip + " or test_distance_transform_cdt05" %} # [s390x] See: https://github.com/scipy/scipy/issues/18878
 
 # skip failing osx-64 tests
-{% set tests_to_skip = tests_to_skip + " or test_bad_genei" %}  # [osx and x86_64] (See: https://github.com/scipy/scipy/issues/17125)
-{% set tests_to_skip = tests_to_skip + " or test_tgsyl" %}  # [osx and x86_64 and blas_impl == 'openblas'] (See: https://github.com/scipy/scipy/pull/18571, could potentially be fixed with openblas 0.3.23)
+{% set tests_to_skip = tests_to_skip + " or test_tgsyl" %}  # [osx and x86_64 and blas_impl == 'openblas'] See: https://github.com/scipy/scipy/pull/18571, could potentially be fixed with openblas 0.3.23
 
 # skip failing win-64 tests - fortran related regression, from switching to meson
 # see https://github.com/scipy/scipy/issues/17075
 {% set tests_to_skip = tests_to_skip + " or TestODR" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_hermitian_modes" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_complex_nonsymmetric_modes" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_standard_nonsymmetric_starting_vector" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_general_nonsymmetric_starting_vector" %}  # [win]
+
+# skip failing win-64 tests - propack/arpack issues
+# see https://github.com/scipy/scipy/issues/15108
+{% set tests_to_skip = tests_to_skip + " or test_svd_linop or test_svdp or test_examples" %}  # [win]                                                                                                      
+
+# skip failing mkl tests
+# see https://github.com/scipy/scipy/issues/20470
+{% set tests_to_skip = tests_to_skip + " or test_nnls_inner_loop_case1" %} # [blas_impl == 'mkl']
+
+# flaky test observerd on multiple platforms
+# see https://github.com/scipy/scipy/issues/18880
+{% set tests_to_skip = tests_to_skip + " or test_expm_multiply_dtype[True-float32-float32]" %}
+# see https://github.com/scipy/scipy/issues/20471
+{% set tests_to_skip = tests_to_skip + " or test_falker" %}
 
 test:
   imports:
@@ -122,7 +151,8 @@ test:
     # - gmpy2           (until gmpy2 2.2 is released)
     - threadpoolctl
     - pooch
-    - hypothesis
+    - hypothesis >=6.30
+    - array-api-strict
     # see comment above
     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
     # output of numpy.show_config()
@@ -150,21 +180,41 @@ test:
 
     # run tests except tests_to_skip
     {% set param = "verbose=1, label=" + label + ", tests=None" %} # set verbose to 2 for additional logs
-    {% set extra = "extra_argv=['-k', 'not (" + tests_to_skip + " or " + tests_known_to_crash + ")', '-n', '3', '--timeout=1800', '--durations=50']" %}
+    {% set extra = "extra_argv=['-k', 'not (" + tests_to_skip + ")', '-n', '3', '--timeout=1800', '--durations=50']" %}
     - python -c "import scipy, sys; sys.exit(not scipy.test({{ param }}, {{ extra }}))"
 
     # run tests_to_skip tests, but ignore results (to keep a record of failures)
     {% set param_fail = "verbose=2, label=" + label + ", tests=None" %}
-    {% set extra_crash = "extra_argv=['-k', '(" + tests_known_to_crash + ")', '-n', '3', '--timeout=1800', '--durations=50']" %}
     {% set extra_fail = "extra_argv=['-k', '(" + tests_to_skip + ")', '-n', '3', '--timeout=1800', '--durations=50']" %}
-    - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_crash }}); sys.exit(0)" # [not s390x]
-    - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_fail }}); sys.exit(0)"  # [not s390x]
+    - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_fail }}); sys.exit(0)"
 
 about:
   home: https://scipy.org/
-  license: BSD-3-Clause
   license_family: BSD
-  license_file: LICENSE.txt
+  license: BSD-3-Clause AND MIT AND BSD-3-Clause-Attribution AND BSD-2-Clause AND BSL-1.0
+  license_file:
+    - LICENSE.txt
+    - LICENSES_bundled.txt
+    - scipy/ndimage/LICENSE.txt
+    - scipy/optimize/tnc/LICENSE
+    - scipy/optimize/_direct/COPYING
+    - scipy/io/_fast_matrix_market/LICENSE.txt
+    - scipy/io/_fast_matrix_market/fast_matrix_market/dependencies/fast_float/LICENSE-MIT
+    - scipy/io/_fast_matrix_market/fast_matrix_market/dependencies/ryu/LICENSE-Boost
+    - scipy/_lib/boost_math/LICENSE
+    - scipy/_lib/_uarray/LICENSE
+    - scipy/_lib/array_api_compat/LICENSE
+    - scipy/_lib/pocketfft/LICENSE.md
+    - scipy/_lib/unuran/license.txt
+    - scipy/_lib/highs/LICENSE
+    - scipy/_lib/highs/extern/pdqsort/license.txt
+    - scipy/_lib/highs/extern/filereaderlp/LICENSE
+    - scipy/fft/_pocketfft/LICENSE.md
+    - scipy/sparse/linalg/_eigen/arpack/ARPACK/COPYING
+    - scipy/sparse/linalg/_propack/PROPACK/license.txt
+    - scipy/sparse/linalg/_dsolve/SuperLU/License.txt
+    - scipy/spatial/qhull_src/COPYING.txt
+    - scipy/stats/biasedurn/license.txt
   summary: Scientific Library for Python
   description: |
     SciPy is a Python-based ecosystem of open-source software for mathematics,
