@@ -190,9 +190,31 @@ test:
 
 about:
   home: https://scipy.org/
-  license: BSD-3-Clause
   license_family: BSD
-  license_file: LICENSE.txt
+  license: BSD-3-Clause AND MIT AND BSD-3-Clause-Attribution AND BSD-2-Clause AND BSL-1.0
+  license_file:
+    - LICENSE.txt
+    - LICENSES_bundled.txt
+    - scipy/ndimage/LICENSE.txt
+    - scipy/optimize/tnc/LICENSE
+    - scipy/optimize/_direct/COPYING
+    - scipy/io/_fast_matrix_market/LICENSE.txt
+    - scipy/io/_fast_matrix_market/fast_matrix_market/dependencies/fast_float/LICENSE-MIT
+    - scipy/io/_fast_matrix_market/fast_matrix_market/dependencies/ryu/LICENSE-Boost
+    - scipy/_lib/boost_math/LICENSE
+    - scipy/_lib/_uarray/LICENSE
+    - scipy/_lib/array_api_compat/LICENSE
+    - scipy/_lib/pocketfft/LICENSE.md
+    - scipy/_lib/unuran/license.txt
+    - scipy/_lib/highs/LICENSE
+    - scipy/_lib/highs/extern/pdqsort/license.txt
+    - scipy/_lib/highs/extern/filereaderlp/LICENSE
+    - scipy/fft/_pocketfft/LICENSE.md
+    - scipy/sparse/linalg/_eigen/arpack/ARPACK/COPYING
+    - scipy/sparse/linalg/_propack/PROPACK/license.txt
+    - scipy/sparse/linalg/_dsolve/SuperLU/License.txt
+    - scipy/spatial/qhull_src/COPYING.txt
+    - scipy/stats/biasedurn/license.txt
   summary: Scientific Library for Python
   description: |
     SciPy is a Python-based ecosystem of open-source software for mathematics,
