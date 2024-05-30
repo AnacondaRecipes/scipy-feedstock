@@ -1,4 +1,4 @@
-{% set version = "1.13.0" %}
+{% set version = "1.13.1" %}
 
 package:
   name: scipy
@@ -6,16 +6,9 @@ package:
 
 source:
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
-    sha256: 58569af537ea29d3f78e5abd18398459f195546bb3be23d16677fb26616cc11e
+    sha256: 095a87a0312b08dfd6a6155cbbd310a8c51800fc931b8c0b84003014b874ed3c
     patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
-  # The  version of pocketfft pinned to scipy 1.13.0 is incompatible with osx <10.15.
-  # This is fixed in pocketfft commit https://github.com/mreineck/pocketfft/commit/33ae5dc94c9cdc7f1c78346504a85de87cadaa12
-  # See: https://github.com/scipy/scipy/issues/20300
-  # TODO remove on the next update
-  - git_url: https://github.com/scipy/pocketfft.git              # [osx and x86_64]
-    git_rev: 9367142748fcc9696a1c9e5a99b76ed9897c9daa            # [osx and x86_64]
-    folder: pocketfft                                            # [osx and x86_64]
 
 build:
   number: 0
@@ -47,7 +40,7 @@ requirements:
     - pythran >=0.14.0,<0.16.0
     - meson-python >=0.15.0,<0.18.0
     - python-build
-    # see: https://github.com/scipy/scipy/blob/v1.13.0/pyproject.toml#L28-L34
+    # see: https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L28-L34
     - numpy 1.23 # [py<311]
     - numpy {{ numpy }} # [py>=311]
     - pip
@@ -56,8 +49,8 @@ requirements:
   run:
     - python
     # see explanation of numpy bounds here
-    # https://github.com/scipy/scipy/blob/v1.13.0/pyproject.toml#L28-L34
-    # https://github.com/scipy/scipy/blob/v1.13.0/pyproject.toml#L55
+    # https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L28-L34
+    # https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L55
     # code compiled against numpy 1 is incompatible with numpy 2 ABI
     # code compiled against numpy 2 can work with numpy 1
     - {{ pin_compatible('numpy', upper_bound='1.29') }}
@@ -96,8 +89,6 @@ requirements:
 # flaky test observerd on multiple platforms
 # see https://github.com/scipy/scipy/issues/18880
 {% set tests_to_skip = tests_to_skip + " or test_expm_multiply_dtype[True-float32-float32]" %}
-# see https://github.com/scipy/scipy/issues/20471
-{% set tests_to_skip = tests_to_skip + " or test_falker" %}
 
 test:
   imports:
