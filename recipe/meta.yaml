@@ -1,4 +1,4 @@
-{% set version = "1.12.0" %}
+{% set version = "1.14.0" %}
 
 package:
   name: scipy
@@ -6,9 +6,11 @@ package:
 
 source:
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
-    sha256: 4bf5abab8a36d20193c698b0f1fc282c1d083c94723902c447e5d2f1780936a3
-    patches:                                                     # [s390x]
+    sha256: b5923f48cb840380f9854339176ef21763118a7300a88203ccd0bdd26e58527b
+    patches:
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
+      # backport https://github.com/scipy/scipy/pull/21069
+      - patches/0003-small-typo-in-small_dynamic_array.h.patch
 
 build:
   number: 0
@@ -26,24 +28,25 @@ requirements:
     - clang   # [win]
     - lld     # [win]
     - {{ compiler('fortran') }}
-    - patch   # [s390x]
+    - patch
     - pkg-config
   host:
     - python
     - cython >=0.29.35,!=3.0.3,<3.1.0
-    - pybind11 >=2.10.4,<2.12.0
+    - pybind11 >=2.12.0,<2.13.0
     - pythran >=0.15.0,<0.16.0
-    - meson-python >=0.15.0,<0.16.0
+    - meson-python >=0.15.0,<0.19.0
     - python-build
-    - numpy 1.22 # [py<311]
-    - numpy {{ numpy }} # [py>=311]
+    - numpy 1.26.4 # [py<311]
+    - numpy >=1.26.4, <2.3 # [py>=311]
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
     # https://github.com/scipy/scipy/blob/v1.12.0/pyproject.toml#L57
-    - {{ pin_compatible('numpy', upper_bound='1.29') }}
+    - numpy 1.26.4 # [py<311]
+    - numpy >=1.26.4, <2.3 # [py>=311]
 
 # Scipy segfault when calling solver PROPACK _svdp at mkl_blas.cdotc (). see: https://github.com/scipy/scipy/issues/15108
 # The use of PROPACK is disabled by default on 1.9.0 : see https://github.com/scipy/scipy/pull/16420
