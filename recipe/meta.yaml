@@ -7,8 +7,8 @@ package:
 source:
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
     sha256: 5a275584e726026a5699459aa72f828a610821006228e841b94275c4a7c08417
-    patches:
-      - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
+    patches: # [s390x]
+      - patches/0002-arff-nodata-test-remove-endian-check.patch  
 build:
   number: 0
   skip: true  # [py<310]
@@ -24,8 +24,7 @@ requirements:
     - clang   # [win]
     - lld     # [win]
     - {{ compiler('fortran') }}
-    - patch # [not win]
-    - m2-patch  # [win]
+    - patch # [s390x]
     - pkg-config
     - git     # [osx and x86_64]
   host:
