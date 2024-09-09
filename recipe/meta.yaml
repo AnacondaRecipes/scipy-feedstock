@@ -8,7 +8,7 @@ source:
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
     sha256: 5a275584e726026a5699459aa72f828a610821006228e841b94275c4a7c08417
     patches: # [s390x]
-      - patches/0002-arff-nodata-test-remove-endian-check.patch  
+      - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
 build:
   number: 0
   skip: true  # [py<310]
