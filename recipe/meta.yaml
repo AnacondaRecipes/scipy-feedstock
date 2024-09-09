@@ -1,4 +1,4 @@
-{% set version = "1.14.0" %}
+{% set version = "1.14.1" %}
 
 package:
   name: scipy
@@ -6,12 +6,9 @@ package:
 
 source:
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
-    sha256: b5923f48cb840380f9854339176ef21763118a7300a88203ccd0bdd26e58527b
+    sha256: 5a275584e726026a5699459aa72f828a610821006228e841b94275c4a7c08417
     patches:
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
-      # backport https://github.com/scipy/scipy/pull/21069
-      - patches/0003-small-typo-in-small_dynamic_array.h.patch
-
 build:
   number: 0
   skip: true  # [py<310]
