@@ -1,6 +1,4 @@
-
 {% set version = "1.14.1" %}
-
 
 package:
   name: scipy
@@ -26,7 +24,8 @@ requirements:
     - clang   # [win]
     - lld     # [win]
     - {{ compiler('fortran') }}
-    - patch
+    - patch # [not win]
+    - m2-patch  # [win]
     - pkg-config
     - git     # [osx and x86_64]
   host:
