@@ -1,5 +1,9 @@
 @echo on
 
+REM Configure Git to handle line endings
+git config --global core.autocrlf true
+git config --global core.eol crlf
+
 REM Add a file to load the fortran wrapper libraries in scipy/.libs
 del scipy\_distributor_init.py
 if %ERRORLEVEL% neq 0 exit 1
