@@ -31,6 +31,7 @@ mkdir builddir
 REM setting c++17. see: https://github.com/scipy/scipy/issues/19726
 "%PYTHON%" -m build --wheel --no-isolation --skip-dependency-check ^
     -Cbuilddir=builddir ^
+    -Csetup-args=-Dcpp_std=c++17 ^
     -Csetup-args=-Dblas=%BLAS% ^
     -Csetup-args=-Dlapack=%BLAS% ^
     -Csetup-args=-Duse-g77-abi=true ^
