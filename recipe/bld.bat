@@ -1,9 +1,5 @@
 @echo on
 
-REM Configure Git to handle line endings
-git config --global core.autocrlf true
-git config --global core.eol crlf
-
 REM Add a file to load the fortran wrapper libraries in scipy/.libs
 del scipy\_distributor_init.py
 if %ERRORLEVEL% neq 0 exit 1
@@ -35,7 +31,6 @@ mkdir builddir
 REM setting c++17. see: https://github.com/scipy/scipy/issues/19726
 "%PYTHON%" -m build --wheel --no-isolation --skip-dependency-check ^
     -Cbuilddir=builddir ^
-    -Csetup-args=-Dcpp_std=c++17 ^
     -Csetup-args=-Dblas=%BLAS% ^
     -Csetup-args=-Dlapack=%BLAS% ^
     -Csetup-args=-Duse-g77-abi=true ^
