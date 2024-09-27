@@ -31,7 +31,7 @@ requirements:
     - git     # [osx and x86_64]
   host:
     - python
-    - cython >=3.0.8,<3.1.0
+    - cython >=3.0.8,<3.2.0
     - pybind11 >=2.12.0,<2.13.0
     - pybind11-abi
     - pythran >=0.14.0,<0.16.0
@@ -50,7 +50,8 @@ requirements:
     # https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L55
     # code compiled against numpy 1 is incompatible with numpy 2 ABI
     # code compiled against numpy 2 can work with numpy 1
-    - {{ pin_compatible('numpy', upper_bound='1.29') }}
+    # FIXME Breaks building 3.13 but probably needs to be reintroduced in some way
+    # - {{ pin_compatible('numpy', upper_bound='1.29') }}
 
 {% set tests_to_skip = "_not_a_real_test" %}
 
