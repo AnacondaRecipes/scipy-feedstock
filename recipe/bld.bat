@@ -35,7 +35,6 @@ REM Setting c++17. See: https://github.com/scipy/scipy/issues/19726
     -Csetup-args=-Dlapack=%BLAS% ^
     -Csetup-args=-Duse-g77-abi=true ^
     -Csetup-args=-Duse-pythran=true ^
-    -Csetup-args=-Dpythran_extra_compiler_args=-DPYTHRAN_NO_BUILTIN_OPEN_MEMSTREAM
 if errorlevel 1 (
   type builddir\meson-logs\meson-log.txt
   exit /b 1
