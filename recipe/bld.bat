@@ -34,7 +34,7 @@ REM Setting c++17. See: https://github.com/scipy/scipy/issues/19726
     -Csetup-args=-Dblas=%BLAS% ^
     -Csetup-args=-Dlapack=%BLAS% ^
     -Csetup-args=-Duse-g77-abi=true ^
-    -Csetup-args=-Duse-pythran=true ^
+    -Csetup-args=-Duse-pythran=true
 if errorlevel 1 (
   type builddir\meson-logs\meson-log.txt
   exit /b 1
@@ -46,21 +46,21 @@ for /f %%f in ('dir /b /S .\dist') do (
 
 REM After the build, check for the DLL
 echo Checking for sf_error_state.dll
-dir /s /b %PREFIX%\sf_error_state.dll
 dir /s /b %PREFIX%\Lib\site-packages\scipy\special\sf_error_state.dll
 
-REM Copy the DLL to the Library\bin directory if it exists
+REM Copy the DLL to the scipy\special directory if it doesn't exist
 if exist %PREFIX%\Lib\site-packages\scipy\special\sf_error_state.dll (
-    echo Copying sf_error_state.dll to Library\bin
-    copy %PREFIX%\Lib\site-packages\scipy\special\sf_error_state.dll %PREFIX%\Library\bin\sf_error_state.dll
+    echo sf_error_state.dll is already in the expected location
 ) else (
-    echo sf_error_state.dll not found in the expected location
+    echo sf_error_state.dll not found, attempting to copy
+    copy builddir\build\lib.win-amd64-*-cpython-*\scipy\special\sf_error_state.dll %PREFIX%\Lib\site-packages\scipy\special\
+    if %ERRORLEVEL% neq 0 exit 1
 )
 
 REM Final check
-if exist %PREFIX%\Library\bin\sf_error_state.dll (
-    echo sf_error_state.dll successfully copied to Library\bin
+if exist %PREFIX%\Lib\site-packages\scipy\special\sf_error_state.dll (
+    echo sf_error_state.dll successfully copied to scipy\special
 ) else (
-    echo Failed to copy sf_error_state.dll to Library\bin
+    echo Failed to copy sf_error_state.dll to scipy\special
     exit 1
 )
