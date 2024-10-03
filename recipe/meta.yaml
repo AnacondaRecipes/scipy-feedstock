@@ -9,12 +9,13 @@ source:
     sha256: 5a275584e726026a5699459aa72f828a610821006228e841b94275c4a7c08417
     patches: # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
+
 build:
   number: 0
   skip: true  # [py<310]
-  missing_dso_whitelist:  # [linux and s390x]
-    - $RPATH/ld64.so.1    # [linux and s390x] 
-    - $RPATH/sf_error_state.dll    # [win]
+  missing_dso_whitelist: # [linux and s390x]
+    - $RPATH/ld64.so.1  # [linux and s390x]
+    - $RPATH/sf_error_state.dll  # [win]
   ignore_run_exports:
     - numpy
 
