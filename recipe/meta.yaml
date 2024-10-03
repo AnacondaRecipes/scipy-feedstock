@@ -14,6 +14,7 @@ build:
   skip: true  # [py<310]
   missing_dso_whitelist:  # [linux and s390x]
     - $RPATH/ld64.so.1    # [linux and s390x] 
+    - $RPATH/sf_error_state.dll    # [win]
   ignore_run_exports:
     - numpy
 
