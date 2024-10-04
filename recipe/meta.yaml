@@ -12,11 +12,9 @@ source:
 
 build:
   number: 0
-  skip: true  # [py<310]
+  skip: true  # [py<310 or linux or osx or s390x]
   missing_dso_whitelist: # [linux and s390x]
     - $RPATH/ld64.so.1  # [linux and s390x]
-  missing_dso_whitelist: # [win]
-    - $RPATH/sf_error_state.dll  # [win]
   ignore_run_exports:
     - numpy
 
