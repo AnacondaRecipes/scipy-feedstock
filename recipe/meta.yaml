@@ -13,8 +13,9 @@ source:
 build:
   number: 0
   skip: true  # [py<310 or linux or osx or s390x]
-  missing_dso_whitelist: # [linux and s390x]
+  missing_dso_whitelist:
     - $RPATH/ld64.so.1  # [linux and s390x]
+    - $RPATH/sf_error_state.dll # [win]
   ignore_run_exports:
     - numpy
 
@@ -37,18 +38,13 @@ requirements:
     - meson-python >=0.15.0,<0.18.0
     - python-build
     - numpy 1.26.4 # [py<311]
-    - numpy {{ numpy }} # [py>=311]
+    - numpy 2.1.0 # [py>=311]
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
-    # see explanation of numpy bounds here
-    # https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L28-L34
-    # https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L55
-    # code compiled against numpy 1 is incompatible with numpy 2 ABI
-    # code compiled against numpy 2 can work with numpy 1
-    - {{ pin_compatible('numpy', upper_bound='1.29') }}
+    - {{ pin_compatible('numpy', upper_bound='2.1.0') }}
 
 {% set tests_to_skip = "_not_a_real_test" %}
 
