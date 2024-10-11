@@ -1,0 +1,17 @@
+SmallDynamicArray does not have a `size` member, but `size_`. This patch fixes the typo.
+
+diff --git a/scipy/_lib/_uarray/small_dynamic_array.h b/scipy/_lib/_uarray/small_dynamic_array.h
+index b6c46d7c4..351b5d8fc 100644
+--- a/scipy/_lib/_uarray/small_dynamic_array.h
++++ b/scipy/_lib/_uarray/small_dynamic_array.h
+@@ -142,7 +142,7 @@ public:
+ 
+     clear();
+ 
+-    size_ = copy.size;
++    size_ = copy.size_;
+     try {
+       allocate();
+     } catch (...) {
+(END)
+
