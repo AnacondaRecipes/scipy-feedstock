@@ -38,30 +38,17 @@ requirements:
     - python
     - cython >=3.0.8,<3.1.0
     - pybind11 >=2.12.0,<2.13.0
-    - pythran >=0.15.0,<0.16.0
-    - meson-python >=0.15.0,<0.18.0
+    - pythran >=0.14.0,<0.17.0
+    - meson-python >=0.15.0,<0.19.0
     - python-build
-    # see: https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L28-L34
-    - numpy 1.23 # [py<311]
-    - numpy {{ numpy }} # [py>=311]
+    - numpy 2.1
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
-    # see explanation of numpy bounds here
-    # https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L28-L34
-    # https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L55
-    # code compiled against numpy 1 is incompatible with numpy 2 ABI
-    # code compiled against numpy 2 can work with numpy 1
-    - {{ pin_compatible('numpy', upper_bound='1.29') }}
+    - numpy >=1.23.5,<2.3
 {% set tests_to_skip = "_not_a_real_test" %}
-
-# skip a test that fails with MKL + AVX512 (non-AVX512 passes) (See: https://github.com/scipy/scipy/issues/15533)
-{% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab] or test_x0_equals_Mb[bicgstab-nonsymposdef-F] or test_x0_equals_Mb[nonsymposdef-bicgstab]" %} # [blas_impl == 'mkl']
-
-# mark one linalg.solve_discrete_are as knownfail https://github.com/scipy/scipy/issues/16926
-{% set tests_to_skip = tests_to_skip + " or test_solve_discrete_are"  %} # [blas_impl == 'openblas' and linux]
 
 # skip failing s390x tests
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
@@ -76,15 +63,7 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_hermitian_modes" %}  # [win]
 {% set tests_to_skip = tests_to_skip + " or test_complex_nonsymmetric_modes" %}  # [win]
 {% set tests_to_skip = tests_to_skip + " or test_standard_nonsymmetric_starting_vector" %}  # [win]
-{% set tests_to_skip = tests_to_skip + " or test_general_nonsymmetric_starting_vector" %}  # [win]
-
-# skip failing win-64 tests - propack/arpack issues
-# see https://github.com/scipy/scipy/issues/15108
-{% set tests_to_skip = tests_to_skip + " or test_svd_linop or test_svdp or test_examples" %}  # [win]                                                                                                      
-
-# skip failing mkl tests
-# see https://github.com/scipy/scipy/issues/20470
-{% set tests_to_skip = tests_to_skip + " or test_nnls_inner_loop_case1" %} # [blas_impl == 'mkl']
+{% set tests_to_skip = tests_to_skip + " or test_general_nonsymmetric_starting_vector" %}  # [win]                                                                                                   
 
 # flaky test observerd on multiple platforms
 # see https://github.com/scipy/scipy/issues/18880
@@ -143,7 +122,7 @@ test:
     - threadpoolctl
     - pooch
     - hypothesis >=6.30
-    - array-api-strict
+    - array-api-strict >=2.0
     # see comment above
     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
     # output of numpy.show_config()
