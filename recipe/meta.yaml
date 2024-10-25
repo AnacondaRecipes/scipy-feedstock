@@ -7,8 +7,11 @@ package:
 source:
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
     sha256: 5a275584e726026a5699459aa72f828a610821006228e841b94275c4a7c08417
-    patches: # [s390x]
+    patches:
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
+      # - recipe\patches\0003-small-typo-in-small_dynamic_array.h.patch
+      # - patches/0004-fix-windows-linker.patch  # [win]
+      # - patches/0005-open-memstream-windows-compat.patch # [win]
 
 build:
   number: 0
@@ -28,6 +31,7 @@ requirements:
     - lld     # [win]
     - {{ compiler('fortran') }}
     - patch # [s390x]
+    - m2-patch # [win]
     - pkg-config
     - git     # [osx and x86_64]
   host:
@@ -37,15 +41,20 @@ requirements:
     - pythran >=0.15.0,<0.16.0
     - meson-python >=0.15.0,<0.18.0
     - python-build
-    - numpy 1.26.4 # [py<311]
-    - numpy 2.1.0 # [py>=311]
+    # see: https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L28-L34
+    - numpy 1.23 # [py<311]
+    - numpy {{ numpy }} # [py>=311]
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
-    - {{ pin_compatible('numpy', upper_bound='2.1.0') }}
-
+    # see explanation of numpy bounds here
+    # https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L28-L34
+    # https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L55
+    # code compiled against numpy 1 is incompatible with numpy 2 ABI
+    # code compiled against numpy 2 can work with numpy 1
+    - {{ pin_compatible('numpy', upper_bound='1.29') }}
 {% set tests_to_skip = "_not_a_real_test" %}
 
 # skip a test that fails with MKL + AVX512 (non-AVX512 passes) (See: https://github.com/scipy/scipy/issues/15533)

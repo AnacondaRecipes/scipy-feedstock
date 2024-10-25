@@ -6,6 +6,8 @@ if %ERRORLEVEL% neq 0 exit 1
 copy %RECIPE_DIR%\_distributor_init.py scipy\
 if %ERRORLEVEL% neq 0 exit 1
 
+set CFLAGS=-I%SRC_DIR%\scipy\linalg -I%SRC_DIR%\scipy\_lib
+
 REM Check if clang-cl is on path as required
 clang-cl.exe --version
 if %ERRORLEVEL% neq 0 exit 1

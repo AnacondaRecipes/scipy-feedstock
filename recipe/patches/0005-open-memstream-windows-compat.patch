@@ -1,0 +1,19 @@
+--- scipy/_lib/meson.build.orig	2024-10-25 09:20:22.979583878 +0100
++++ scipy/_lib/meson.build	2024-10-25 12:48:03.533369342 +0100
+@@ -86,9 +86,13 @@
+ 
+ conf_memstream = configuration_data()
+ 
+-if meson.get_compiler('c').has_function('open_memstream',
+-                                        prefix: '#define _POSIX_C_SOURCE 200809L\n#include <stdio.h>')
+-  conf_memstream.set('has_openmemstream', '1')
++if not is_windows
++  if meson.get_compiler('c').has_function('open_memstream',
++                                          prefix: '#define _POSIX_C_SOURCE 200809L\n#include <stdio.h>')
++    conf_memstream.set('has_openmemstream', '1')
++  else
++    conf_memstream.set('has_openmemstream', '0')
++  endif
+ else
+   conf_memstream.set('has_openmemstream', '0')
+ endif
