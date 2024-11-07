@@ -1,0 +1,13 @@
+build_env_vars:
+  ANACONDA_ROCKET_ENABLE_PY313 : yes
+
+channels:
+  - https://staging.continuum.io/prefect/fs/clangdev-feedstock/pr4/0cf84db
+  - https://staging.continuum.io/prefect/fs/lld-feedstock/pr6/822dcbd
+  - https://staging.continuum.io/prefect/fs/pythran-feedstock/pr12/e745850
+  - https://staging.continuum.io/prefect/fs/ninja-feedstock/pr7/8792101
+  - https://staging.continuum.io/prefect/fs/threadpoolctl-feedstock/pr7/a0cf150
+  - https://staging.continuum.io/prefect/fs/pyyaml-feedstock/pr11/b2c8fc9
+  - https://staging.continuum.io/prefect/fs/requests-feedstock/pr15/f2f2cf0
+  - https://staging.continuum.io/prefect/fs/pooch-feedstock/pr7/0ec6eb0
+  - https://staging.continuum.io/prefect/fs/pybind11-feedstock/pr18/44dfec4
