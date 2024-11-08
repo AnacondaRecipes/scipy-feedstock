@@ -7,7 +7,7 @@ package:
 source:
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
     sha256: 5a275584e726026a5699459aa72f828a610821006228e841b94275c4a7c08417
-    patches:
+    patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
 
 build:
@@ -37,7 +37,6 @@ requirements:
     - lld     # [win]
     - {{ compiler('fortran') }}
     - patch # [s390x]
-    - m2-patch # [win]
     - pkg-config
   host:
     - python
@@ -83,6 +82,10 @@ requirements:
 # flaky test observerd on multiple platforms
 # see https://github.com/scipy/scipy/issues/18880
 {% set tests_to_skip = tests_to_skip + " or test_expm_multiply_dtype[True-float32-float32]" %}
+
+# flaky test observerd on windows - time sensitive
+# see https://github.com/scipy/scipy/blob/v1.14.1/scipy/_lib/tests/test_import_cycles.py#L11
+{% set tests_to_skip = tests_to_skip + " or test_public_modules_importable" %}  # [win] 
 
 test:
   imports:
@@ -214,4 +217,7 @@ extra:
     - rgommers
     - ocefpaf
     - h-vetinari
-
+  skip-lints:
+    - pip_install_args
+    - potentially_bad_ignore_run_exports
+    - host_section_needs_exact_pinnings
