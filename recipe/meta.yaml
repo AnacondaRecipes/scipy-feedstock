@@ -1,4 +1,4 @@
-{% set version = "1.13.1" %}
+{% set version = "1.14.1" %}
 
 package:
   name: scipy
@@ -6,15 +6,25 @@ package:
 
 source:
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
-    sha256: 095a87a0312b08dfd6a6155cbbd310a8c51800fc931b8c0b84003014b874ed3c
+    sha256: 5a275584e726026a5699459aa72f828a610821006228e841b94275c4a7c08417
     patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
 
 build:
   number: 0
-  skip: true  # [py<39]
-  missing_dso_whitelist:  # [linux and s390x]
-    - $RPATH/ld64.so.1    # [linux and s390x] 
+  skip: true  # [py<310]
+  missing_dso_whitelist:
+    - $RPATH/ld64.so.1  # [linux and s390x]
+    # sf_error_state is loaded with ctypes.WinDLL
+    # see: https://github.com/scipy/scipy/pull/20321
+    - "**/sf_error_state.dll" # [win]
+    # It is also flagged as overlinking on linux, though this seems to be a conda issue.
+    # For some reason, the .sos built for python 3.11 look for .sos for linking in directories of a different
+    # python. This patches over this, although it's not great and the problem should be fixed properly.
+    # Note that this issue is sporadic - you may remove this, and the build may work but then break at a later date.
+    # These are present in the site-packages directory
+    - "**/libsf_error_state.*" # [unix]
+
   ignore_run_exports:
     - numpy
 
@@ -26,36 +36,24 @@ requirements:
     - clang   # [win]
     - lld     # [win]
     - {{ compiler('fortran') }}
-    - patch   # [s390x]
+    - patch # [s390x]
     - pkg-config
-    - git     # [osx and x86_64]
   host:
     - python
     - cython >=3.0.8,<3.1.0
     - pybind11 >=2.12.0,<2.13.0
-    - pybind11-abi
-    - pythran >=0.14.0,<0.16.0
-    - meson-python >=0.15.0,<0.18.0
+    - pythran >=0.14.0,<0.17.0
+    - meson-python >=0.15.0,<0.19.0
     - python-build
-    # see: https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L28-L34
-    - numpy 1.23 # [py<311]
-    - numpy {{ numpy }} # [py>=311]
+    - numpy 2.0 # [py<313]
+    - numpy 2.1 # [py==313]
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
-    # see explanation of numpy bounds here
-    # https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L28-L34
-    # https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L55
-    # code compiled against numpy 1 is incompatible with numpy 2 ABI
-    # code compiled against numpy 2 can work with numpy 1
-    - {{ pin_compatible('numpy', upper_bound='1.29') }}
-
+    - numpy >=1.23.5,<2.3
 {% set tests_to_skip = "_not_a_real_test" %}
-
-# skip a test that fails with MKL + AVX512 (non-AVX512 passes) (See: https://github.com/scipy/scipy/issues/15533)
-{% set tests_to_skip = tests_to_skip + " or test_x0_equals_Mb[bicgstab] or test_x0_equals_Mb[bicgstab-nonsymposdef-F] or test_x0_equals_Mb[nonsymposdef-bicgstab]" %} # [blas_impl == 'mkl']
 
 # mark one linalg.solve_discrete_are as knownfail https://github.com/scipy/scipy/issues/16926
 {% set tests_to_skip = tests_to_skip + " or test_solve_discrete_are"  %} # [blas_impl == 'openblas' and linux]
@@ -65,9 +63,11 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_distance_transform_cdt05" %} # [s390x] See: https://github.com/scipy/scipy/issues/18878
 
 # skip failing osx-64 tests
-{% set tests_to_skip = tests_to_skip + " or test_tgsyl" %}  # [osx and x86_64 and blas_impl == 'openblas'] See: https://github.com/scipy/scipy/pull/18571, could potentially be fixed with openblas 0.3.23
+# see: https://github.com/scipy/scipy/pull/18571, could potentially be fixed with openblas 0.3.23
+# see https://github.com/scipy/scipy/issues/16949
+{% set tests_to_skip = tests_to_skip + " or test_tgsyl or test_gges_tgexc or test_gges_tgsen or test_qz_single" %}  # [osx and x86_64 and blas_impl == 'openblas']
 
-# skip failing win-64 tests - fortran related regression, from switching to meson
+# skip failing win-64 tests - intel fortran related regression
 # see https://github.com/scipy/scipy/issues/17075
 {% set tests_to_skip = tests_to_skip + " or TestODR" %}  # [win]
 {% set tests_to_skip = tests_to_skip + " or test_hermitian_modes" %}  # [win]
@@ -77,15 +77,15 @@ requirements:
 
 # skip failing win-64 tests - propack/arpack issues
 # see https://github.com/scipy/scipy/issues/15108
-{% set tests_to_skip = tests_to_skip + " or test_svd_linop or test_svdp or test_examples" %}  # [win]                                                                                                      
-
-# skip failing mkl tests
-# see https://github.com/scipy/scipy/issues/20470
-{% set tests_to_skip = tests_to_skip + " or test_nnls_inner_loop_case1" %} # [blas_impl == 'mkl']
+{% set tests_to_skip = tests_to_skip + " or test_svd_linop or test_svdp or test_examples" %}  # [win] 
 
 # flaky test observerd on multiple platforms
 # see https://github.com/scipy/scipy/issues/18880
 {% set tests_to_skip = tests_to_skip + " or test_expm_multiply_dtype[True-float32-float32]" %}
+
+# flaky test observerd on windows - time sensitive
+# see https://github.com/scipy/scipy/blob/v1.14.1/scipy/_lib/tests/test_import_cycles.py#L11
+{% set tests_to_skip = tests_to_skip + " or test_public_modules_importable" %}  # [win] 
 
 test:
   imports:
@@ -140,7 +140,7 @@ test:
     - threadpoolctl
     - pooch
     - hypothesis >=6.30
-    - array-api-strict
+    - array-api-strict >=2.0
     # see comment above
     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
     # output of numpy.show_config()
@@ -217,4 +217,7 @@ extra:
     - rgommers
     - ocefpaf
     - h-vetinari
-
+  skip-lints:
+    - pip_install_args
+    - potentially_bad_ignore_run_exports
+    - host_section_needs_exact_pinnings

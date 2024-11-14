@@ -30,5 +30,6 @@ $PYTHON -m build --wheel --no-isolation --skip-dependency-check \
     -Csetup-args=-Dlapack=${BLAS} \
     -Csetup-args=-Duse-g77-abi=true \
     -Csetup-args=-Duse-pythran=true \
+    -Csetup-args=-Dcpp_std=c++17 \
     || (cat builddir/meson-logs/meson-log.txt && exit 1)
 $PYTHON -m pip install dist/scipy*.whl
