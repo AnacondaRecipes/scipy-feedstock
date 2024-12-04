@@ -38,7 +38,7 @@ requirements:
     - meson-python >=0.15.0,<0.18.0
     - python-build
     # see: https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L28-L34
-    - numpy >2
+    - numpy >=2
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
