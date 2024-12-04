@@ -38,8 +38,7 @@ requirements:
     - meson-python >=0.15.0,<0.18.0
     - python-build
     # see: https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L28-L34
-    - numpy 1.23 # [py<311]
-    - numpy {{ numpy }} # [py>=311]
+    - numpy >2
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
@@ -50,7 +49,8 @@ requirements:
     # https://github.com/scipy/scipy/blob/v1.13.1/pyproject.toml#L55
     # code compiled against numpy 1 is incompatible with numpy 2 ABI
     # code compiled against numpy 2 can work with numpy 1
-    - {{ pin_compatible('numpy', upper_bound='1.29') }}
+    # - {{ pin_compatible('numpy', upper_bound='1.29') }}
+    - numpy
 
 {% set tests_to_skip = "_not_a_real_test" %}
 
