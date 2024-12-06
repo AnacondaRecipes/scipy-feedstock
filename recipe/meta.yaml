@@ -72,6 +72,9 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_complex_nonsymmetric_modes" %}  # [win]
 {% set tests_to_skip = tests_to_skip + " or test_standard_nonsymmetric_starting_vector" %}  # [win]
 {% set tests_to_skip = tests_to_skip + " or test_general_nonsymmetric_starting_vector" %}  # [win]
+# from updating to numpy 2
+{% set tests_to_skip = tests_to_skip + " or test_hermite_nan" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_gegenbauer_nan" %}  # [win]
 
 # skip failing win-64 tests - propack/arpack issues
 # see https://github.com/scipy/scipy/issues/15108
