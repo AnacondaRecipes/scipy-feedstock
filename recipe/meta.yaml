@@ -1,4 +1,4 @@
-{% set version = "1.14.1" %}
+{% set version = "1.15.0" %}
 
 package:
   name: scipy
@@ -6,7 +6,7 @@ package:
 
 source:
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
-    sha256: 5a275584e726026a5699459aa72f828a610821006228e841b94275c4a7c08417
+    sha256: 300742e2cc94e36a2880ebe464a1c8b4352a7b0f3e36ec3d2ac006cdbe0219ac
     patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
 
@@ -41,9 +41,9 @@ requirements:
   host:
     - python
     - cython >=3.0.8,<3.1.0
-    - pybind11 >=2.12.0,<2.13.0
-    - pythran >=0.14.0,<0.17.0
-    - meson-python >=0.15.0,<0.19.0
+    - pybind11 >=2.13.2,<2.14.0
+    - pythran >=0.14.0,<0.18.0
+    - meson-python >=0.15.0,<0.20.0
     - python-build
     - numpy 2.0 # [py<313]
     - numpy 2.1 # [py==313]
@@ -52,7 +52,7 @@ requirements:
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
-    - numpy >=1.23.5,<2.3
+    - numpy >=1.23.5,<2.5
 {% set tests_to_skip = "_not_a_real_test" %}
 
 # mark one linalg.solve_discrete_are as knownfail https://github.com/scipy/scipy/issues/16926
@@ -97,6 +97,7 @@ test:
     - scipy.cluster.vq
     - scipy.constants
     - scipy.datasets
+    - scipy.differentiate
     - scipy.fft
     - scipy.fftpack
     - scipy.integrate
@@ -115,6 +116,7 @@ test:
     - scipy.ndimage
     - scipy.odr
     - scipy.optimize
+    - scipy.optimize.elementwise
     - scipy.signal
     - scipy.signal.windows
     - scipy.sparse
@@ -140,7 +142,7 @@ test:
     - threadpoolctl
     - pooch
     - hypothesis >=6.30
-    - array-api-strict >=2.0
+    - array-api-strict >=2.0,<2.1.1
     # see comment above
     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
     # output of numpy.show_config()
@@ -189,14 +191,13 @@ about:
     - scipy/io/_fast_matrix_market/LICENSE.txt
     - scipy/io/_fast_matrix_market/fast_matrix_market/dependencies/fast_float/LICENSE-MIT
     - scipy/io/_fast_matrix_market/fast_matrix_market/dependencies/ryu/LICENSE-Boost
-    - scipy/_lib/boost_math/LICENSE
     - scipy/_lib/_uarray/LICENSE
     - scipy/_lib/array_api_compat/LICENSE
+    - scipy/_lib/array_api_extra/LICENSE
+    - scipy/_lib/boost_math/LICENSE
+    - scipy/_lib/cobyqa/LICENSE
     - scipy/_lib/pocketfft/LICENSE.md
     - scipy/_lib/unuran/license.txt
-    - scipy/_lib/highs/LICENSE
-    - scipy/_lib/highs/extern/pdqsort/license.txt
-    - scipy/_lib/highs/extern/filereaderlp/LICENSE
     - scipy/fft/_pocketfft/LICENSE.md
     - scipy/sparse/linalg/_eigen/arpack/ARPACK/COPYING
     - scipy/sparse/linalg/_propack/PROPACK/license.txt
