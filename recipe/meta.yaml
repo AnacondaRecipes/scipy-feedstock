@@ -87,6 +87,10 @@ requirements:
 # see https://github.com/scipy/scipy/blob/v1.14.1/scipy/_lib/tests/test_import_cycles.py#L11
 {% set tests_to_skip = tests_to_skip + " or test_public_modules_importable" %}  # [win] 
 
+# test would pass with pytest 8 (verified with pytest 8.3.3)
+# see https://github.com/scipy/scipy/issues/22244
+{% set tests_to_skip = tests_to_skip + " or test_no_ZeroDivisionError" %}
+
 test:
   imports:
     - scipy
