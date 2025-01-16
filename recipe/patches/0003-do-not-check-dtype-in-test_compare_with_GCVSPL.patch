@@ -1,0 +1,25 @@
+From ce7763451fb885bc303a32fbe36d6703ccdb689c Mon Sep 17 00:00:00 2001
+From: Charles Bousseau <cbousseau@anaconda.com>
+Date: Thu, 16 Jan 2025 16:23:43 -0500
+Subject: [PATCH] do not check dtype in test_compare_with_GCVSPL
+
+See: https://github.com/scipy/scipy/pull/22345
+---
+ scipy/interpolate/tests/test_bsplines.py | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/scipy/interpolate/tests/test_bsplines.py b/scipy/interpolate/tests/test_bsplines.py
+index 62c7365ee5e4..e8b1b2b58afc 100644
+--- a/scipy/interpolate/tests/test_bsplines.py
++++ b/scipy/interpolate/tests/test_bsplines.py
+@@ -2164,7 +2164,9 @@ def test_compare_with_GCVSPL(self):
+         # such tolerance is explained by the fact that the spline is built
+         # using an iterative algorithm for minimizing the GCV criteria. These
+         # algorithms may vary, so the tolerance should be rather low.
+-        xp_assert_close(y_compr, y_GCVSPL, atol=1e-4, rtol=1e-4)
++        # Not checking dtypes as gcvspl.npz stores little endian arrays, which
++        # result in conflicting dtypes on big endian systems. 
++        xp_assert_close(y_compr, y_GCVSPL, atol=1e-4, rtol=1e-4, check_dtype=False)
+ 
+     def test_non_regularized_case(self):
+         """

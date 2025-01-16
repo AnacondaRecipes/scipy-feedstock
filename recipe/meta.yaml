@@ -9,6 +9,7 @@ source:
     sha256: 033a75ddad1463970c96a88063a1df87ccfddd526437136b6ee81ff0312ebdf6
     patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
+      - patches/0003-do-not-check-dtype-in-test_compare_with_GCVSPL.patch # [s390x]
 
 build:
   number: 0
