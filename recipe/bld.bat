@@ -30,8 +30,10 @@ if "%blas_impl%" == "openblas" (
 
 mkdir builddir
 REM Setting c++17. See: https://github.com/scipy/scipy/issues/19726
+REM Setting -j4 to limit parallelization in order to avoid random cython compilation issues.
 "%PYTHON%" -m build --wheel --no-isolation --skip-dependency-check ^
     -Cbuilddir=builddir ^
+    -Ccompile-args=-j4 ^
     -Csetup-args=-Dcpp_std=c++17 ^
     -Csetup-args=-Dblas=%BLAS% ^
     -Csetup-args=-Dlapack=%BLAS% ^
