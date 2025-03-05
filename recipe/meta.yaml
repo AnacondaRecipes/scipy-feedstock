@@ -12,8 +12,9 @@ source:
       - patches/0003-do-not-check-dtype-in-test_compare_with_GCVSPL.patch # [s390x]
 
 build:
-  number: 0
-  skip: true  # [py<310]
+  number: 1
+  # s390x fails in CI without an almalinux docker image.
+  skip: true  # [py<310 or s390x]
   missing_dso_whitelist:
     - $RPATH/ld64.so.1  # [linux and s390x]
     # sf_error_state is loaded with ctypes.WinDLL
@@ -49,7 +50,7 @@ requirements:
     - numpy 2.0 # [py<313]
     - numpy 2.1 # [py==313]
     - pip
-    - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
+    - mkl-devel {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
@@ -153,10 +154,6 @@ test:
     # output of numpy.show_config()
     - pyyaml
   commands:
-    # Use OpenBLAS with 1 thread only as it seems to be using too many
-    # on the CIs apparently.
-    - export OPENBLAS_NUM_THREADS=1 # [ppc64le and blas_impl == 'openblas']
-
     # Attempt to fix some file number limits when testing on osx.
     - ulimit -n 64000 # [osx]
 
