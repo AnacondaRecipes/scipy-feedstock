@@ -1,2 +1,13 @@
 build_env_vars:
   ANACONDA_ROCKET_ENABLE_PY313 : yes
+
+# Required for glibc >= 2.26 for intel-openmp to work.
+pkg_build_image_tag: main-almalinux-8
+
+channels:
+  - https://staging.continuum.io/prefect/fs/numpy-feedstock/pr101/5c2bba6
+  - https://staging.continuum.io/prefect/fs/numpy-feedstock/pr102/1b20634
+  - https://staging.continuum.io/prefect/fs/numpy-feedstock/pr103/3f09968
+  - https://staging.continuum.io/prefect/fs/mkl_random-feedstock/pr9/616b59f
+  - https://staging.continuum.io/prefect/fs/mkl_fft-feedstock/pr11/c96980d
+  - brianwing
