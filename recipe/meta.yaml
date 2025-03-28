@@ -11,7 +11,7 @@ source:
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
 
 build:
-  number: 0
+  number: 1
   skip: true  # [py<310]
   missing_dso_whitelist:
     - $RPATH/ld64.so.1  # [linux and s390x]
