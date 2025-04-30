@@ -50,7 +50,7 @@ requirements:
     - numpy 2.1 # [py==313]
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
-    - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
+    - openblas-devel 0.3.29  # [blas_impl == 'openblas']
   run:
     - python
     - numpy >=1.23.5,<2.5
