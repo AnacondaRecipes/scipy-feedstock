@@ -1,4 +1,4 @@
-{% set version = "1.15.2" %}
+{% set version = "1.15.3" %}
 
 package:
   name: scipy
@@ -6,12 +6,12 @@ package:
 
 source:
   - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
-    sha256: cd58a314d92838f7e6f755c8a2167ead4f27e1fd5c1251fd54289569ef3495ec
+    sha256: eae3cf522bc7df64b42cad3925c876e1b0b6c35c1337c93e12c0f366f55b0eaf
     patches:                                                     # [s390x]
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
 
 build:
-  number: 1
+  number: 0
   skip: true  # [py<310]
   missing_dso_whitelist:
     - $RPATH/ld64.so.1  # [linux and s390x]
@@ -55,17 +55,9 @@ requirements:
     - numpy >=1.23.5,<2.5
 {% set tests_to_skip = "_not_a_real_test" %}
 
-# mark one linalg.solve_discrete_are as knownfail https://github.com/scipy/scipy/issues/16926
-{% set tests_to_skip = tests_to_skip + " or test_solve_discrete_are"  %} # [blas_impl == 'openblas' and linux]
-
 # skip failing s390x tests
 {% set tests_to_skip = tests_to_skip + " or test_jacobi_int" %} # [s390x] timeout after 1800s
 {% set tests_to_skip = tests_to_skip + " or test_distance_transform_cdt05" %} # [s390x] See: https://github.com/scipy/scipy/issues/18878
-
-# skip failing osx-64 tests
-# see: https://github.com/scipy/scipy/pull/18571, could potentially be fixed with openblas 0.3.23
-# see https://github.com/scipy/scipy/issues/16949
-{% set tests_to_skip = tests_to_skip + " or test_tgsyl or test_gges_tgexc or test_gges_tgsen or test_qz_single" %}  # [osx and x86_64 and blas_impl == 'openblas']
 
 # skip failing win-64 tests - intel fortran related regression
 # see https://github.com/scipy/scipy/issues/17075
@@ -86,10 +78,6 @@ requirements:
 # flaky test observerd on windows - time sensitive
 # see https://github.com/scipy/scipy/blob/v1.14.1/scipy/_lib/tests/test_import_cycles.py#L11
 {% set tests_to_skip = tests_to_skip + " or test_public_modules_importable" %}  # [win] 
-
-# test would pass with pytest 8 (verified with pytest 8.3.3)
-# see https://github.com/scipy/scipy/issues/22244
-{% set tests_to_skip = tests_to_skip + " or test_no_ZeroDivisionError" %}
 
 test:
   imports:
@@ -142,7 +130,7 @@ test:
     - pytest-xdist
     - asv
     - mpmath
-    # - gmpy2           (until gmpy2 2.2 is released)
+    - gmpy2
     - threadpoolctl
     - pooch
     - hypothesis >=6.30
