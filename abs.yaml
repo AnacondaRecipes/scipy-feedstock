@@ -1,13 +1,11 @@
-build_env_vars:
-  ANACONDA_ROCKET_ENABLE_PY313 : yes
-
 # Required for glibc >= 2.26 for intel-openmp to work.
-pkg_build_image_tag: main-almalinux-8
+pkg_build_image_tag: main-rockylinux-8
 
 channels:
-  - https://staging.continuum.io/prefect/fs/numpy-feedstock/pr101/5c2bba6
-  - https://staging.continuum.io/prefect/fs/numpy-feedstock/pr102/1b20634
-  - https://staging.continuum.io/prefect/fs/numpy-feedstock/pr103/3f09968
-  - https://staging.continuum.io/prefect/fs/mkl_random-feedstock/pr9/616b59f
-  - https://staging.continuum.io/prefect/fs/mkl_fft-feedstock/pr11/c96980d
-  - brianwing
+  - https://staging.continuum.io/prefect/fs/linux-sysroot-feedstock/pr3/be8f934
+  - https://staging.continuum.io/prefect/fs/numpy-feedstock/pr101/7a39196
+  - https://staging.continuum.io/prefect/fs/numpy-feedstock/pr102/c060a95
+  - https://staging.continuum.io/prefect/fs/numpy-feedstock/pr103/7538eef
+  - https://staging.continuum.io/prefect/fs/mkl_random-feedstock/pr9/e791be0
+  - https://staging.continuum.io/prefect/fs/mkl_fft-feedstock/pr11/8e824ca
+  - brianwing  # CI really doesn't want to put Linux artifacts in staging channels this round so I just pushed them to my own channel for now.

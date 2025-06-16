@@ -32,6 +32,7 @@ build:
 
 requirements:
   build:
+    - {{ stdlib('c') }}  # [linux]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     # pythran code needs clang-cl on windows
@@ -142,6 +143,7 @@ test:
     - pytest
     - pytest-timeout
     - pytest-xdist
+    - arpack
     - asv
     - mpmath
     # - gmpy2           (until gmpy2 2.2 is released)
