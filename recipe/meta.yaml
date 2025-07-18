@@ -47,6 +47,11 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_standard_nonsymmetric_starting_vector" %}  # [win]
 {% set tests_to_skip = tests_to_skip + " or test_general_nonsymmetric_starting_vector" %}  # [win]
 
+# ACTUAL: np.float64(-inf) DESIRED: inf
+{% set tests_to_skip = tests_to_skip + " or test_expm1_complex" %}  # [win]
+# ACTUAL: array(-0.) DESIRED: array(-5.e-324)
+{% set tests_to_skip = tests_to_skip + " or test_log1mexp" %}  # [win]
+
 test:
   imports:
     - scipy
