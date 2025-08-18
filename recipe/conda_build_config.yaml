@@ -4,4 +4,4 @@ cxx_compiler_version:      # [osx]
   - 17                     # [osx]
 
 mkl:
-  - 2025
+  - 2025.*
