@@ -15,8 +15,11 @@ build:
 requirements:
   build:
     - {{ stdlib('c') }}
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    # Use explicit clang >=17 on macOS, generic compilers elsewhere
+    - {{ compiler('c') }}     # [not osx]
+    - {{ compiler('cxx') }}   # [not osx]
+    - clang >=17              # [osx]
+    - clangxx >=17            # [osx]
     # pythran code needs clang-cl on windows
     - clang   # [win]
     - lld     # [win]
