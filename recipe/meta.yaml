@@ -15,14 +15,8 @@ build:
 requirements:
   build:
     - {{ stdlib('c') }}
-    # Use explicit clang >=17 on macOS, generic compilers elsewhere
-    - {{ compiler('c') }}     # [not osx]
-    - {{ compiler('cxx') }}   # [not osx]
-    - clang >=17              # [osx]
-    - clangxx >=17            # [osx]
-    # pythran code needs clang-cl on windows
-    - clang   # [win]
-    - lld     # [win]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
     - pkg-config
   host:
@@ -40,7 +34,6 @@ requirements:
   run:
     - python
     - numpy >=1.25.2,<2.6
-    - libcxx >=17  # [osx]
 {% set tests_to_skip = "_not_a_real_test" %}
 
 # skip failing win-64 tests - intel fortran related regression
