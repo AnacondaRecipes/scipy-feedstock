@@ -12,11 +12,6 @@ if [[ "${target_platform}" == "osx-arm64" ]]; then
     export DEBUG_FORTRANFLAGS="${DEBUG_FORTRANFLAGS//armv8.3-a/armv8-a}"
     export FFLAGS="${FFLAGS//armv8.3-a/armv8-a}"
     export FORTRANFLAGS="${FORTRANFLAGS//armv8.3-a/armv8-a}"
-
-    # Fix C++ standard library header paths for clang 17 on osx-arm64
-    # Ensure libc++ headers are accessible to resolve '<cmath> file not found' error
-    export CXXFLAGS="${CXXFLAGS} -isystem ${BUILD_PREFIX}/include/c++/v1"
-    export CPPFLAGS="${CPPFLAGS} -isystem ${BUILD_PREFIX}/include/c++/v1"
 fi
 
 if [[ ${blas_impl} == openblas ]]; then
