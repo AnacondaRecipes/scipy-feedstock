@@ -17,6 +17,9 @@ requirements:
     - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    # pythran code needs clang-cl on windows
+    - clang   # [win]
+    - lld     # [win]
     - {{ compiler('fortran') }}
     - pkg-config
   host:

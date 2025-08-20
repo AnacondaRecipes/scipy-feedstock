@@ -1,13 +1,7 @@
-c_compiler_version:        # [osx or win]
-  - 17                     # [osx or win]
-cxx_compiler_version:      # [osx or win]
-  - 17                     # [osx or win]
-
-# pythran code needs clang-cl on windows
-c_compiler:    # [win]
-  - clang      # [win]
-cxx_compiler:  # [win]
-  - clang      # [win]
+c_compiler_version:        # [osx]
+  - 17                     # [osx]
+cxx_compiler_version:      # [osx]
+  - 17                     # [osx]
 
 mkl:
   - 2025.*
