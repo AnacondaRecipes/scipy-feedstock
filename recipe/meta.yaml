@@ -1,15 +1,16 @@
-{% set version = "1.16.0" %}
+{% set name = "scipy" %}
+{% set version = "1.16.1" %}
 
 package:
-  name: scipy
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/scipy/scipy/releases/download/v{{ version }}/scipy-{{ version }}.tar.gz
-    sha256: b5ef54021e832869c8cfb03bc3bf20366cbcd426e02a58e8a58d7584dfbb8f62
+  - url: https://github.com/{{ name }}/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 44c76f9e8b6e8e488a586190ab38016e4ed2f8a038af7cd3defa903c0a2238b3
 
 build:
-  number: 1
+  number: 0
   skip: true  # [py<311]
 
 requirements:
@@ -17,21 +18,22 @@ requirements:
     - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
     # pythran code needs clang-cl on windows
     - clang   # [win]
     - lld     # [win]
-    - {{ compiler('fortran') }}
     - pkg-config
   host:
+    - pip
     - python
     - cython >=3.0.8,<3.2.0
-    - pybind11 >=2.13.2,<2.14.0
+    - pybind11 >=2.13.2,<3.1.0
     - pythran >=0.14.0,<0.19.0
     - meson-python >=0.15.0,<0.21.0
+    # Ninja added to have specific Meson backend
+    - ninja-base
     - python-build
-    - numpy 2.0 # [py<313]
-    - numpy 2.1 # [py==313]
-    - pip
+    - numpy {{ numpy }}
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
@@ -56,6 +58,11 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_expm1_complex" %}  # [win]
 # ACTUAL: array(-0.) DESIRED: array(-5.e-324)
 {% set tests_to_skip = tests_to_skip + " or test_log1mexp" %}  # [win]
+# Tolerance violation in test_x0_working on linux-aarch64.
+# Similar to:
+# https://github.com/scipy/scipy/issues/22022
+# https://github.com/scipy/scipy/pull/22033
+{% set tests_to_skip = tests_to_skip + " or test_x0_working" %}  # [linux and aarch64]
 
 test:
   imports:
@@ -147,7 +154,7 @@ test:
 
 
 about:
-  home: https://scipy.org/
+  home: https://scipy.org
   license_family: BSD
   license: BSD-3-Clause AND MIT AND BSD-3-Clause-Attribution AND BSD-2-Clause AND BSL-1.0
   license_file:
@@ -176,7 +183,7 @@ about:
   description: |
     SciPy is a Python-based ecosystem of open-source software for mathematics,
     science, and engineering.
-  doc_url: https://docs.scipy.org/doc/scipy/
+  doc_url: https://docs.scipy.org/doc/scipy
   dev_url: https://github.com/scipy/scipy
 
 extra:
