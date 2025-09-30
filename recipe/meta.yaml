@@ -11,7 +11,7 @@ source:
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
 
 build:
-  number: 0
+  number: 1
   skip: true  # [py<310]
   missing_dso_whitelist:
     - $RPATH/ld64.so.1  # [linux and s390x]
@@ -30,6 +30,7 @@ build:
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     # pythran code needs clang-cl on windows
@@ -78,6 +79,9 @@ requirements:
 # flaky test observerd on windows - time sensitive
 # see https://github.com/scipy/scipy/blob/v1.14.1/scipy/_lib/tests/test_import_cycles.py#L11
 {% set tests_to_skip = tests_to_skip + " or test_public_modules_importable" %}  # [win] 
+# tolerance violation - related to https://github.com/scipy/scipy/issues/22022
+# might be due to openblas being updated
+{% set tests_to_skip = tests_to_skip + " or test_x0_working[tfqmr]" %}  # [linux and aarch64] 
 
 test:
   imports:
