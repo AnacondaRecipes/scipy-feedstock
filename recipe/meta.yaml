@@ -1,5 +1,5 @@
 {% set name = "scipy" %}
-{% set version = "1.16.1" %}
+{% set version = "1.16.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   - url: https://github.com/{{ name }}/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 44c76f9e8b6e8e488a586190ab38016e4ed2f8a038af7cd3defa903c0a2238b3
+    sha256: af029b153d243a80afb6eabe40b0a07f8e35c9adc269c019f364ad747f826a6b
 
 build:
   number: 0
@@ -110,7 +110,7 @@ test:
     - scipy.stats.qmc
     - scipy.stats.sampling
   requires:
-    - pytest
+    - pytest >=8.0.0
     - pytest-timeout
     - pytest-xdist
     - asv
@@ -180,9 +180,7 @@ about:
     - subprojects/qhull_r/libqhull_r/COPYING.txt
     - scipy/stats/biasedurn/license.txt
   summary: Scientific Library for Python
-  description: |
-    SciPy is a Python-based ecosystem of open-source software for mathematics,
-    science, and engineering.
+  description: 'SciPy is a Python-based ecosystem of open-source software for mathematics, science, and engineering.'
   doc_url: https://docs.scipy.org/doc/scipy
   dev_url: https://github.com/scipy/scipy
 
