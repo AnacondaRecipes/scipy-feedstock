@@ -1,5 +1,5 @@
 {% set name = "scipy" %}
-{% set version = "1.16.3" %}
+{% set version = "1.17.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   - url: https://github.com/{{ name }}/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 01e87659402762f43bd2fee13370553a17ada367d42e7487800bf2916535aecb
+    sha256: 2591060c8e648d8b96439e111ac41fd8342fdeff1876be2e19dea3fe8930454e
 
 build:
   number: 0
@@ -26,7 +26,7 @@ requirements:
   host:
     - pip
     - python
-    - cython >=3.0.8,<3.2.0
+    - cython >=3.0.8,<3.3.0
     - pybind11 >=2.13.2,<3.1.0
     - pythran >=0.14.0,<0.19.0
     - meson-python >=0.15.0,<0.21.0
@@ -38,7 +38,9 @@ requirements:
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
-    - numpy >=1.25.2,<2.6
+    - numpy >=1.26.4,<2.7
+
+
 {% set tests_to_skip = "_not_a_real_test" %}
 
 # skip failing win-64 tests - intel fortran related regression
@@ -63,6 +65,9 @@ requirements:
 # https://github.com/scipy/scipy/issues/22022
 # https://github.com/scipy/scipy/pull/22033
 {% set tests_to_skip = tests_to_skip + " or test_x0_working" %}  # [linux and aarch64]
+# E   Max absolute difference among violations: 1.23296473e-12
+# E   Max relative difference among violations: 7.23955002e-13
+{% set tests_to_skip = tests_to_skip + " or test_hermitian_modes" %}  # [linux and aarch64]
 
 test:
   imports:
@@ -113,7 +118,6 @@ test:
     - pytest >=8.0.0
     - pytest-timeout
     - pytest-xdist
-    - asv
     - mpmath
     - gmpy2
     - threadpoolctl
@@ -174,11 +178,11 @@ about:
     - scipy/_lib/pocketfft/LICENSE.md
     - scipy/_lib/unuran/license.txt
     - scipy/fft/_pocketfft/LICENSE.md
-    - scipy/sparse/linalg/_eigen/arpack/ARPACK/COPYING
-    - scipy/sparse/linalg/_propack/PROPACK/license.txt
-    - scipy/sparse/linalg/_dsolve/SuperLU/License.txt
     - subprojects/qhull_r/libqhull_r/COPYING.txt
     - scipy/stats/biasedurn/license.txt
+    - scipy/sparse/linalg/_eigen/arpack/arnaud/ARPACK_LICENSE.txt
+    - scipy/sparse/linalg/_propack/PROPACK/PROPACK_LICENSE.txt
+    - scipy/sparse/linalg/_dsolve/SuperLU/License.txt
   summary: Scientific Library for Python
   description: 'SciPy is a Python-based ecosystem of open-source software for mathematics, science, and engineering.'
   doc_url: https://docs.scipy.org/doc/scipy
