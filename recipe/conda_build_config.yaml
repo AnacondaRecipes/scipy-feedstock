@@ -1,0 +1,8 @@
+blas_impl:
+  - mkl                    # [(x86 or x86_64) and not osx]
+  - openblas
+
+fortran_compiler:          # [win]
+  - flang                  # [win]
+fortran_compiler_version:  # [win]
+  - 20                     # [win]
