@@ -6,3 +6,12 @@ MACOSX_SDK_VERSION:      # [osx]
   - 11.1                 # [osx]
 CONDA_BUILD_SYSROOT:     # [osx]
   - /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk  # [osx]
+
+blas_impl:
+  - mkl                    # [(x86 or x86_64) and not osx]
+  - openblas
+
+fortran_compiler:          # [win]
+  - flang                  # [win]
+fortran_compiler_version:  # [win]
+  - 20                     # [win]
