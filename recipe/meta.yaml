@@ -80,9 +80,16 @@ requirements:
 # see https://github.com/scipy/scipy/issues/15108
 {% set tests_to_skip = tests_to_skip + " or test_svd_linop or test_svdp or test_examples" %}  # [win] 
 
+# id_dist Fortran code produces wrong complex128 results under LLVM flang
+# fixed in 1.15 via Cython rewrite (PR #20558); see https://github.com/scipy/scipy/issues/9249
+{% set tests_to_skip = tests_to_skip + " or (TestInterpolativeDecomposition and complex128)" %}  # [win]
+
 # flaky test observerd on multiple platforms
 # see https://github.com/scipy/scipy/issues/18880
 {% set tests_to_skip = tests_to_skip + " or test_expm_multiply_dtype[True-float32-float32]" %}
+
+# tolerance violation in tfqmr solver - related to https://github.com/scipy/scipy/issues/22022
+{% set tests_to_skip = tests_to_skip + " or test_x0_working[tfqmr]" %}  # [linux and aarch64]
 
 # flaky test observerd on windows - time sensitive
 # see https://github.com/scipy/scipy/blob/v1.14.1/scipy/_lib/tests/test_import_cycles.py#L11
