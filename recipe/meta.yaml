@@ -11,8 +11,8 @@ source:
       - patches/0002-arff-nodata-test-remove-endian-check.patch  # [s390x]
 
 build:
-  number: 0
-  skip: true  # [py<310]
+  number: 1
+  skip: true  # [py<310 or py>313]
   missing_dso_whitelist:
     - $RPATH/ld64.so.1  # [linux and s390x]
     # sf_error_state is loaded with ctypes.WinDLL
@@ -44,9 +44,10 @@ requirements:
     - pybind11 >=2.12.0,<2.13.0
     - pythran >=0.14.0,<0.17.0
     - meson-python >=0.15.0,<0.19.0
+    # meson-python: error: Could not find ninja version 1.8.2 or newer.
+    - ninja-base >=1.8.2
     - python-build
-    - numpy 2.0 # [py<313]
-    - numpy 2.1 # [py==313]
+    - numpy {{ numpy }}
     - pip
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
@@ -79,13 +80,24 @@ requirements:
 # see https://github.com/scipy/scipy/issues/15108
 {% set tests_to_skip = tests_to_skip + " or test_svd_linop or test_svdp or test_examples" %}  # [win] 
 
+# id_dist Fortran code produces wrong complex128 results under LLVM flang
+# fixed in 1.15 via Cython rewrite (PR #20558); see https://github.com/scipy/scipy/issues/9249
+{% set tests_to_skip = tests_to_skip + " or (TestInterpolativeDecomposition and complex128)" %}  # [win]
+
 # flaky test observerd on multiple platforms
 # see https://github.com/scipy/scipy/issues/18880
 {% set tests_to_skip = tests_to_skip + " or test_expm_multiply_dtype[True-float32-float32]" %}
 
-# flaky test observerd on windows - time sensitive
+# tolerance violation in tfqmr solver - related to https://github.com/scipy/scipy/issues/22022
+{% set tests_to_skip = tests_to_skip + " or test_x0_working[tfqmr]" %}  # [linux and aarch64]
+
+# flaky test observerd on windows - time sensitive 
 # see https://github.com/scipy/scipy/blob/v1.14.1/scipy/_lib/tests/test_import_cycles.py#L11
 {% set tests_to_skip = tests_to_skip + " or test_public_modules_importable" %}  # [win] 
+
+# quadpack Fortran bug produces wrong complex weighted integration results
+# fixed in 1.15 via C rewrite (PR #21201); see https://github.com/scipy/scipy/issues/21057
+{% set tests_to_skip = tests_to_skip + " or (TestQuad and test_complex)" %}  # [osx]
 
 test:
   imports:

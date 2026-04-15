@@ -24,6 +24,7 @@ set "SRC_DIR="
 set "PKG_CONFIG_PATH=%LIBRARY_LIB%\pkgconfig;%LIBRARY_PREFIX%\share\pkgconfig;%BUILD_PREFIX%\Library\lib\pkgconfig"
 if "%blas_impl%" == "openblas" (
     set "BLAS=openblas"
+    set "OPENBLAS_ROOT=%LIBRARY_PREFIX%"
 ) else (
     set "BLAS=mkl-sdl"
 )
@@ -36,7 +37,8 @@ REM Setting c++17. See: https://github.com/scipy/scipy/issues/19726
     -Csetup-args=-Dblas=%BLAS% ^
     -Csetup-args=-Dlapack=%BLAS% ^
     -Csetup-args=-Duse-g77-abi=true ^
-    -Csetup-args=-Duse-pythran=true
+    -Csetup-args=-Duse-pythran=true ^
+    -Csetup-args=-Dfortran_std=none
 if errorlevel 1 (
   type builddir\meson-logs\meson-log.txt
   exit /b 1
