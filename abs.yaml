@@ -1,0 +1,7 @@
+# Dev/staging channel for pre-release pybind11 3.0.4 (PKG-13552) — this
+# rebuild needs pybind11 3.0.4 + pybind11-abi 11 from staging so the
+# resulting scipy artifact pins pybind11-abi ==11 (not ==4/5). Remove
+# this `channels:` block once pybind11 3.0.4 ships to pkgs/main and the
+# pybind11-v3 migration is complete.
+channels:
+  - xkong-staging
