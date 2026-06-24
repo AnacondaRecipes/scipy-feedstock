@@ -1,17 +1,17 @@
 {% set name = "scipy" %}
-{% set version = "1.17.1" %}
+{% set version = "1.18.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/{{ name }}/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
+  - url: https://github.com/{{ name }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
     sha256: 95d8e012d8cb8816c226aef832200b1d45109ed4464303e997c5b13122b297c0
 
 build:
-  number: 1
-  skip: true  # [py<311]
+  number: 0
+  skip: true  # [py<312]
 
 requirements:
   build:
@@ -26,10 +26,10 @@ requirements:
   host:
     - pip
     - python
-    - cython >=3.0.8,<3.3.0
+    - meson-python >=0.15.0,<0.22.0
+    - cython >=3.2.0,<3.3.0
     - pybind11 >=2.13.2,<3.1.0
-    - pythran >=0.14.0,<0.19.0
-    - meson-python >=0.15.0,<0.21.0
+    - pythran >=0.18.1,<0.19.0
     # Ninja added to have specific Meson backend
     - ninja-base
     - python-build
@@ -38,11 +38,9 @@ requirements:
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
-    - numpy >=1.26.4,<2.7
-
+    - numpy >=2.0.0,<2.8
 
 {% set tests_to_skip = "_not_a_real_test" %}
-
 # skip failing win-64 tests - intel fortran related regression
 # see https://github.com/scipy/scipy/issues/17075
 {% set tests_to_skip = tests_to_skip + " or TestODR" %}  # [win]
@@ -55,7 +53,6 @@ requirements:
 # problem - scipy.sparse imports correctly in normal usage. Likely due to Python 3.12 DLL loading changes
 # interacting with MKL 2025 stack layout in subprocess environment.
 {% set tests_to_skip = tests_to_skip + " or test_public_modules_importable" %}  # [win and py==312]
-
 # ACTUAL: np.float64(-inf) DESIRED: inf
 {% set tests_to_skip = tests_to_skip + " or test_expm1_complex" %}  # [win]
 # ACTUAL: array(-0.) DESIRED: array(-5.e-324)
