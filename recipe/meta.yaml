@@ -157,26 +157,40 @@ about:
   license_family: BSD
   license: BSD-3-Clause AND MIT AND BSD-3-Clause-Attribution AND BSD-2-Clause AND BSL-1.0
   license_file:
-    - LICENSE.txt
     - LICENSES_bundled.txt
+    - doc/source/_static/scipy-mathjax/LICENSE
+    - LICENSE.txt
+    - subprojects/boost_math/math/LICENSE
+    - subprojects/array_api_compat/array_api_compat/LICENSE
+    - subprojects/xsf/LICENSE
+    - subprojects/xsf/LICENSES_bundled.txt
+    - subprojects/array_api_extra/LICENSE
+    - subprojects/duccfft/LICENSE.md
+    - subprojects/cobyqa/LICENSE
+    - subprojects/highs/LICENSE.txt
+    - subprojects/highs/extern/filereaderlp/LICENSE
     - scipy/ndimage/LICENSE.txt
     - scipy/optimize/tnc/LICENSE
-    - scipy/optimize/_direct/COPYING
-    - scipy/io/_fast_matrix_market/LICENSE.txt
+    - scipy/integrate/src/LICENSE_DOP
     - scipy/io/_fast_matrix_market/fast_matrix_market/dependencies/fast_float/LICENSE-MIT
     - scipy/io/_fast_matrix_market/fast_matrix_market/dependencies/ryu/LICENSE-Boost
+    - scipy/io/_fast_matrix_market/LICENSE.txt
     - scipy/_lib/_uarray/LICENSE
-    - scipy/_lib/array_api_compat/LICENSE
-    - scipy/_lib/array_api_extra/LICENSE
-    - subprojects/boost_math/math/LICENSE
-    - scipy/_lib/cobyqa/LICENSE
-    - scipy/_lib/pocketfft/LICENSE.md
-    - scipy/_lib/unuran/license.txt
-    - scipy/fft/_pocketfft/LICENSE.md
-    - subprojects/qhull_r/libqhull_r/COPYING.txt
-    - scipy/stats/biasedurn/license.txt
+    - scipy/_external/packaging_version/src/LICENSE.BSD
+    - scipy/fft/_duccfft/LICENSE.md
+    - scipy/sparse/linalg/_eigen/arpack/arnaud/LICENSE
     - scipy/sparse/linalg/_eigen/arpack/arnaud/ARPACK_LICENSE.txt
     - scipy/sparse/linalg/_propack/PROPACK/PROPACK_LICENSE.txt
+    - scipy/sparse/linalg/_propack/PROPACK/LICENSE
+    - scipy/_build_utils/tempita/LICENSE.txt
+    - subprojects/qhull_r/libqhull_r/COPYING.txt
+    - scipy/optimize/_direct/COPYING
+    - scipy/spatial/COPYING_QHULL.txt
+    - subprojects/unuran/license.txt
+    - subprojects/cobyqa/.github/workflows/license.yml
+    - subprojects/cobyqa/doc/source/license.rst
+    - subprojects/highs/extern/pdqsort/license.txt
+    - scipy/stats/biasedurn/license.txt
     - scipy/sparse/linalg/_dsolve/SuperLU/License.txt
   summary: Scientific Library for Python
   description: 'SciPy is a Python-based ecosystem of open-source software for mathematics, science, and engineering.'
