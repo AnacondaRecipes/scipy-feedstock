@@ -6,8 +6,8 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://github.com/{{ name }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 95d8e012d8cb8816c226aef832200b1d45109ed4464303e997c5b13122b297c0
+  url: https://github.com/{{ name }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 95d8e012d8cb8816c226aef832200b1d45109ed4464303e997c5b13122b297c0
 
 build:
   number: 0
@@ -126,7 +126,6 @@ test:
     # output of numpy.show_config()
     - pyyaml
   commands:
-
     # Attempt to fix some file number limits when testing on osx.
     - ulimit -n 64000 # [osx]
 
@@ -152,7 +151,6 @@ test:
     {% set param_fail = "verbose=2, label=" + label + ", tests=None" %}
     {% set extra_fail = "extra_argv=['-k', '(" + tests_to_skip + ")', '-n', '3', '--timeout=1800', '--durations=50']" %}
     - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_fail }}); sys.exit(0)"
-
 
 about:
   home: https://scipy.org
