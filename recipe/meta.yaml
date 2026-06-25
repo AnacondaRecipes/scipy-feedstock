@@ -1,17 +1,17 @@
 {% set name = "scipy" %}
-{% set version = "1.17.1" %}
+{% set version = "1.18.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/{{ name }}/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 95d8e012d8cb8816c226aef832200b1d45109ed4464303e997c5b13122b297c0
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 67b2ad2ad54c72ca6d04975a9b2df8c3638c34ddd5b28738e94fc2b57929d378
 
 build:
-  number: 1
-  skip: true  # [py<311]
+  number: 0
+  skip: true  # [py<312]
 
 requirements:
   build:
@@ -26,10 +26,10 @@ requirements:
   host:
     - pip
     - python
-    - cython >=3.0.8,<3.3.0
+    - meson-python >=0.15.0,<0.22.0
+    - cython >=3.2.0,<3.3.0
     - pybind11 >=2.13.2,<3.1.0
-    - pythran >=0.14.0,<0.19.0
-    - meson-python >=0.15.0,<0.21.0
+    - pythran >=0.18.1,<0.19.0
     # Ninja added to have specific Meson backend
     - ninja-base
     - python-build
@@ -38,11 +38,9 @@ requirements:
     - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
   run:
     - python
-    - numpy >=1.26.4,<2.7
-
+    - numpy >=2.0.0,<2.8
 
 {% set tests_to_skip = "_not_a_real_test" %}
-
 # skip failing win-64 tests - intel fortran related regression
 # see https://github.com/scipy/scipy/issues/17075
 {% set tests_to_skip = tests_to_skip + " or TestODR" %}  # [win]
@@ -55,7 +53,6 @@ requirements:
 # problem - scipy.sparse imports correctly in normal usage. Likely due to Python 3.12 DLL loading changes
 # interacting with MKL 2025 stack layout in subprocess environment.
 {% set tests_to_skip = tests_to_skip + " or test_public_modules_importable" %}  # [win and py==312]
-
 # ACTUAL: np.float64(-inf) DESIRED: inf
 {% set tests_to_skip = tests_to_skip + " or test_expm1_complex" %}  # [win]
 # ACTUAL: array(-0.) DESIRED: array(-5.e-324)
@@ -129,7 +126,6 @@ test:
     # output of numpy.show_config()
     - pyyaml
   commands:
-
     # Attempt to fix some file number limits when testing on osx.
     - ulimit -n 64000 # [osx]
 
@@ -156,32 +152,45 @@ test:
     {% set extra_fail = "extra_argv=['-k', '(" + tests_to_skip + ")', '-n', '3', '--timeout=1800', '--durations=50']" %}
     - python -c "import scipy, sys; scipy.test({{ param_fail }}, {{ extra_fail }}); sys.exit(0)"
 
-
 about:
   home: https://scipy.org
   license_family: BSD
   license: BSD-3-Clause AND MIT AND BSD-3-Clause-Attribution AND BSD-2-Clause AND BSL-1.0
   license_file:
-    - LICENSE.txt
     - LICENSES_bundled.txt
+    - doc/source/_static/scipy-mathjax/LICENSE
+    - LICENSE.txt
+    - subprojects/boost_math/math/LICENSE
+    - subprojects/array_api_compat/array_api_compat/LICENSE
+    - subprojects/xsf/LICENSE
+    - subprojects/xsf/LICENSES_bundled.txt
+    - subprojects/array_api_extra/LICENSE
+    - subprojects/duccfft/LICENSE.md
+    - subprojects/cobyqa/LICENSE
+    - subprojects/highs/LICENSE.txt
+    - subprojects/highs/extern/filereaderlp/LICENSE
     - scipy/ndimage/LICENSE.txt
     - scipy/optimize/tnc/LICENSE
-    - scipy/optimize/_direct/COPYING
-    - scipy/io/_fast_matrix_market/LICENSE.txt
+    - scipy/integrate/src/LICENSE_DOP
     - scipy/io/_fast_matrix_market/fast_matrix_market/dependencies/fast_float/LICENSE-MIT
     - scipy/io/_fast_matrix_market/fast_matrix_market/dependencies/ryu/LICENSE-Boost
+    - scipy/io/_fast_matrix_market/LICENSE.txt
     - scipy/_lib/_uarray/LICENSE
-    - scipy/_lib/array_api_compat/LICENSE
-    - scipy/_lib/array_api_extra/LICENSE
-    - subprojects/boost_math/math/LICENSE
-    - scipy/_lib/cobyqa/LICENSE
-    - scipy/_lib/pocketfft/LICENSE.md
-    - scipy/_lib/unuran/license.txt
-    - scipy/fft/_pocketfft/LICENSE.md
-    - subprojects/qhull_r/libqhull_r/COPYING.txt
-    - scipy/stats/biasedurn/license.txt
+    - scipy/_external/packaging_version/src/LICENSE.BSD
+    - scipy/fft/_duccfft/LICENSE.md
+    - scipy/sparse/linalg/_eigen/arpack/arnaud/LICENSE
     - scipy/sparse/linalg/_eigen/arpack/arnaud/ARPACK_LICENSE.txt
     - scipy/sparse/linalg/_propack/PROPACK/PROPACK_LICENSE.txt
+    - scipy/sparse/linalg/_propack/PROPACK/LICENSE
+    - scipy/_build_utils/tempita/LICENSE.txt
+    - subprojects/qhull_r/libqhull_r/COPYING.txt
+    - scipy/optimize/_direct/COPYING
+    - scipy/spatial/COPYING_QHULL.txt
+    - subprojects/unuran/license.txt
+    - subprojects/cobyqa/.github/workflows/license.yml
+    - subprojects/cobyqa/doc/source/license.rst
+    - subprojects/highs/extern/pdqsort/license.txt
+    - scipy/stats/biasedurn/license.txt
     - scipy/sparse/linalg/_dsolve/SuperLU/License.txt
   summary: Scientific Library for Python
   description: 'SciPy is a Python-based ecosystem of open-source software for mathematics, science, and engineering.'
