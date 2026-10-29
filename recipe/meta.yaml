@@ -65,6 +65,10 @@ requirements:
 # E   Max absolute difference among violations: 1.23296473e-12
 # E   Max relative difference among violations: 7.23955002e-13
 {% set tests_to_skip = tests_to_skip + " or test_hermitian_modes" %}  # [linux and aarch64]
+# Single-precision CGS convergence depends on platform rounding;
+# similar to https://github.com/scipy/scipy/issues/25522
+{% set tests_to_skip = tests_to_skip + " or test_convergence[rand-sym-pd-F-cgs-numpy-batch_b0-batch_A0]" %}  # [win and arm64]
+
 
 test:
   imports:
